@@ -1,0 +1,379 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+    --primary: #3b82f6;
+    --primary-light: #60a5fa;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --gray: #6b7280;
+    --bg: #f1f5f9;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f8fafc);
+}
+
+/* HEADER */
+.header {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* BOTÓN LOGOUT */
+.btn-logout {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-logout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* CONTENEDOR */
+.container {
+    padding: 20px;
+}
+
+/* FILTROS */
+.filters {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.filters-form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* INPUTS */
+.filters input {
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    outline: none;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.filters input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+/* BOTONES */
+button, .btn-new, .btn-search {
+    font-size: 15px;
+    padding: 12px 18px;
+}
+
+/* NUEVO PACIENTE */
+.btn-new {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+}
+
+.btn-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59,130,246,0.3);
+}
+
+/* BUSCAR */
+.btn-search {
+    background: linear-gradient(135deg, #6366f1, #3b82f6);
+    color: white;
+
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 500;
+
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    transition: all 0.25s ease;
+}
+
+/* HOVER PRO */
+.btn-search:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 25px rgba(59,130,246,0.35);
+}
+
+/* CLICK */
+.btn-search:active {
+    transform: scale(0.96);
+}
+
+/* FOCUS (accesibilidad) */
+.btn-search:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.4);
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+/* TABLA */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+/* HEADERS */
+th {
+    text-align: left;
+    padding: 10px 15px;
+    color: var(--gray);
+    font-size: 13px;
+}
+
+/* FILAS */
+tr {
+    background: white;
+    border-radius: 12px;
+}
+
+td {
+    padding: 15px;
+    font-size: 14px;
+}
+
+/* EFECTO HOVER */
+tbody tr {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    transition: 0.2s;
+}
+
+tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* ACCIONES */
+.acciones {
+    display: flex;
+    gap: 8px;
+}
+
+/* BOTONES ACCIONES */
+.btn-view, .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 500;
+
+    border-radius: 12px;
+    text-decoration: none;
+
+    transition: all 0.25s ease;
+}
+
+/* VER */
+.btn-view {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+}
+
+.btn-view:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(34,197,94,0.35);
+}
+
+/* ELIMINAR */
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(239,68,68,0.35);
+}
+
+/* CLICK */
+.btn-view:active,
+.btn-danger:active {
+    transform: scale(0.95);
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+}
+
+/* INPUT MODAL */
+.modal-content input {
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+/* ANIMACIÓN */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+
+    .filters-form {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .filters input {
+        width: 100%;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    td, th {
+        padding: 10px;
+    }
+}
+
+/* BOTÓN FLOTANTE*/
+.fab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: white;
+
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+
+    border: none;
+    cursor: pointer;
+
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* ICONO + */
+.fab .icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* TEXTO */
+.fab .text {
+    margin-left: 45px;
+    opacity: 0;
+    white-space: nowrap;
+    font-size: 16px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+/* HOVER */
+.fab:hover {
+    width: 200px;
+    border-radius: 40px;
+    justify-content: flex-start;
+    padding-left: 20px;
+}
+
+.fab:hover .icon {
+    left: 20px;
+    transform: translateY(-50%);
+}
+
+.fab:hover .text {
+    opacity: 1;
+}

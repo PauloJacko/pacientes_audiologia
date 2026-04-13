@@ -25,8 +25,39 @@ def logout_view(request):
     return redirect('login')
 
 
+from .models import Paciente
+from django.db.models import Q
+
+
 @login_required
 def dashboard_view(request):
-    return render(request, 'Login/dashboard.html')
+
+    nombre = request.GET.get('nombre')
+    rut = request.GET.get('rut')
+
+    pacientes = Paciente.objects.all().order_by('-creado')
+
+    if nombre:
+        pacientes = pacientes.filter(nombre__icontains=nombre)
+
+    if rut:
+        pacientes = pacientes.filter(rut__icontains=rut)
+
+    return render(request, 'Login/dashboard.html', {
+        'pacientes': pacientes
+    })
+
+
+@login_required
+def crear_paciente(request):
+    if request.method == 'POST':
+        Paciente.objects.create(
+            nombre=request.POST['nombre'],
+            rut=request.POST['rut'],
+            telefono=request.POST.get('telefono'),
+            fecha_nacimiento=request.POST['fecha_nacimiento'],
+            direccion=request.POST.get('direccion'),
+        )
+    return redirect('dashboard')
 
 

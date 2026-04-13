@@ -1,0 +1,95 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'Login/css/dashboard.css' %}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- HEADER -->
+<div class="header">
+    <h2>Pacientes</h2>
+    <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+</div>
+
+<!-- FILTROS -->
+<div class="filters">
+
+    <form method="GET" class="filters-form">
+        <input type="text" name="nombre" placeholder="Buscar por nombre">
+        <input type="text" name="rut" placeholder="Buscar por RUT">
+
+        <button type="submit" class="btn-search">
+            🔍 Buscar
+        </button>
+    </form>
+
+    <button class="fab" onclick="abrirModal()">
+        <span class="icon">+</span>
+        <span class="text">Nuevo Paciente</span>
+    </button>
+
+</div>
+
+<!-- CONTENIDO -->
+<div class="container">
+    <div class="card">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>RUT</th>
+                    <th>Teléfono</th>
+                    <th>Fecha Nac.</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in pacientes %}
+                <tr>
+                    <td>{{ p.nombre }}</td>
+                    <td>{{ p.rut }}</td>
+                    <td>{{ p.telefono }}</td>
+                    <td>{{ p.fecha_nacimiento }}</td>
+
+                    <td class="acciones">
+                        <a href="#" class="btn-view">👁 Ver</a>
+                        <a href="#" class="btn-danger">🗑 Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3>Nuevo Paciente</h3>
+
+        <form method="POST" action="{% url 'crear_paciente' %}">
+            {% csrf_token %}
+
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="rut" placeholder="RUT" required>
+            <input type="text" name="telefono" placeholder="Teléfono">
+            <input type="date" name="fecha_nacimiento" required>
+            <input type="text" name="direccion" placeholder="Dirección">
+
+            <button class="btn-new">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirModal() {
+    document.getElementById('modal').style.display = 'flex';
+}
+
+window.onclick = function(e) {
+    const modal = document.getElementById('modal');
+    if (e.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
