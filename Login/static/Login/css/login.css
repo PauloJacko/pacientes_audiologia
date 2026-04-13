@@ -11,10 +11,13 @@ body {
     background: url("../img/login-audiologia.jpg") no-repeat center center;
     background-size: cover;
 
-    height: 100vh;
+    min-height: 100vh;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
+    padding: 20px;
 }
 
 /* Overlay oscuro elegante */
@@ -30,10 +33,10 @@ body::before {
     position: relative;
     z-index: 1;
 
-    width: 90%;
+    width: 92%;
     max-width: 420px;
 
-    padding: 50px 40px;
+    padding: 45px 35px;
 
     border-radius: 20px;
 
@@ -54,14 +57,21 @@ body::before {
 .login-box h2 {
     font-weight: 600;
     font-size: 28px;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
+}
+
+/* SUBTEXTO */
+.login-box p {
+    opacity: 0.85;
+    font-size: 15px;
+    margin-bottom: 20px;
 }
 
 /* INPUTS */
 .login-box input {
     width: 100%;
     padding: 14px;
-    margin: 12px 0;
+    margin: 10px 0;
 
     border: none;
     border-radius: 10px;
@@ -71,6 +81,12 @@ body::before {
     outline: none;
 
     background: rgba(255, 255, 255, 0.9);
+
+    transition: 0.2s;
+}
+
+.login-box input:focus {
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
 }
 
 /* BOTÓN */
@@ -98,6 +114,10 @@ body::before {
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
+.login-box button:active {
+    transform: scale(0.96);
+}
+
 /* ERROR */
 .error {
     color: #ffb3b3;
@@ -117,14 +137,42 @@ body::before {
     }
 }
 
-/* 📱 RESPONSIVE */
+/* 📱 MOBILE REAL (CLAVE) */
 @media (max-width: 480px) {
+
+    body {
+        padding: 15px;
+        align-items: center;
+    }
+
     .login-box {
-        padding: 40px 25px;
-        border-radius: 15px;
+        width: 100%;
+        max-width: 100%;
+
+        padding: 35px 25px;
+
+        border-radius: 18px;
     }
 
     .login-box h2 {
-        font-size: 24px;
+        font-size: 26px;
+    }
+
+    .login-box p {
+        font-size: 15px;
+    }
+
+    /* INPUTS MÁS GRANDES */
+    .login-box input {
+        padding: 16px;
+        font-size: 15px;
+        border-radius: 12px;
+    }
+
+    /* BOTÓN MÁS GRANDE */
+    .login-box button {
+        padding: 16px;
+        font-size: 16px;
+        border-radius: 12px;
     }
 }
