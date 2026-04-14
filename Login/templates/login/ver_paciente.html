@@ -2,6 +2,90 @@
 <link rel="stylesheet" href="{% static 'Login/css/ver_paciente.css' %}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<h1>HOLA MUNDO</h1>
+<div class="page">
 
-<p>{{ paciente.nombre }}</p>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+        <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3C9 3 7 5 7 8c0 2 1 3 2 4 1 1 2 2 2 4v1"
+                    stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M12 21a2 2 0 002-2"
+                    stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+            <h2>Paciente: <span>{{ paciente.nombre|default:"Juan Pérez" }}</span></h2>
+        </div>
+    </div>
+
+    <!-- NAV ACCIONES -->
+    <div class="tabs">
+        <button class="tab">+ Nueva Anamnesis</button>
+        <button class="tab active">Audiometría</button>
+        <button class="tab">Otoscopia</button>
+        <button class="tab">Impedanciometría</button>
+        <button class="tab">EOA</button>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="content">
+
+        <h3 class="section-title">Historial</h3>
+
+        <div class="grid">
+
+            <!-- CARD AUDIO -->
+            <div class="card">
+                <h4>Audiometría Reciente</h4>
+
+                <div class="graph-placeholder"></div>
+
+                <div class="metrics">
+                    <p><strong>PTP:</strong> 38 dB</p>
+                    <p><strong>Discriminación:</strong> 88%</p>
+                </div>
+
+                <button class="btn primary">Ver Detalle</button>
+            </div>
+
+            <!-- CARD OTOSCOPIA -->
+            <div class="card">
+                <h4>Otoscopia</h4>
+
+                <div class="otos">
+                    <div>
+                        <div class="img"></div>
+                        <span>OD</span>
+                    </div>
+                    <div>
+                        <div class="img"></div>
+                        <span>OI</span>
+                    </div>
+                </div>
+
+                <button class="btn secondary">Ver Detalle</button>
+            </div>
+
+            <!-- CARD IMPEDANCIA -->
+            <div class="card">
+                <h4>Impedanciometría Reciente</h4>
+
+                <div class="graph-placeholder small"></div>
+
+                <button class="btn success">Ver Detalle</button>
+            </div>
+
+            <!-- CARD EOA -->
+            <div class="card">
+                <h4>EOA</h4>
+
+                <p class="result">Resultados: <span>Normales</span></p>
+
+                <button class="btn secondary">Ver Detalle</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>

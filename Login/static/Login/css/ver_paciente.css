@@ -1,4 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --success: #16a34a;
+    --gray: #64748b;
+    --bg: #f8fafc;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    padding: 40px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: #0f172a;
+}
+
+/* CONTENEDOR */
+.page {
+    padding: 25px;
+}
+
+/* HEADER */
+.header {
+    background: white;
+    padding: 18px 22px;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header .icon {
+    font-size: 22px;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.header span {
+    font-weight: 600;
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.tab {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    background: #e2e8f0;
+    color: #334155;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.tab:hover {
+    background: #cbd5f5;
+}
+
+.tab.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* CONTENT */
+.section-title {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+/* TITULO CARD */
+.card h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* PLACEHOLDER GRAFICO */
+.graph-placeholder {
+    height: 120px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+}
+
+.graph-placeholder.small {
+    height: 90px;
+}
+
+/* METRICAS */
+.metrics p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* OTOSCOPIA */
+.otos {
+    display: flex;
+    gap: 10px;
+}
+
+.otos .img {
+    width: 100%;
+    height: 70px;
+    background: #e2e8f0;
+    border-radius: 8px;
+}
+
+.otos span {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: var(--gray);
+    margin-top: 4px;
+}
+
+/* RESULTADO */
+.result {
+    font-size: 14px;
+}
+
+.result span {
+    color: var(--success);
+    font-weight: 600;
+}
+
+/* BOTONES */
+.btn {
+    margin-top: auto;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn.primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn.secondary {
+    background: #64748b;
+    color: white;
+}
+
+.btn.secondary:hover {
+    background: #475569;
+}
+
+.btn.success {
+    background: var(--success);
+    color: white;
+}
+
+.btn.success:hover {
+    background: #15803d;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
 }
