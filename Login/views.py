@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .models import Paciente
+from django.db.models import Q
 
 
 def login_view(request):
@@ -24,10 +26,12 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-
-from .models import Paciente
-from django.db.models import Q
-
+@login_required
+def eliminar_paciente(request, id):
+    if request.method == 'POST':
+        paciente = Paciente.objects.get(id=id)
+        paciente.delete()
+    return redirect('dashboard')
 
 @login_required
 def dashboard_view(request):
@@ -59,5 +63,14 @@ def crear_paciente(request):
             direccion=request.POST.get('direccion'),
         )
     return redirect('dashboard')
+
+
+@login_required
+def ver_paciente(request, id):
+    paciente = Paciente.objects.get(id=id)
+
+    return render(request, 'Login/ver_paciente.html', {
+        'paciente': paciente
+    })
 
 
