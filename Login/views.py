@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Paciente
@@ -55,22 +55,24 @@ def dashboard_view(request):
 @login_required
 def crear_paciente(request):
     if request.method == 'POST':
-        Paciente.objects.create(
+        paciente = Paciente.objects.create(
             nombre=request.POST['nombre'],
             rut=request.POST['rut'],
             telefono=request.POST.get('telefono'),
+            email=request.POST.get('email'),
             fecha_nacimiento=request.POST['fecha_nacimiento'],
             direccion=request.POST.get('direccion'),
+            prevision=request.POST.get('prevision'),
         )
+
+        return redirect('ver_paciente', paciente.id)
+
     return redirect('dashboard')
 
 
-@login_required
 def ver_paciente(request, id):
-    paciente = Paciente.objects.get(id=id)
-
+    paciente = get_object_or_404(Paciente, id=id)
     return render(request, 'Login/ver_paciente.html', {
         'paciente': paciente
     })
-
 

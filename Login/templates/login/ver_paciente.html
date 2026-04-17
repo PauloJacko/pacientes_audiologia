@@ -1,91 +1,189 @@
-{% load static %}
-<link rel="stylesheet" href="{% static 'Login/css/ver_paciente.css' %}">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paciente</title>
 
-<div class="page">
+    <!-- CSS DASHBOARD (para header y colores) -->
+    <link rel="stylesheet" href="{% static 'Login/css/dashboard.css' %}">
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="header-left">
-        <div class="icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3C9 3 7 5 7 8c0 2 1 3 2 4 1 1 2 2 2 4v1"
-                    stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M12 21a2 2 0 002-2"
-                    stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-        </div>
-            <h2>Paciente: <span>{{ paciente.nombre|default:"Juan Pérez" }}</span></h2>
+    <!-- CSS PROPIO -->
+    <link rel="stylesheet" href="{% static 'Login/css/ver_paciente.css' %}" />
+</head>
+<body>
+
+<!-- HEADER IGUAL AL DASHBOARD -->
+<div class="header">
+
+    <div class="header-left">
+        <img src="{% static 'Login/img/logo-png.png' %}" alt="Logo" class="logo-header">
+
+        <div class="header-text">
+            <span class="title">Paciente</span>
+            <span class="subtitle">Ficha clínica</span>
         </div>
     </div>
 
-    <!-- NAV ACCIONES -->
-    <div class="tabs">
-        <button class="tab">+ Nueva Anamnesis</button>
-        <button class="tab active">Audiometría</button>
-        <button class="tab">Otoscopia</button>
-        <button class="tab">Impedanciometría</button>
-        <button class="tab">EOA</button>
-    </div>
-
-    <!-- CONTENIDO -->
-    <div class="content">
-
-        <h3 class="section-title">Historial</h3>
-
-        <div class="grid">
-
-            <!-- CARD AUDIO -->
-            <div class="card">
-                <h4>Audiometría Reciente</h4>
-
-                <div class="graph-placeholder"></div>
-
-                <div class="metrics">
-                    <p><strong>PTP:</strong> 38 dB</p>
-                    <p><strong>Discriminación:</strong> 88%</p>
-                </div>
-
-                <button class="btn primary">Ver Detalle</button>
-            </div>
-
-            <!-- CARD OTOSCOPIA -->
-            <div class="card">
-                <h4>Otoscopia</h4>
-
-                <div class="otos">
-                    <div>
-                        <div class="img"></div>
-                        <span>OD</span>
-                    </div>
-                    <div>
-                        <div class="img"></div>
-                        <span>OI</span>
-                    </div>
-                </div>
-
-                <button class="btn secondary">Ver Detalle</button>
-            </div>
-
-            <!-- CARD IMPEDANCIA -->
-            <div class="card">
-                <h4>Impedanciometría Reciente</h4>
-
-                <div class="graph-placeholder small"></div>
-
-                <button class="btn success">Ver Detalle</button>
-            </div>
-
-            <!-- CARD EOA -->
-            <div class="card">
-                <h4>EOA</h4>
-
-                <p class="result">Resultados: <span>Normales</span></p>
-
-                <button class="btn secondary">Ver Detalle</button>
-            </div>
-
-        </div>
+    <div class="header-right">
+        <a href="{% url 'dashboard' %}" class="btn-back">← Volver</a>
+        <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
     </div>
 
 </div>
+
+<main class="dashboard">
+
+    <!-- HEADER PACIENTE -->
+    <header class="topbar card">
+        <div class="patient-main">
+            <div class="avatar">
+                {{ paciente.nombre|slice:":1" }}{{ paciente.nombre|slice:"1:2" }}
+            </div>
+
+            <h1>{{ paciente.nombre }}</h1>
+
+            <p class="meta">
+                {{ paciente.rut }} • 
+                Último ingreso: {{ paciente.creado|date:"d/m/Y" }}
+            </p>
+        </div>
+
+        <div class="status-wrap">
+            <button class="btn">Nueva Anamnesis</button>
+        </div>
+    </header>
+
+    <!-- KPIs -->
+    <section class="kpis">
+        <div class="kpi card">
+            <strong>12</strong>
+            <span>Ingresos</span>
+        </div>
+        <div class="kpi card">
+            <strong>27/04</strong>
+            <span>Próxima cita</span>
+        </div>
+    </section>
+
+    <!-- TABS -->
+    <section class="tabs card">
+        <button class="tab active" onclick="openTab('resumen')">Resumen</button>
+        <button class="tab" onclick="openTab('anamnesis')">Anamnesis</button>
+        <button class="tab" onclick="openTab('evaluaciones')">Evaluaciones</button>
+        <button class="tab" onclick="openTab('historial')">Historial</button>
+    </section>
+
+    <!-- CONTENIDO -->
+    <section class="tab-content">
+
+        <div id="resumen" class="tab-pane active">
+            <div class="card panel">
+                <h2>Datos personales</h2>
+                    <div class="info-grid">
+                        <div><span>RUT</span><p>{{ paciente.rut }}</p></div>
+
+                        <div>
+                            <span>Edad</span>
+                            <p>
+                                {{ paciente.fecha_nacimiento|timesince|slice:":2" }} años
+                            </p>
+                        </div>
+
+                        <div><span>Teléfono</span><p>{{ paciente.telefono }}</p></div>
+
+                        <div><span>Email</span><p>{{ paciente.email }}</p></div>
+
+                        <div><span>Dirección</span><p>{{ paciente.direccion }}</p></div>
+
+                        <div><span>Previsión</span><p>{{ paciente.get_prevision_display }}</p></div>
+                    </div>
+            </div>
+        </div>
+
+        <div id="anamnesis" class="tab-pane">
+            <div class="card panel">
+                <h2>Anamnesis médica</h2>
+                <div class="form-grid compact">
+                    <textarea placeholder="Motivo de consulta"></textarea>
+                    <textarea placeholder="Antecedentes"></textarea>
+                    <input type="text" placeholder="Medicación actual">
+                    <input type="text" placeholder="Alergias">
+                </div>
+                <button class="btn">Guardar</button>
+            </div>
+        </div>
+
+        <div id="evaluaciones" class="tab-pane">
+            <div class="card panel">
+                <h2>Evaluaciones clínicas</h2>
+
+                <div class="exam-grid compact">
+
+                    <div class="exam-box">
+                        <h3>Audiometría</h3>
+                        <textarea placeholder="Observaciones..."></textarea>
+                    </div>
+
+                    <div class="exam-box">
+                        <h3>Impedanciometría</h3>
+                        <textarea placeholder="Resultados..."></textarea>
+                    </div>
+
+                    <div class="exam-box">
+                        <h3>Otoscopía</h3>
+                        <div class="media-slot small">Imagen / Video</div>
+                        <textarea placeholder="Hallazgos..."></textarea>
+                    </div>
+
+                    <div class="exam-box">
+                        <h3>Otros</h3>
+                        <input type="text" placeholder="Nombre examen">
+                        <textarea placeholder="Detalle..."></textarea>
+                    </div>
+
+                </div>
+
+                <button class="btn">Guardar evaluación</button>
+            </div>
+        </div>
+
+        <div id="historial" class="tab-pane">
+            <div class="card panel">
+                <h2>Historial</h2>
+
+                <div class="timeline compact">
+                    <div class="event">
+                        <div>
+                            <strong>15/04/2026</strong>
+                            <p>Control integral</p>
+                        </div>
+                    </div>
+
+                    <div class="event">
+                        <div>
+                            <strong>12/01/2026</strong>
+                            <p>Impedanciometría</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+function openTab(tabId) {
+    document.querySelectorAll(".tab-pane").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(el => el.classList.remove("active"));
+
+    document.getElementById(tabId).classList.add("active");
+    event.target.classList.add("active");
+}
+</script>
+
+</body>
+</html>
