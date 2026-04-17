@@ -12,8 +12,10 @@
 <body>
 
 <div class="login-box">
+
+    <img src="{% static 'Login/img/logo-png.png' %}" alt="Logo" class="logo">
+
     <h2>Acceso</h2>
-    <p style="opacity: 0.8; font-size: 14px;">Sistema de Audiología</p>
 
     {% if error %}
         <p class="error">{{ error }}</p>

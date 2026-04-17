@@ -176,3 +176,25 @@ body::before {
         border-radius: 12px;
     }
 }
+
+/* LOGO */
+.logo {
+    width: 170px;
+    margin-bottom: 15px;
+
+    /* hace que el blanco resalte mejor sobre el fondo oscuro */
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+
+    animation: fadeInLogo 1s ease;
+}
+
+@keyframes fadeInLogo {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
