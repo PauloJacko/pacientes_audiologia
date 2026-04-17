@@ -173,11 +173,23 @@ function formatearRUT(rut) {
 
 // Evento en tiempo real
 document.addEventListener("DOMContentLoaded", function () {
-    const inputRut = document.querySelector('#modal input[name="rut"]');
 
-    inputRut.addEventListener("input", function () {
-        this.value = formatearRUT(this.value);
-    });
+    const inputRutModal = document.querySelector('#modal input[name="rut"]');
+
+    if (inputRutModal) {
+        inputRutModal.addEventListener("input", function () {
+            this.value = formatearRUT(this.value);
+        });
+    }
+
+    const inputRutFiltro = document.querySelector('.filters-form input[name="rut"]');
+
+    if (inputRutFiltro) {
+        inputRutFiltro.addEventListener("input", function () {
+            this.value = formatearRUT(this.value);
+        });
+    }
+
 });
 
 // MODAL ELIMINAR PACIENTE
