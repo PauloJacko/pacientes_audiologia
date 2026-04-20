@@ -26,3 +26,31 @@ class Paciente(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.rut}"
+    
+from django.db import models
+
+class Anamnesis(models.Model):
+    paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE, related_name='anamnesis')
+
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    motivo_consulta = models.TextField()
+
+    antecedentes_medicos = models.TextField(blank=True, null=True)
+    antecedentes_auditivos = models.TextField(blank=True, null=True)
+
+    hipoacusia = models.BooleanField(default=False)
+    tinnitus = models.BooleanField(default=False)
+    vertigo = models.BooleanField(default=False)
+    otalgia = models.BooleanField(default=False)
+
+    exposicion_ruido = models.BooleanField(default=False)
+    uso_audifonos = models.BooleanField(default=False)
+
+    medicamentos = models.TextField(blank=True, null=True)
+    alergias = models.TextField(blank=True, null=True)
+
+    observaciones = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Anamnesis {self.paciente.nombre} - {self.fecha.strftime('%d/%m/%Y')}"

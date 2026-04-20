@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paciente</title>
 
-    <!-- CSS DASHBOARD (para header y colores) -->
-    <link rel="stylesheet" href="{% static 'Login/css/dashboard.css' %}">
-
     <!-- CSS PROPIO -->
     <link rel="stylesheet" href="{% static 'Login/css/ver_paciente.css' %}" />
 </head>
@@ -55,18 +52,6 @@
         </div>
     </header>
 
-    <!-- KPIs -->
-    <section class="kpis">
-        <div class="kpi card">
-            <strong>12</strong>
-            <span>Ingresos</span>
-        </div>
-        <div class="kpi card">
-            <strong>27/04</strong>
-            <span>Próxima cita</span>
-        </div>
-    </section>
-
     <!-- TABS -->
     <section class="tabs card">
         <button class="tab active" onclick="openTab('resumen')">Resumen</button>
@@ -104,14 +89,34 @@
 
         <div id="anamnesis" class="tab-pane">
             <div class="card panel">
-                <h2>Anamnesis médica</h2>
-                <div class="form-grid compact">
-                    <textarea placeholder="Motivo de consulta"></textarea>
-                    <textarea placeholder="Antecedentes"></textarea>
-                    <input type="text" placeholder="Medicación actual">
-                    <input type="text" placeholder="Alergias">
+
+                <div class="anamnesis-header">
+                    <h2>Anamnesis clínica</h2>
+
+                    <button class="btn" onclick="openModal()">
+                        + Nueva Anamnesis
+                    </button>
                 </div>
-                <button class="btn">Guardar</button>
+
+                {% if anamnesis %}
+                    <div class="anamnesis-list">
+                        {% for a in anamnesis %}
+                            <div class="anamnesis-item">
+                                <div>
+                                    <strong>{{ a.fecha|date:"d/m/Y" }}</strong>
+                                    <p>{{ a.motivo_consulta|truncatechars:80 }}</p>
+                                </div>
+
+                                <button class="btn small" onclick="openModal()">
+                                    Ver / Editar
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty">No hay anamnesis registradas</p>
+                {% endif %}
+
             </div>
         </div>
 
@@ -175,6 +180,102 @@
 
 </main>
 
+<!-- MODAL ANAMNESIS -->
+<div id="modalAnamnesis" class="modal modal-anamnesis">
+    <div class="modal-content">
+
+        <!-- HEADER -->
+        <div class="modal-header">
+            <h2>Nueva Anamnesis</h2>
+            <button type="button" onclick="closeModal()">✕</button>
+        </div>
+
+        <form method="POST" action="{% url 'crear_anamnesis' paciente.id %}">
+            {% csrf_token %}
+
+            <!-- BODY -->
+            <div class="modal-body">
+
+                <!-- COLUMNA PRINCIPAL -->
+                <div class="modal-col">
+
+                    <div class="modal-section">
+                        <h3>Motivo de consulta</h3>
+                        <textarea name="motivo_consulta" required></textarea>
+                    </div>
+
+                    <div class="modal-section">
+                        <h3>Antecedentes médicos</h3>
+                        <textarea name="antecedentes_medicos"></textarea>
+                    </div>
+
+                    <div class="modal-section">
+                        <h3>Antecedentes auditivos</h3>
+                        <textarea name="antecedentes_auditivos"></textarea>
+                    </div>
+
+                    <div class="modal-section">
+                        <h3>Observaciones clínicas</h3>
+                        <textarea name="observaciones"></textarea>
+                    </div>
+
+                </div>
+
+                <!-- COLUMNA LATERAL -->
+                <div class="modal-col">
+
+                    <div class="modal-section">
+                        <h3>Síntomas</h3>
+                        <div class="checkbox-group">
+
+                            <input type="checkbox" id="hipoacusia" name="hipoacusia">
+                            <label for="hipoacusia">Hipoacusia</label>
+
+                            <input type="checkbox" id="tinnitus" name="tinnitus">
+                            <label for="tinnitus">Tinnitus</label>
+
+                            <input type="checkbox" id="vertigo" name="vertigo">
+                            <label for="vertigo">Vértigo</label>
+
+                            <input type="checkbox" id="otalgia" name="otalgia">
+                            <label for="otalgia">Otalgia</label>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-section">
+                        <h3>Exposición</h3>
+                        <div class="checkbox-group">
+
+                            <input type="checkbox" id="ruido" name="exposicion_ruido">
+                            <label for="ruido">Ruido</label>
+
+                            <input type="checkbox" id="audifonos" name="uso_audifonos">
+                            <label for="audifonos">Audífonos</label>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-section">
+                        <h3>Otros</h3>
+                        <input type="text" name="medicamentos" placeholder="Medicamentos">
+                        <input type="text" name="alergias" placeholder="Alergias">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <button type="button" class="btn secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn">Guardar</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
 <script>
 function openTab(tabId) {
     document.querySelectorAll(".tab-pane").forEach(el => el.classList.remove("active"));
@@ -182,6 +283,14 @@ function openTab(tabId) {
 
     document.getElementById(tabId).classList.add("active");
     event.target.classList.add("active");
+}
+
+function openModal() {
+    document.getElementById("modalAnamnesis").classList.add("active");
+}
+
+function closeModal() {
+    document.getElementById("modalAnamnesis").classList.remove("active");
 }
 </script>
 

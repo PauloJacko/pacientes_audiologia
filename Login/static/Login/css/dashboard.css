@@ -34,7 +34,7 @@ body {
 
 .header h2 {
     margin: 0;
-    font-size: 20px; /* 🔽 antes muy grande */
+    font-size: 20px;
     font-weight: 600;
 }
 
@@ -322,7 +322,7 @@ tbody tr:hover {
     transition: all 0.2s ease;
 }
 
-/* SELECT (PREVISIÓN) */
+/* SELECT */
 .modal-content select {
     padding: 11px 13px;
     border-radius: 12px;
@@ -525,7 +525,7 @@ tbody tr:hover {
 }
 
 .logo-header {
-    height: 50px; /* 🔥 tamaño ideal dashboard */
+    height: 50px; 
     width: auto;
 
     filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));

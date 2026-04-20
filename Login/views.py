@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Paciente
+from django.views.decorators.http import require_POST
+from .models import Paciente, Anamnesis
 from django.db.models import Q
 
 
@@ -51,6 +52,14 @@ def dashboard_view(request):
         'pacientes': pacientes
     })
 
+def ver_paciente(request, id):
+    paciente = get_object_or_404(Paciente, id=id)
+    anamnesis = paciente.anamnesis.all().order_by('-fecha')
+
+    return render(request, 'Login/ver_paciente.html', {
+        'paciente': paciente,
+        'anamnesis': anamnesis
+    })
 
 @login_required
 def crear_paciente(request):
@@ -69,10 +78,28 @@ def crear_paciente(request):
 
     return redirect('dashboard')
 
+@require_POST
+@login_required
+def crear_anamnesis(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
 
-def ver_paciente(request, id):
-    paciente = get_object_or_404(Paciente, id=id)
-    return render(request, 'Login/ver_paciente.html', {
-        'paciente': paciente
-    })
+    Anamnesis.objects.create(
+        paciente=paciente,
+        motivo_consulta=request.POST.get('motivo_consulta'),
+        antecedentes_medicos=request.POST.get('antecedentes_medicos'),
+        antecedentes_auditivos=request.POST.get('antecedentes_auditivos'),
 
+        hipoacusia=bool(request.POST.get('hipoacusia')),
+        tinnitus=bool(request.POST.get('tinnitus')),
+        vertigo=bool(request.POST.get('vertigo')),
+        otalgia=bool(request.POST.get('otalgia')),
+
+        exposicion_ruido=bool(request.POST.get('exposicion_ruido')),
+        uso_audifonos=bool(request.POST.get('uso_audifonos')),
+
+        medicamentos=request.POST.get('medicamentos'),
+        alergias=request.POST.get('alergias'),
+        observaciones=request.POST.get('observaciones'),
+    )
+
+    return redirect('ver_paciente', paciente.id)
