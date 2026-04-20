@@ -52,6 +52,7 @@ def dashboard_view(request):
         'pacientes': pacientes
     })
 
+@login_required
 def ver_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
     anamnesis = paciente.anamnesis.all().order_by('-fecha')
@@ -103,3 +104,36 @@ def crear_anamnesis(request, paciente_id):
     )
 
     return redirect('ver_paciente', paciente.id)
+
+@login_required
+def editar_anamnesis(request, anamnesis_id):
+    anamnesis = get_object_or_404(Anamnesis, id=anamnesis_id)
+
+    if request.method == "POST":
+        anamnesis.motivo_consulta = request.POST.get("motivo_consulta")
+        anamnesis.antecedentes_medicos = request.POST.get("antecedentes_medicos")
+        anamnesis.antecedentes_auditivos = request.POST.get("antecedentes_auditivos")
+        anamnesis.observaciones = request.POST.get("observaciones")
+        anamnesis.medicamentos = request.POST.get("medicamentos")
+        anamnesis.alergias = request.POST.get("alergias")
+
+        anamnesis.hipoacusia = "hipoacusia" in request.POST
+        anamnesis.tinnitus = "tinnitus" in request.POST
+        anamnesis.vertigo = "vertigo" in request.POST
+        anamnesis.otalgia = "otalgia" in request.POST
+
+        anamnesis.exposicion_ruido = "exposicion_ruido" in request.POST
+        anamnesis.uso_audifonos = "uso_audifonos" in request.POST
+
+        anamnesis.save()
+
+        return redirect("ver_paciente", id=anamnesis.paciente.id)
+
+@login_required
+def eliminar_anamnesis(request, id):
+    anamnesis = get_object_or_404(Anamnesis, id=id)
+    paciente_id = anamnesis.paciente.id
+
+    anamnesis.delete()
+
+    return redirect('ver_paciente', id=paciente_id)

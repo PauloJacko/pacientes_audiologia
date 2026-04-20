@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
     <title>Paciente</title>
 
     <!-- CSS PROPIO -->
@@ -34,22 +36,29 @@
 
     <!-- HEADER PACIENTE -->
     <header class="topbar card">
+
         <div class="patient-main">
             <div class="avatar">
                 {{ paciente.nombre|slice:":1" }}{{ paciente.nombre|slice:"1:2" }}
             </div>
 
-            <h1>{{ paciente.nombre }}</h1>
-
-            <p class="meta">
-                {{ paciente.rut }} • 
-                Último ingreso: {{ paciente.creado|date:"d/m/Y" }}
-            </p>
+            <div class="patient-info">
+                <h1>{{ paciente.nombre }}</h1>
+            </div>
         </div>
 
-        <div class="status-wrap">
-            <button class="btn">Nueva Anamnesis</button>
+        <div class="patient-meta-right">
+            <div>
+                <span>RUT</span>
+                <p>{{ paciente.rut }}</p>
+            </div>
+
+            <div>
+                <span>Ingreso</span>
+                <p>{{ paciente.creado|date:"d/m/Y" }}</p>
+            </div>
         </div>
+
     </header>
 
     <!-- TABS -->
@@ -91,7 +100,10 @@
             <div class="card panel">
 
                 <div class="anamnesis-header">
-                    <h2>Anamnesis clínica</h2>
+                    <div>
+                        <h2>Anamnesis clínica</h2>
+                        <p class="section-subtitle">Registro de Anamnesis del paciente</p>
+                    </div>
 
                     <button class="btn" onclick="openModal()">
                         + Nueva Anamnesis
@@ -101,16 +113,79 @@
                 {% if anamnesis %}
                     <div class="anamnesis-list">
                         {% for a in anamnesis %}
-                            <div class="anamnesis-item">
-                                <div>
-                                    <strong>{{ a.fecha|date:"d/m/Y" }}</strong>
-                                    <p>{{ a.motivo_consulta|truncatechars:80 }}</p>
-                                </div>
+                        <div class="anamnesis-item">
 
-                                <button class="btn small" onclick="openModal()">
+                        <div class="anamnesis-top">
+                            <strong>{{ a.fecha|date:"d/m/Y" }}</strong>
+
+                            <div class="actions">
+                                <button class="btn btn-edit small"
+                                    onclick="openModalEdit(this)"
+                                    
+                                    data-id="{{ a.id }}"
+                                    data-motivo="{{ a.motivo_consulta }}"
+                                    data-medicos="{{ a.antecedentes_medicos }}"
+                                    data-auditivos="{{ a.antecedentes_auditivos }}"
+                                    data-observaciones="{{ a.observaciones }}"
+                                    data-medicamentos="{{ a.medicamentos }}"
+                                    data-alergias="{{ a.alergias }}"
+                                    
+                                    data-hipoacusia="{{ a.hipoacusia }}"
+                                    data-tinnitus="{{ a.tinnitus }}"
+                                    data-vertigo="{{ a.vertigo }}"
+                                    data-otalgia="{{ a.otalgia }}"
+                                    
+                                    data-ruido="{{ a.exposicion_ruido }}"
+                                    data-audifonos="{{ a.uso_audifonos }}"
+                                >
                                     Ver / Editar
                                 </button>
+
+                                <button class="btn btn-delete small"
+                                    onclick="confirmDelete({{ a.id }})">
+                                    Eliminar
+                                </button>
                             </div>
+                        </div>
+
+                            <!-- TABLA RESUMEN -->
+                            <div class="anamnesis-table">
+
+                                <div class="motivo">
+                                    <span>Motivo de consulta</span>
+                                    <p class="truncate" title="{{ a.motivo_consulta }}">
+                                        {{ a.motivo_consulta|default:"Sin información" }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <span>Síntomas</span>
+                                    <p>
+                                        {% if a.hipoacusia %}Hipoacusia, {% endif %}
+                                        {% if a.tinnitus %}Tinnitus, {% endif %}
+                                        {% if a.vertigo %}Vértigo, {% endif %}
+                                        {% if a.otalgia %}Otalgia{% endif %}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <span>Exposición</span>
+                                    <p>
+                                        {% if a.exposicion_ruido %}Ruido {% endif %}
+                                        {% if a.uso_audifonos %}Audífonos{% endif %}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <span>Medicamentos</span>
+                                    <p>{{ a.medicamentos|default:"-" }}</p>
+                                </div>
+
+                                <div>
+                                    <span>Alergias</span>
+                                    <p>{{ a.alergias|default:"-" }}</p>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 {% else %}
@@ -181,97 +256,94 @@
 </main>
 
 <!-- MODAL ANAMNESIS -->
-<div id="modalAnamnesis" class="modal modal-anamnesis">
+<div id="modalAnamnesis" class="modal-anamnesis">
     <div class="modal-content">
-
-        <!-- HEADER -->
-        <div class="modal-header">
-            <h2>Nueva Anamnesis</h2>
-            <button type="button" onclick="closeModal()">✕</button>
-        </div>
-
-        <form method="POST" action="{% url 'crear_anamnesis' paciente.id %}">
+        <form id="formAnamnesis" method="POST" action="{% url 'crear_anamnesis' paciente.id %}" class="modal-form">
             {% csrf_token %}
 
-            <!-- BODY -->
+            <input type="hidden" name="anamnesis_id" id="anamnesis_id">
+            <div class="modal-header">
+                <div>
+                    <h2>Nueva Anamnesis</h2>
+                    <p class="modal-subtitle">Registro de evaluación para {{ paciente.nombre }}</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="closeModal()">✕</button>
+            </div>
+
             <div class="modal-body">
+                <div class="modal-grid">
+                    
+                    <div class="modal-col main-col">
+                        <div class="modal-section">
+                            <h3><i class="icon-doc"></i> Motivo de consulta</h3>
+                            <textarea name="motivo_consulta" placeholder="Describa el motivo principal..." required></textarea>
+                        </div>
 
-                <!-- COLUMNA PRINCIPAL -->
-                <div class="modal-col">
+                        <div class="modal-section">
+                            <h3>Antecedentes médicos</h3>
+                            <textarea name="antecedentes_medicos" placeholder="Enfermedades, cirugías, etc..."></textarea>
+                        </div>
 
-                    <div class="modal-section">
-                        <h3>Motivo de consulta</h3>
-                        <textarea name="motivo_consulta" required></textarea>
-                    </div>
+                        <div class="modal-section">
+                            <h3>Antecedentes auditivos</h3>
+                            <textarea name="antecedentes_auditivos" placeholder="Uso de protectores, traumas, etc..."></textarea>
+                        </div>
 
-                    <div class="modal-section">
-                        <h3>Antecedentes médicos</h3>
-                        <textarea name="antecedentes_medicos"></textarea>
-                    </div>
-
-                    <div class="modal-section">
-                        <h3>Antecedentes auditivos</h3>
-                        <textarea name="antecedentes_auditivos"></textarea>
-                    </div>
-
-                    <div class="modal-section">
-                        <h3>Observaciones clínicas</h3>
-                        <textarea name="observaciones"></textarea>
-                    </div>
-
-                </div>
-
-                <!-- COLUMNA LATERAL -->
-                <div class="modal-col">
-
-                    <div class="modal-section">
-                        <h3>Síntomas</h3>
-                        <div class="checkbox-group">
-
-                            <input type="checkbox" id="hipoacusia" name="hipoacusia">
-                            <label for="hipoacusia">Hipoacusia</label>
-
-                            <input type="checkbox" id="tinnitus" name="tinnitus">
-                            <label for="tinnitus">Tinnitus</label>
-
-                            <input type="checkbox" id="vertigo" name="vertigo">
-                            <label for="vertigo">Vértigo</label>
-
-                            <input type="checkbox" id="otalgia" name="otalgia">
-                            <label for="otalgia">Otalgia</label>
-
+                        <div class="modal-section">
+                            <h3>Observaciones clínicas</h3>
+                            <textarea name="observaciones" placeholder="Notas adicionales del especialista..."></textarea>
                         </div>
                     </div>
 
-                    <div class="modal-section">
-                        <h3>Exposición</h3>
-                        <div class="checkbox-group">
+                    <div class="modal-col side-col">
+                        <div class="modal-section">
+                            <h3>Síntomas actuales</h3>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="hipoacusia" name="hipoacusia">
+                                <label for="hipoacusia">Hipoacusia</label>
 
-                            <input type="checkbox" id="ruido" name="exposicion_ruido">
-                            <label for="ruido">Ruido</label>
+                                <input type="checkbox" id="tinnitus" name="tinnitus">
+                                <label for="tinnitus">Tinnitus</label>
 
-                            <input type="checkbox" id="audifonos" name="uso_audifonos">
-                            <label for="audifonos">Audífonos</label>
+                                <input type="checkbox" id="vertigo" name="vertigo">
+                                <label for="vertigo">Vértigo</label>
 
+                                <input type="checkbox" id="otalgia" name="otalgia">
+                                <label for="otalgia">Otalgia</label>
+                            </div>
+                        </div>
+
+                        <div class="modal-section">
+                            <h3>Exposición y Uso</h3>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="ruido" name="exposicion_ruido">
+                                <label for="ruido">Ruido Laboral</label>
+
+                                <input type="checkbox" id="audifonos" name="uso_audifonos">
+                                <label for="audifonos">Uso Audífonos</label>
+                            </div>
+                        </div>
+
+                        <div class="modal-section extra-inputs">
+                            <h3>Información Adicional</h3>
+                            <div class="input-field">
+                                <label>Medicamentos</label>
+                                <input type="text" name="medicamentos" placeholder="Ej: Aspirina">
+                            </div>
+                            <div class="input-field">
+                                <label>Alergias</label>
+                                <input type="text" name="alergias" placeholder="Ej: Penicilina">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="modal-section">
-                        <h3>Otros</h3>
-                        <input type="text" name="medicamentos" placeholder="Medicamentos">
-                        <input type="text" name="alergias" placeholder="Alergias">
-                    </div>
-
                 </div>
-
             </div>
 
-            <!-- FOOTER -->
             <div class="modal-footer">
-                <button type="button" class="btn secondary" onclick="closeModal()">Cancelar</button>
-                <button type="submit" class="btn">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Anamnesis</button>
             </div>
-
         </form>
     </div>
 </div>
@@ -285,14 +357,78 @@ function openTab(tabId) {
     event.target.classList.add("active");
 }
 
+const form = document.getElementById("formAnamnesis");
+
 function openModal() {
+    resetModal();
+
+    form.action = `/crear-anamnesis/{{ paciente.id }}/`;
+    document.getElementById("anamnesis_id").value = "";
+
+    document.querySelector(".modal-header h2").innerText = "Nueva Anamnesis";
+
     document.getElementById("modalAnamnesis").classList.add("active");
+}
+
+function openModalEdit(btn) {
+    resetModal();
+
+    const id = btn.dataset.id;
+
+    form.action = `/editar_anamnesis/${id}/`;
+    document.getElementById("anamnesis_id").value = id;
+
+    document.querySelector(".modal-header h2").innerText = "Editar Anamnesis";
+
+    document.querySelector('[name="motivo_consulta"]').value = btn.dataset.motivo || "";
+    document.querySelector('[name="antecedentes_medicos"]').value = btn.dataset.medicos || "";
+    document.querySelector('[name="antecedentes_auditivos"]').value = btn.dataset.auditivos || "";
+    document.querySelector('[name="observaciones"]').value = btn.dataset.observaciones || "";
+    document.querySelector('[name="medicamentos"]').value = btn.dataset.medicamentos || "";
+    document.querySelector('[name="alergias"]').value = btn.dataset.alergias || "";
+
+    setCheckbox("hipoacusia", btn.dataset.hipoacusia);
+    setCheckbox("tinnitus", btn.dataset.tinnitus);
+    setCheckbox("vertigo", btn.dataset.vertigo);
+    setCheckbox("otalgia", btn.dataset.otalgia);
+
+    setCheckbox("ruido", btn.dataset.ruido);
+    setCheckbox("audifonos", btn.dataset.audifonos);
+
+    document.getElementById("modalAnamnesis").classList.add("active");
+}
+
+function setCheckbox(id, value) {
+    document.getElementById(id).checked = (value === "True");
+}
+
+function resetModal() {
+    document.querySelectorAll("#modalAnamnesis textarea, #modalAnamnesis input[type='text']")
+        .forEach(el => el.value = "");
+
+    document.querySelectorAll("#modalAnamnesis input[type='checkbox']")
+        .forEach(el => el.checked = false);
 }
 
 function closeModal() {
     document.getElementById("modalAnamnesis").classList.remove("active");
 }
+
+function confirmDelete(id) {
+    alertify.confirm(
+        "Eliminar Anamnesis",
+        "¿Estás seguro de eliminar esta anamnesis? Esta acción no se puede deshacer.",
+        function () {
+            window.location.href = `/eliminar_anamnesis/${id}/`;
+        },
+        function () {
+            alertify.error("Cancelado");
+        }
+    );
+}
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 
 </body>
 </html>
