@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from .models import Paciente, Anamnesis
 from django.db.models import Q
+from evaluaciones.models import Evaluacion
 
 
 def login_view(request):
@@ -56,10 +57,12 @@ def dashboard_view(request):
 def ver_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
     anamnesis = paciente.anamnesis.all().order_by('-fecha')
+    evaluaciones = paciente.evaluaciones.all().order_by('-fecha')
 
     return render(request, 'Login/ver_paciente.html', {
         'paciente': paciente,
-        'anamnesis': anamnesis
+        'anamnesis': anamnesis,
+        'evaluaciones': evaluaciones
     })
 
 @login_required

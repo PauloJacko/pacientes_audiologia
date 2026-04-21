@@ -151,12 +151,6 @@
                             <!-- TABLA RESUMEN -->
                             <div class="anamnesis-table">
 
-                                <div class="motivo">
-                                    <span>Motivo de consulta</span>
-                                    <p class="truncate" title="{{ a.motivo_consulta }}">
-                                        {{ a.motivo_consulta|default:"Sin información" }}
-                                    </p>
-                                </div>
                                 <div>
                                     <span>Síntomas</span>
                                     <p>
@@ -170,7 +164,7 @@
                                 <div>
                                     <span>Exposición</span>
                                     <p>
-                                        {% if a.exposicion_ruido %}Ruido {% endif %}
+                                        {% if a.exposicion_ruido %}Ruido, {% endif %}
                                         {% if a.uso_audifonos %}Audífonos{% endif %}
                                     </p>
                                 </div>
@@ -197,35 +191,55 @@
 
         <div id="evaluaciones" class="tab-pane">
             <div class="card panel">
-                <h2>Evaluaciones clínicas</h2>
 
-                <div class="exam-grid compact">
-
-                    <div class="exam-box">
-                        <h3>Audiometría</h3>
-                        <textarea placeholder="Observaciones..."></textarea>
+                <div class="anamnesis-header">
+                    <div>
+                        <h2>Evaluaciones clínicas</h2>
+                        <p class="section-subtitle">Registro de evaluaciones del paciente</p>
                     </div>
 
-                    <div class="exam-box">
-                        <h3>Impedanciometría</h3>
-                        <textarea placeholder="Resultados..."></textarea>
-                    </div>
-
-                    <div class="exam-box">
-                        <h3>Otoscopía</h3>
-                        <div class="media-slot small">Imagen / Video</div>
-                        <textarea placeholder="Hallazgos..."></textarea>
-                    </div>
-
-                    <div class="exam-box">
-                        <h3>Otros</h3>
-                        <input type="text" placeholder="Nombre examen">
-                        <textarea placeholder="Detalle..."></textarea>
-                    </div>
-
+                    <button class="btn">
+                        + Nueva Evaluación
+                    </button>
                 </div>
 
-                <button class="btn">Guardar evaluación</button>
+                {% if evaluaciones %}
+                    <div class="anamnesis-list">
+                        {% for e in evaluaciones %}
+                            <div class="anamnesis-item">
+
+                                <div class="anamnesis-top">
+                                    <strong>{{ e.get_tipo_display }}</strong>
+                                    <span>{{ e.fecha|date:"d/m/Y" }}</span>
+                                </div>
+
+                                <div class="anamnesis-table">
+
+                                    <div>
+                                        <span>Observaciones</span>
+                                        <p>{{ e.observaciones|default:"-" }}</p>
+                                    </div>
+
+                                    <div>
+                                        <span>Archivo</span>
+                                        <p>
+                                            {% if e.archivo %}
+                                                <a href="{{ e.archivo.url }}" target="_blank">Ver archivo</a>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty">No hay evaluaciones registradas</p>
+                {% endif %}
+
             </div>
         </div>
 
