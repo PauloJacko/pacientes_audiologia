@@ -248,43 +248,32 @@ body {
     box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
 }
 
-/* LOGOAUDIOMETRIA */
+/* ============================= */
+/* LOGOAUDIOMETRÍA + BASE       */
+/* ============================= */
 
-/* LOGO + PTP base */
-.logo-table,
-.ptp-table {
+.logo-table {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* FILAS */
-.logo-row,
-.ptp-row {
+.logo-row {
     display: grid;
+    grid-template-columns: 60px 1fr 1fr 1fr;
     align-items: center;
     gap: 8px;
 }
 
-/* ESPECÍFICO */
-.logo-row {
-    grid-template-columns: 60px 1fr 1fr 1fr;
-}
-
-.ptp-row {
-    grid-template-columns: 60px 1fr 1fr 1fr 1fr;
-}
-
-/* HEADER */
-.header {
+/* HEADER SOLO LOGO */
+.logo-row.header {
     font-size: 12px;
     font-weight: 600;
     color: var(--muted);
 }
 
-/* INPUTS */
-.logo-row input,
-.ptp-row input {
+/* INPUTS LOGO */
+.logo-row input {
     width: 100%;
     padding: 8px;
     border-radius: 8px;
@@ -293,21 +282,113 @@ body {
     text-align: center;
 }
 
-/* PTP RESULTADO */
-.ptp-result {
-    font-weight: 700;
-    background: #f1f5f9;
+
+/* ============================= */
+/* PTP ANTIGUO (DESACTIVADO)    */
+/* ============================= */
+
+.ptp-table,
+.ptp-row {
+    display: none;
 }
 
 
-/* CONTENEDOR DOBLE */
+/* ============================= */
+/* PTP FORMATO CLÍNICO (NUEVO)  */
+/* ============================= */
+
+.ptp-clinico {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* FILAS */
+.ptp-c-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 1fr;
+    align-items: center;
+}
+
+/* HEADER SOLO PTP */
+.ptp-c-row.header {
+    background: #e5e7eb;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.ptp-c-row.header div {
+    padding: 6px;
+    border-right: 1px solid #cbd5e1;
+}
+
+.ptp-c-row.header div:last-child {
+    border-right: none;
+}
+
+/* FILAS NORMALES */
+.ptp-c-row:not(.header) {
+    border-top: 1px solid #cbd5e1;
+}
+
+/* LABEL IZQUIERDA */
+.ptp-label {
+    text-align: center;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 6px;
+    border-right: 1px solid #cbd5e1;
+}
+
+/* INPUTS PTP */
+.ptp-c-row input {
+    border: none;
+    border-right: 1px solid #cbd5e1;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.85rem;
+    background: #fff;
+}
+
+.ptp-c-row input:last-child {
+    border-right: none;
+}
+
+/* RESULTADO */
+.ptp-result {
+    font-weight: 700;
+    background: #f8fafc;
+}
+
+/* CONTENEDOR INPUT + UNIDAD */
+.ptp-field {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* TEXTO dB HL */
+.ptp-field span {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+
+/* ============================= */
+/* CONTENEDOR GENERAL           */
+/* ============================= */
+
 .dual-tables {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
 
-/* CAJAS */
 .table-box {
     background: #fbfdff;
     border: 1px solid #e3edf7;
@@ -315,7 +396,201 @@ body {
     padding: 14px;
 }
 
-/* RESPONSIVE */
+/* ACUMETRÍA */
+
+/* ACUMETRÍA */
+.acumetria-card {
+    max-width: 400px; /* 🔥 lo hace compacto */
+}
+
+.acumetria-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.acu-col {
+    border: 1px solid #e3edf7;
+    border-radius: 10px;
+    padding: 10px;
+    background: #f8fbff;
+}
+
+.acu-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.acu-freq {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.acu-freq label {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.acu-freq select {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #d7e3e6;
+    font-size: 12px;
+}
+
+/* RINNE doble select */
+.acu-col:nth-child(2) .acu-freq {
+    flex-direction: column;
+}
+
+.acu-col:nth-child(2) .acu-freq select {
+    margin-bottom: 3px;
+}
+
+/* TINITUMETRIA */
+
+/* TINNITUMETRÍA */
+.tinni-table {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-x: auto;
+}
+
+.tinni-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+}
+
+.tinni-row.header {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.tinni-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.tinni-col label {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.tinni-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tinni-field input {
+    width: 70px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #d7e3e6;
+    font-size: 12px;
+    text-align: center;
+}
+
+.tinni-field span {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* BLOQUE FINAL DE LA AUDIOMETRIA */
+
+/* UPLOAD */
+.upload-box {
+    display: block;
+    border: 2px dashed #cbd5f5;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #f8fbff;
+}
+
+.upload-box:hover {
+    border-color: #2563eb;
+    background: #eef4ff;
+}
+
+.upload-box input {
+    display: none;
+}
+
+.upload-icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.upload-text {
+    font-weight: 600;
+    display: block;
+}
+
+.upload-box small {
+    color: #64748b;
+}
+
+/* OBSERVACIONES */
+.observaciones-card textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #d7e3e6;
+    resize: vertical;
+    font-size: 14px;
+}
+
+.observaciones-card textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+}
+
+/* BOTÓN */
+.action-card {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* ============================= */
+/* RESPONSIVE                   */
+/* ============================= */
+
 @media (max-width: 900px) {
     .dual-tables {
         grid-template-columns: 1fr;

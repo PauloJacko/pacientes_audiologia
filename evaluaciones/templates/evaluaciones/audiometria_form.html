@@ -81,7 +81,10 @@
             <div class="audiometria-layout">
 
     <!-- PANEL IZQUIERDO -->
-    <div class="audio-controls">
+<div class="audio-controls" id="audio-controls">
+
+    <!-- TONAL -->
+    <div id="controls-tonal">
 
         <h4>Oído</h4>
         <div class="control-group">
@@ -96,13 +99,28 @@
             <button class="ctrl-btn" data-mask="true">Enmascarado</button>
         </div>
 
-        <h4>Opciones</h4>
+    </div>
+
+    <!-- CAMPO LIBRE -->
+    <div id="controls-campo" style="display:none;">
+
+        <h4>Condición</h4>
         <div class="control-group">
-            <button class="ctrl-btn" data-extra="nr">Sin respuesta</button>
-            <button class="ctrl-btn" data-extra="ldl">LDL</button>
+            <button class="ctrl-btn active" data-sf="S">Sin amplificación (S)</button>
+            <button class="ctrl-btn" data-sf="A">Con audífono (A)</button>
+            <button class="ctrl-btn" data-sf="CI">Implante (CI)</button>
         </div>
 
     </div>
+
+    <!-- COMUNES -->
+    <h4>Opciones</h4>
+    <div class="control-group">
+        <button class="ctrl-btn" data-extra="nr">Sin respuesta</button>
+        <button class="ctrl-btn" data-extra="ldl">LDL</button>
+    </div>
+
+</div>
 
     <!-- GRÁFICO -->
     <div class="audio-chart-container">
@@ -145,64 +163,315 @@
     </div>
 
     <!-- PTP -->
-    <div class="table-box">
-        <h3>PTP (Promedio Tonal Puro)</h3>
+<div class="table-box">
+    <h3>PTP (Promedio Tonal Puro)</h3>
 
-        <div class="ptp-table">
+    <div class="ptp-clinico">
 
-            <div class="ptp-row header">
-                <div>Oído</div>
-                <div>500 Hz</div>
-                <div>1000 Hz</div>
-                <div>2000 Hz</div>
-                <div>PTP</div>
-            </div>
-
-            <div class="ptp-row">
-                <div class="ear-label ear-right">OD</div>
-                <input type="number" name="ptp_500_od" class="input-red">
-                <input type="number" name="ptp_1000_od" class="input-red">
-                <input type="number" name="ptp_2000_od" class="input-red">
-                <input type="number" name="ptp_od" class="input-red ptp-result">
-            </div>
-
-            <div class="ptp-row">
-                <div class="ear-label ear-left">OI</div>
-                <input type="number" name="ptp_500_oi" class="input-blue">
-                <input type="number" name="ptp_1000_oi" class="input-blue">
-                <input type="number" name="ptp_2000_oi" class="input-blue">
-                <input type="number" name="ptp_oi" class="input-blue ptp-result">
-            </div>
-
+        <!-- HEADER -->
+        <div class="ptp-c-row header">
+            <div>PTP</div>
+            <div>O.I.</div>
+            <div>O.D.</div>
         </div>
-    </div>
 
+        <!-- VÍA AÉREA -->
+        <div class="ptp-c-row">
+            <div class="ptp-label">V.A.</div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_va_oi" class="input-blue ptp-result">
+                <span>dB HL</span>
+            </div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_va_od" class="input-red ptp-result">
+                <span>dB HL</span>
+            </div>
+        </div>
+
+        <!-- VÍA ÓSEA -->
+        <div class="ptp-c-row">
+            <div class="ptp-label">V.O.</div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_vo_oi" class="input-blue ptp-result">
+                <span>dB HL</span>
+            </div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_vo_od" class="input-red ptp-result">
+                <span>dB HL</span>
+            </div>
+        </div>
+
+    </div>
+</div>
 </div>
 
-    <!-- BLOQUE ARCHIVO -->
-    <div id="bloque-archivo" style="display:none;">
-        <div class="card">
-            <h3>Adjuntar archivo / video</h3>
+<!-- ACUMETRÍA -->
+<div class="card acumetria-card">
+    <h3>Acumetría</h3>
 
-            <input type="file" name="archivo" accept=".pdf,image/*,video/*">
+    <div class="acumetria-box">
+
+        <!-- WEBER -->
+        <div class="acu-col">
+            <div class="acu-title">WEBER</div>
+
+            <div class="acu-freq">
+                <label>250 Hz</label>
+                <select name="weber_250">
+                    <option value="">--</option>
+                    <option value="central">Central</option>
+                    <option value="od">Lateraliza OD</option>
+                    <option value="oi">Lateraliza OI</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>500 Hz</label>
+                <select name="weber_500">
+                    <option value="">--</option>
+                    <option value="central">Central</option>
+                    <option value="od">Lateraliza OD</option>
+                    <option value="oi">Lateraliza OI</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>1000 Hz</label>
+                <select name="weber_1000">
+                    <option value="">--</option>
+                    <option value="central">Central</option>
+                    <option value="od">Lateraliza OD</option>
+                    <option value="oi">Lateraliza OI</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <!-- OBSERVACIONES -->
-    <div class="card">
-        <h3>Observaciones</h3>
-        <textarea name="observaciones"></textarea>
-    </div>
+        <!-- RINNE -->
+        <div class="acu-col">
+            <div class="acu-title">RINNE</div>
 
-    <!-- BOTÓN -->
-    <div class="card">
-        <button class="btn">Guardar Audiometría</button>
+            <div class="acu-freq">
+                <label>250 Hz</label>
+                <select name="rinne_250_od">
+                    <option value="">OD</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+                <select name="rinne_250_oi">
+                    <option value="">OI</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>500 Hz</label>
+                <select name="rinne_500_od">
+                    <option value="">OD</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+                <select name="rinne_500_oi">
+                    <option value="">OI</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>1000 Hz</label>
+                <select name="rinne_1000_od">
+                    <option value="">OD</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+                <select name="rinne_1000_oi">
+                    <option value="">OI</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+            </div>
+        </div>
+
     </div>
+</div>
+
+<!-- TINNITUMETRÍA -->
+<div class="card">
+    <h3>Tinnitumetría</h3>
+
+    <div class="tinni-table">
+
+        <!-- HEADER -->
+        <div class="tinni-row header">
+            <div>Tinnitus</div>
+            <div>Oído</div>
+            <div>Cantidad</div>
+            <div>Duración</div>
+            <div>Intensidad</div>
+            <div>Frecuencia</div>
+            <div>Masking mínimo</div>
+            <div>Inhibición residual</div>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="tinni-row">
+
+            <!-- TINNITUS -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_presente"> Presente</label>
+                <label><input type="checkbox" name="tin_ausente"> Ausente</label>
+                <label><input type="checkbox" name="tin_ocasional"> Ocasional</label>
+                <label><input type="checkbox" name="tin_examen"> (+) al examen</label>
+            </div>
+
+            <!-- OÍDO -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_od"> OD</label>
+                <label><input type="checkbox" name="tin_oi"> OI</label>
+                <label><input type="checkbox" name="tin_bilateral"> Bilateral</label>
+            </div>
+
+            <!-- CANTIDAD -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_tono"> Tono puro</label>
+                <label><input type="checkbox" name="tin_ruido_blanco"> Ruido blanco</label>
+                <label><input type="checkbox" name="tin_ruido_banda"> Banda estrecha</label>
+            </div>
+
+            <!-- DURACIÓN -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_continuo"> Continuo</label>
+                <label><input type="checkbox" name="tin_pulsatil"> Pulsátil</label>
+                <label><input type="checkbox" name="tin_fluctuante"> Fluctuante</label>
+            </div>
+
+            <!-- INTENSIDAD -->
+            <div class="tinni-col">
+                <div class="tinni-field">
+                    <input type="number" name="tin_db_hl">
+                    <span>dB HL</span>
+                </div>
+                <div class="tinni-field">
+                    <input type="number" name="tin_db_sl">
+                    <span>dB SL</span>
+                </div>
+            </div>
+
+            <!-- FRECUENCIA -->
+            <div class="tinni-col">
+                <div class="tinni-field">
+                    <input type="number" name="tin_freq">
+                    <span>Hz</span>
+                </div>
+            </div>
+
+            <!-- MASKING -->
+            <div class="tinni-col">
+                <div class="tinni-field">
+                    <input type="number" name="tin_masking">
+                    <span>dB HL</span>
+                </div>
+            </div>
+
+            <!-- INHIBICIÓN -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_inh_oi"> Izquierdo</label>
+                <label><input type="checkbox" name="tin_inh_od"> Derecho</label>
+                <label><input type="checkbox" name="tin_inh_bi"> Bilateral</label>
+                <label><input type="checkbox" name="tin_inh_tc"> T. Cráneo</label>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- BLOQUE ARCHIVO -->
+<div id="bloque-archivo" style="display:none;">
+    <div class="card upload-card">
+        <h3>Adjuntar archivo / video</h3>
+
+        <label class="upload-box">
+            <input type="file" name="archivo" accept=".pdf,image/*,video/*">
+            <div class="upload-content">
+                <span class="upload-icon">📎</span>
+                <span class="upload-text">Haz clic o arrastra un archivo</span>
+                <small>PDF, imágenes o video</small>
+            </div>
+        </label>
+    </div>
+</div>
+
+<!-- OBSERVACIONES -->
+<div class="card observaciones-card">
+    <h3>Observaciones</h3>
+    <textarea name="observaciones" placeholder="Escribe observaciones clínicas..."></textarea>
+</div>
+
+<!-- BOTÓN -->
+<div class="card action-card">
+    <button class="btn-primary">Guardar Audiometría</button>
+</div>
 
 </main>
 
 <!-- JS -->
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+const radiosTipo = document.querySelectorAll('input[name="tipo"]');
+
+const controlsTonal = document.getElementById("controls-tonal");
+const controlsCampo = document.getElementById("controls-campo");
+
+let modoAudiometria = "tonal";
+
+radiosTipo.forEach(radio => {
+    radio.addEventListener("change", () => {
+
+        if(radio.value === "campo_libre" && radio.checked){
+
+            modoAudiometria = "campo";
+
+            controlsTonal.style.display = "none";
+            controlsCampo.style.display = "block";
+
+            // reset estado
+            current = {
+                sf: "S",
+                category: "sf",
+                modifier: null
+            };
+
+            data = [];
+            drawGrid();
+        }
+
+        if(radio.value === "tonal" && radio.checked){
+
+            modoAudiometria = "tonal";
+
+            controlsTonal.style.display = "block";
+            controlsCampo.style.display = "none";
+
+            current = {
+                ear: "right",
+                type: "va",
+                category: "va",
+                modifier: null,
+                masked: false
+            };
+
+            data = [];
+            drawGrid();
+        }
+    });
+});
+
 const radiosModo = document.querySelectorAll('input[name="modo"]');
 const bloqueManual = document.getElementById("bloque-manual");
 const bloqueArchivo = document.getElementById("bloque-archivo");
@@ -373,43 +642,56 @@ function drawLDL(x,y,color){
 
 /* DIBUJO */
 function drawPoints(){
+
+    // 🔊 CAMPO LIBRE
+    if(modoAudiometria === "campo"){
+
+        data.forEach(p=>{
+            const x = getX(freqs.indexOf(p.freq));
+            const y = getY(p.db);
+
+            drawSF(x, y, p.sf);
+
+            if(p.modifier === "nr"){
+                drawNRArrow(x,y,"black");
+            }
+
+            if(p.category === "ldl"){
+                drawLDL(x,y,"black");
+            }
+        });
+
+        return;
+    }
+
+    // 🎧 TONAL (tu lógica original)
     data.forEach(p=>{
         const x = getX(freqs.indexOf(p.freq));
         const y = getY(p.db);
 
         const color = p.ear === "right" ? "red" : "blue";
 
-        // LDL (independiente)
         if(p.category === "ldl"){
             drawLDL(x,y,color);
-
-            if(p.modifier === "nr"){
-                drawNRArrow(x,y,color);
-            }
+            if(p.modifier === "nr") drawNRArrow(x,y,color);
             return;
         }
 
-        // VÍA ÓSEA
         if(p.type === "vo"){
             drawBone(x,y,p.ear,p.masked,color);
         }
         else if(p.type === "va"){
             if(p.masked){
-                if(p.ear === "right"){
-                    drawTriangle(x,y,color);
-                } else {
-                    drawSquare(x,y,color);
-                }
+                p.ear === "right"
+                    ? drawTriangle(x,y,color)
+                    : drawSquare(x,y,color);
             } else {
-                if(p.ear === "right"){
-                    drawCircle(x,y,color);
-                } else {
-                    drawX(x,y,color);
-                }
+                p.ear === "right"
+                    ? drawCircle(x,y,color)
+                    : drawX(x,y,color);
             }
         }
 
-        // NR
         if(p.modifier === "nr"){
             drawNRArrow(x,y,color);
         }
@@ -490,6 +772,14 @@ function drawLines(){
     });
 }
 
+function drawSF(x,y,text){
+    ctx.fillStyle = "#111";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x, y);
+}
+
 /* CLICK */
 canvas.addEventListener("click", function(e){
     const rect = canvas.getBoundingClientRect();
@@ -505,64 +795,108 @@ canvas.addEventListener("click", function(e){
     if(closestDb < 0) closestDb = 0;
     if(closestDb > 120) closestDb = 120;
 
-    const existingIndex = data.findIndex(p =>
-        p.freq === closestFreq &&
-        p.ear === current.ear &&
-        p.category === current.category
-    );
+    // 🔊 CAMPO LIBRE
+    if(modoAudiometria === "campo"){
 
-    if(existingIndex !== -1){
-        data.splice(existingIndex, 1);
-    } else {
-        data.push({
-            freq: closestFreq,
-            db: closestDb,
-            ear: current.ear,
-            type: current.type,
-            category: current.category,
-            modifier: current.modifier,
-            masked: current.masked
-        });
+        const existingIndex = data.findIndex(p =>
+            p.freq === closestFreq &&
+            p.category === current.category
+        );
+
+        if(existingIndex !== -1){
+            data.splice(existingIndex, 1);
+        } else {
+            data.push({
+                freq: closestFreq,
+                db: closestDb,
+                sf: current.sf,          // 🔥 CLAVE
+                category: current.category,
+                modifier: current.modifier
+            });
+        }
+
+    } 
+    // 🎧 TONAL (tu lógica actual)
+    else {
+
+        const existingIndex = data.findIndex(p =>
+            p.freq === closestFreq &&
+            p.ear === current.ear &&
+            p.category === current.category
+        );
+
+        if(existingIndex !== -1){
+            data.splice(existingIndex, 1);
+        } else {
+            data.push({
+                freq: closestFreq,
+                db: closestDb,
+                ear: current.ear,
+                type: current.type,
+                category: current.category,
+                modifier: current.modifier,
+                masked: current.masked
+            });
+        }
     }
 
     drawGrid();
-    drawLines();
+
+    if(modoAudiometria === "tonal"){
+        drawLines();
+    }
+
     drawPoints();
+    calcularPTP();
 });
 
 function syncUI(){
 
-    // LIMPIAR TODO
     document.querySelectorAll(".ctrl-btn")
         .forEach(b => b.classList.remove("active"));
 
-    // OÍDO
+    // 🔊 CAMPO LIBRE
+    if(modoAudiometria === "campo"){
+
+        document.querySelector(`[data-sf="${current.sf}"]`)
+            ?.classList.add("active");
+
+        if(current.category === "ldl"){
+            document.querySelector(`[data-extra="ldl"]`)
+                ?.classList.add("active");
+        }
+
+        if(current.modifier === "nr"){
+            document.querySelector(`[data-extra="nr"]`)
+                ?.classList.add("active");
+        }
+
+        return;
+    }
+
+    // 🎧 TONAL (lo tuyo)
+
     document.querySelector(`[data-ear="${current.ear}"]`)
         ?.classList.add("active");
 
-    // TIPO (solo si NO es LDL)
     if(current.category !== "ldl"){
         document.querySelector(`[data-type="${current.type}"]`)
             ?.classList.add("active");
     }
 
-    // LDL
     if(current.category === "ldl"){
         document.querySelector(`[data-extra="ldl"]`)
             ?.classList.add("active");
 
-        // LDL siempre VA visualmente
         document.querySelector(`[data-type="va"]`)
             ?.classList.add("active");
     }
 
-    // NR
     if(current.modifier === "nr"){
         document.querySelector(`[data-extra="nr"]`)
             ?.classList.add("active");
     }
 
-    // MASK
     if(current.masked){
         document.querySelector(`[data-mask]`)
             ?.classList.add("active");
@@ -573,22 +907,43 @@ function syncUI(){
 document.querySelectorAll(".ctrl-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
 
-        // OÍDO
+        // 🔊 CAMPO LIBRE
+        if(modoAudiometria === "campo"){
+
+            // símbolo
+            if(btn.dataset.sf){
+                current.sf = btn.dataset.sf;
+                current.category = "sf";
+            }
+
+            // LDL
+            if(btn.dataset.extra === "ldl"){
+                current.category = current.category === "ldl" ? "sf" : "ldl";
+            }
+
+            // NR
+            if(btn.dataset.extra === "nr"){
+                current.modifier = current.modifier === "nr" ? null : "nr";
+            }
+
+            syncUI();
+            return;
+        }
+
+        // 🎧 TONAL (tu lógica actual intacta)
+
         if(btn.dataset.ear){
             current.ear = btn.dataset.ear;
             current.modifier = null;
         }
 
-        // TIPO
         if(btn.dataset.type){
             current.type = btn.dataset.type;
             current.category = btn.dataset.type;
             current.modifier = null;
         }
 
-        // LDL
         if(btn.dataset.extra === "ldl"){
-
             if(current.category === "ldl"){
                 current.category = current.type;
             } else {
@@ -597,24 +952,94 @@ document.querySelectorAll(".ctrl-btn").forEach(btn=>{
             }
         }
 
-        // NR
         if(btn.dataset.extra === "nr"){
             current.modifier = current.modifier === "nr" ? null : "nr";
         }
 
-        // MASK
         if(btn.dataset.mask){
             current.masked = !current.masked;
-            current.modifier = null; // opcional clínico
+            current.modifier = null;
         }
 
-        syncUI(); // 🔥 LA CLAVE
+        syncUI();
     });
 });
 
 /* INIT */
 drawGrid();
 syncUI();
+
+/* PROMEDIO TONAL PURO */
+
+function calcularPTP(){
+
+    const edadPaciente = 70; // 🔥 cámbialo luego dinámico
+
+    const frecuenciasBase = edadPaciente >= 65
+        ? [500, 1000, 2000, 4000]
+        : [500, 1000, 2000];
+
+    const oidos = ["right", "left"];
+    const tipos = ["va", "vo"];
+
+    let resultados = {
+        right: { va: null, vo: null },
+        left: { va: null, vo: null }
+    };
+
+    oidos.forEach(ear=>{
+        tipos.forEach(type=>{
+
+            const puntos = data.filter(p =>
+                p.ear === ear &&
+                p.type === type &&
+                p.category !== "ldl" &&
+                p.modifier !== "nr" &&
+                frecuenciasBase.includes(p.freq)
+            );
+
+            // asegurar que estén todas las frecuencias necesarias
+            const freqsEncontradas = puntos.map(p => p.freq);
+
+            const tieneTodas = frecuenciasBase.every(f =>
+                freqsEncontradas.includes(f)
+            );
+
+            if(!tieneTodas) return;
+
+            const suma = puntos.reduce((acc,p)=> acc + p.db, 0);
+            const promedio = Math.round(suma / puntos.length);
+
+            resultados[ear][type] = promedio;
+        });
+    });
+
+    // 🔴 OD
+    document.querySelector('[name="ptp_va_od"]').value =
+        resultados.right.va ?? "";
+
+    document.querySelector('[name="ptp_vo_od"]').value =
+        resultados.right.vo ?? "";
+
+    // 🔵 OI
+    document.querySelector('[name="ptp_va_oi"]').value =
+        resultados.left.va ?? "";
+
+    document.querySelector('[name="ptp_vo_oi"]').value =
+        resultados.left.vo ?? "";
+}
+
+});
+
+const fileInput = document.querySelector('input[name="archivo"]');
+const uploadText = document.querySelector('.upload-text');
+
+fileInput.addEventListener("change", () => {
+    if(fileInput.files.length > 0){
+        uploadText.textContent = fileInput.files[0].name;
+    }
+});
+
 </script>
 
 </body>
