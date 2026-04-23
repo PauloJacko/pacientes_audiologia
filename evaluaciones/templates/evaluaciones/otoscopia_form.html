@@ -1,0 +1,17 @@
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <h2>otoscopia - {{ paciente.nombre }}</h2>
+
+    <div>
+        <label>Observaciones</label>
+        <textarea name="observaciones"></textarea>
+    </div>
+
+    <div>
+        <label>Archivo</label>
+        <input type="file" name="archivo">
+    </div>
+
+    <button type="submit">Guardar</button>
+</form>

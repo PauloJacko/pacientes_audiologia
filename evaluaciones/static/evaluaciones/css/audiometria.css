@@ -1,0 +1,179 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Sora:wght@600&display=swap");
+
+:root {
+    /* Paleta de colores */
+    --bg: #f4f8fb;
+    --card: #ffffff;
+    --text: #1c2e33;
+    --muted: #6b7f94;
+    --line: #e1e8ef;
+
+    /* Identidad Audiología (Azul) */
+    --primary: #3f6aa3;
+    --primary-light: #e8f0fb;
+    --primary-dark: #2f4f7a;
+    --accent: #5aa6ff;
+    --soft: #f2f6fc;
+    --danger: #ef4444;
+
+    /* Estructural */
+    --radius: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Manrope", "Inter", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+}
+
+/* HEADER PRINCIPAL */
+.header {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-text .title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2f5485;
+}
+
+.header-text .subtitle {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.logo-header {
+    height: 50px;
+    width: auto;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+    transition: transform 0.2s;
+}
+
+.logo-header:hover {
+    transform: scale(1.03);
+}
+
+.btn-logout {
+    background: transparent;
+    color: var(--danger);
+    padding: 8px 14px;
+    border: 1px solid var(--danger);
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: 0.25s;
+}
+
+.btn-logout:hover {
+    background: var(--danger);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
+}
+
+.btn-back {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-right: 10px;
+    transition: 0.2s;
+}
+
+.btn-back:hover {
+    background: #dbe8fb;
+}
+
+/* CONTENEDOR PRINCIPAL */
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.radio-group label {
+    background: #f1f5f9;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+}
+
+.radio-group input {
+    margin-right: 6px;
+}
+
+/* CONTENEDOR DE AUDIOGRAMAS */
+
+.audiometria-layout {
+    display: flex;
+    gap: 20px;
+}
+
+/* PANEL */
+.audio-controls {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.control-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ctrl-btn {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.ctrl-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* GRÁFICO */
+.audio-chart-container {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#audiograma {
+    background: #fff;
+    cursor: crosshair;
+}

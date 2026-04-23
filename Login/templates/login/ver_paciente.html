@@ -192,17 +192,35 @@
         <div id="evaluaciones" class="tab-pane">
             <div class="card panel">
 
-                <div class="anamnesis-header">
+                <div class="evaluaciones-header">
                     <div>
                         <h2>Evaluaciones clínicas</h2>
                         <p class="section-subtitle">Registro de evaluaciones del paciente</p>
                     </div>
-
-                    <button class="btn">
-                        + Nueva Evaluación
-                    </button>
                 </div>
 
+                <!-- BOTONES -->
+                <div class="evaluacion-actions">
+
+                    <a href="{% url 'evaluaciones:crear_audiometria' paciente.id %}" class="eval-btn eval-audio">
+                        + Audiometría
+                    </a>
+
+                    <a href="{% url 'evaluaciones:crear_impedanciometria' paciente.id %}" class="eval-btn eval-impe">
+                        + Impedanciometría
+                    </a>
+
+                    <a href="{% url 'evaluaciones:crear_otoscopia' paciente.id %}" class="eval-btn eval-oto">
+                        + Otoscopía
+                    </a>
+
+                    <a href="{% url 'evaluaciones:crear_evaluacion_otro' paciente.id %}" class="eval-btn eval-otro">
+                        + Otro
+                    </a>
+
+                </div>
+
+                <!-- LISTADO -->
                 {% if evaluaciones %}
                     <div class="anamnesis-list">
                         {% for e in evaluaciones %}

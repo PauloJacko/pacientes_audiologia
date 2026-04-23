@@ -1,5 +1,4 @@
-﻿/* CONFIGURACIÓN GLOBAL Y VARIABLES */
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Sora:wght@600&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Sora:wght@600&display=swap");
 
 :root {
     /* Paleta de colores */
@@ -708,4 +707,42 @@ textarea { min-height: 70px; }
 .alertify .ajs-cancel:hover {
     background: #d1d5db;
     transform: translateY(-1px);
+}
+
+
+/* Botones de EVALUACIONES */
+
+.evaluacion-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.eval-btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    color: white;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.eval-audio {
+    background: #3b82f6;
+}
+.eval-impe {
+    background: #10b981;
+}
+.eval-oto {
+    background: #f59e0b;
+}
+.eval-otro {
+    background: #6b7280;
+}
+
+.eval-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
 }
