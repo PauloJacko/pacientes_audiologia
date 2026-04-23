@@ -112,34 +112,72 @@
 </div>
         </div>
 
-        <!-- LOGOAUDIOMETRÍA -->
-        <div class="card">
-            <h3>Logoaudiometría</h3>
+<div class="card dual-tables">
 
-            <div class="form-grid compact">
-                <div>
-                    <label>SRT OD</label>
-                    <input type="number" name="srt_od">
-                </div>
+    <!-- LOGOAUDIOMETRÍA -->
+    <div class="table-box">
+        <h3>Logoaudiometría</h3>
 
-                <div>
-                    <label>SRT OI</label>
-                    <input type="number" name="srt_oi">
-                </div>
+        <div class="logo-table">
 
-                <div>
-                    <label>Discriminación (%) OD</label>
-                    <input type="number" name="sds_od">
-                </div>
-
-                <div>
-                    <label>Discriminación (%) OI</label>
-                    <input type="number" name="sds_oi">
-                </div>
+            <div class="logo-row header">
+                <div>Oído</div>
+                <div>% Disc.</div>
+                <div>dB</div>
+                <div>MKG</div>
             </div>
-        </div>
 
+            <div class="logo-row">
+                <div class="ear-label ear-right">OD</div>
+                <input type="number" name="sds_od" class="input-red">
+                <input type="number" name="int_od" class="input-red">
+                <input type="number" name="mkg_od" class="input-blue">
+            </div>
+
+            <div class="logo-row">
+                <div class="ear-label ear-left">OI</div>
+                <input type="number" name="sds_oi" class="input-blue">
+                <input type="number" name="int_oi" class="input-blue">
+                <input type="number" name="mkg_oi" class="input-red">
+            </div>
+
+        </div>
     </div>
+
+    <!-- PTP -->
+    <div class="table-box">
+        <h3>PTP (Promedio Tonal Puro)</h3>
+
+        <div class="ptp-table">
+
+            <div class="ptp-row header">
+                <div>Oído</div>
+                <div>500 Hz</div>
+                <div>1000 Hz</div>
+                <div>2000 Hz</div>
+                <div>PTP</div>
+            </div>
+
+            <div class="ptp-row">
+                <div class="ear-label ear-right">OD</div>
+                <input type="number" name="ptp_500_od" class="input-red">
+                <input type="number" name="ptp_1000_od" class="input-red">
+                <input type="number" name="ptp_2000_od" class="input-red">
+                <input type="number" name="ptp_od" class="input-red ptp-result">
+            </div>
+
+            <div class="ptp-row">
+                <div class="ear-label ear-left">OI</div>
+                <input type="number" name="ptp_500_oi" class="input-blue">
+                <input type="number" name="ptp_1000_oi" class="input-blue">
+                <input type="number" name="ptp_2000_oi" class="input-blue">
+                <input type="number" name="ptp_oi" class="input-blue ptp-result">
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
     <!-- BLOQUE ARCHIVO -->
     <div id="bloque-archivo" style="display:none;">
@@ -378,6 +416,80 @@ function drawPoints(){
     });
 }
 
+function drawLines(){
+
+    const ears = ["right", "left"];
+    const types = ["va", "vo"];
+
+    ears.forEach(ear=>{
+        types.forEach(type=>{
+
+            // filtrar puntos válidos
+            let points = data
+                .filter(p =>
+                    p.ear === ear &&
+                    p.type === type &&
+                    p.category !== "ldl" &&
+                    p.modifier !== "nr"
+                )
+                .sort((a,b)=> freqs.indexOf(a.freq) - freqs.indexOf(b.freq));
+
+            if(points.length < 2) return;
+
+            const color = ear === "right" ? "red" : "blue";
+
+            ctx.save();
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+
+            // tipo de línea
+            if(type === "vo"){
+                ctx.setLineDash([6,6]); // punteada
+            } else {
+                ctx.setLineDash([]); // continua
+            }
+
+            ctx.beginPath();
+
+            let started = false;
+            let lastWasNR = false;
+
+            freqs.forEach(freq => {
+
+                const p = points.find(pt => pt.freq === freq);
+
+                if(!p){
+                    started = false;
+                    lastWasNR = false;
+                    return;
+                }
+
+                const x = getX(freqs.indexOf(freq));
+                const y = getY(p.db);
+
+                if(!started){
+                    ctx.moveTo(x,y);
+                    started = true;
+                    lastWasNR = false;
+                } else {
+
+                    if(lastWasNR){
+                        // 🔥 no reconectar después de NR
+                        ctx.moveTo(x,y);
+                        lastWasNR = false;
+                    } else {
+                        ctx.lineTo(x,y);
+                    }
+                }
+            });
+
+            ctx.stroke();
+            ctx.restore();
+        });
+    });
+}
+
 /* CLICK */
 canvas.addEventListener("click", function(e){
     const rect = canvas.getBoundingClientRect();
@@ -414,6 +526,7 @@ canvas.addEventListener("click", function(e){
     }
 
     drawGrid();
+    drawLines();
     drawPoints();
 });
 

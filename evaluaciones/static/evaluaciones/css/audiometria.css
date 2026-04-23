@@ -177,3 +177,147 @@ body {
     background: #fff;
     cursor: crosshair;
 }
+
+/* LOGOAUDIOMETRIA */
+
+/* LOGOAUDIOMETRÍA */
+
+.logo-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.logo-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.logo-row.header {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* OÍDOS */
+.ear-label {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.ear-right {
+    color: #dc2626; /* rojo */
+}
+
+.ear-left {
+    color: #2563eb; /* azul */
+}
+
+/* INPUTS */
+.logo-row input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #d7e3e6;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* COLORES CLÍNICOS */
+.input-red {
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+.input-blue {
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+.input-red:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220,38,38,0.2);
+}
+
+.input-blue:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+}
+
+/* LOGOAUDIOMETRIA */
+
+/* LOGO + PTP base */
+.logo-table,
+.ptp-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* FILAS */
+.logo-row,
+.ptp-row {
+    display: grid;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ESPECÍFICO */
+.logo-row {
+    grid-template-columns: 60px 1fr 1fr 1fr;
+}
+
+.ptp-row {
+    grid-template-columns: 60px 1fr 1fr 1fr 1fr;
+}
+
+/* HEADER */
+.header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+/* INPUTS */
+.logo-row input,
+.ptp-row input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #d7e3e6;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* PTP RESULTADO */
+.ptp-result {
+    font-weight: 700;
+    background: #f1f5f9;
+}
+
+
+/* CONTENEDOR DOBLE */
+.dual-tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* CAJAS */
+.table-box {
+    background: #fbfdff;
+    border: 1px solid #e3edf7;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .dual-tables {
+        grid-template-columns: 1fr;
+    }
+}
