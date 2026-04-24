@@ -1,0 +1,1769 @@
+<!-- HEADER NO TOCAR -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Audiometría</title>
+
+    <link rel="stylesheet" href="{% static 'evaluaciones/css/audiometria.css' %}">
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <img src="{% static 'Login/img/logo-png.png' %}" class="logo-header">
+
+        <div class="header-text">
+            <span class="title">Audiometría</span>
+            <span class="subtitle">Evaluación clínica</span>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <a href="{% url 'ver_paciente' paciente.id %}" class="btn-back">← Volver</a>
+        <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+<!-- ACA TERMINA EL HEADER NO TOCAR -->
+
+<!-- CONTENIDO -->
+<main class="dashboard">
+
+    <!-- PACIENTE -->
+    <div class="card">
+        <h2>{{ paciente.nombre }}</h2>
+        <p class="meta">RUT: {{ paciente.rut }}</p>
+    </div>
+
+    <!-- MODO -->
+    <div class="card">
+        <h3>Modo de registro</h3>
+
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="modo" value="manual" checked>
+                Manual
+            </label>
+
+            <label>
+                <input type="radio" name="modo" value="archivo">
+                Adjuntar archivo / video
+            </label>
+        </div>
+    </div>
+
+    <!-- TIPO -->
+    <div class="card">
+        <h3>Tipo de audiometría</h3>
+
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="tipo" value="tonal" checked>
+                Audiometría tonal clásica
+            </label>
+
+            <label>
+                <input type="radio" name="tipo" value="campo_libre">
+                Campo libre (binaural)
+            </label>
+        </div>
+    </div>
+
+    <!-- BLOQUE MANUAL -->
+    <div id="bloque-manual">
+
+        <!-- AUDIOMETRÍA TONAL -->
+        <div class="card">
+            <h3>Audiometría</h3>
+
+            <!-- Aquí irá la tabla -->
+            <div class="audiometria-layout">
+
+    <!-- PANEL IZQUIERDO -->
+<div class="audio-controls" id="audio-controls">
+
+    <!-- TONAL -->
+    <div id="controls-tonal">
+
+        <h4>Oído</h4>
+        <div class="control-group">
+            <button class="ctrl-btn active" data-ear="right">OD (Rojo)</button>
+            <button class="ctrl-btn" data-ear="left">OI (Azul)</button>
+        </div>
+
+        <h4>Tipo</h4>
+        <div class="control-group">
+            <button class="ctrl-btn active" data-type="va">Vía aérea</button>
+            <button class="ctrl-btn" data-type="vo">Vía ósea</button>
+            <button class="ctrl-btn" data-mask="true">Enmascarado</button>
+        </div>
+
+    </div>
+
+    <!-- CAMPO LIBRE -->
+    <div id="controls-campo" style="display:none;">
+
+        <h4>Condición</h4>
+        <div class="control-group">
+            <button class="ctrl-btn active" data-sf="S">Sin amplificación (S)</button>
+            <button class="ctrl-btn" data-sf="A">Con audífono (A)</button>
+            <button class="ctrl-btn" data-sf="CI">Implante (CI)</button>
+        </div>
+
+    </div>
+
+    <!-- COMUNES -->
+    <h4>Opciones</h4>
+    <div class="control-group">
+        <button class="ctrl-btn" data-extra="nr">Sin respuesta</button>
+        <button class="ctrl-btn" data-extra="ldl">LDL</button>
+    </div>
+
+</div>
+
+    <!-- GRÁFICO -->
+    <div class="audio-chart-container">
+        <canvas id="audiograma" width="800" height="450"></canvas>
+    </div>
+
+</div>
+        </div>
+
+<div class="card dual-tables">
+
+    <!-- LOGOAUDIOMETRÍA -->
+    <div class="table-box">
+        <h3>Logoaudiometría</h3>
+
+        <div class="logo-table">
+
+            <div class="logo-row header">
+                <div>Oído</div>
+                <div>% Disc.</div>
+                <div>dB</div>
+                <div>MKG</div>
+            </div>
+
+            <div class="logo-row">
+                <div class="ear-label ear-right">OD</div>
+                <input type="number" name="sds_od" class="input-red">
+                <input type="number" name="int_od" class="input-red">
+                <input type="number" name="mkg_od" class="input-blue">
+            </div>
+
+            <div class="logo-row">
+                <div class="ear-label ear-left">OI</div>
+                <input type="number" name="sds_oi" class="input-blue">
+                <input type="number" name="int_oi" class="input-blue">
+                <input type="number" name="mkg_oi" class="input-red">
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PTP -->
+<div class="table-box">
+    <h3>PTP (Promedio Tonal Puro)</h3>
+
+    <div class="ptp-clinico">
+
+        <!-- HEADER -->
+        <div class="ptp-c-row header">
+            <div>PTP</div>
+            <div>O.I.</div>
+            <div>O.D.</div>
+        </div>
+
+        <!-- VÍA AÉREA -->
+        <div class="ptp-c-row">
+            <div class="ptp-label">V.A.</div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_va_oi" class="input-blue ptp-result">
+                <span>dB HL</span>
+            </div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_va_od" class="input-red ptp-result">
+                <span>dB HL</span>
+            </div>
+        </div>
+
+        <!-- VÍA ÓSEA -->
+        <div class="ptp-c-row">
+            <div class="ptp-label">V.O.</div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_vo_oi" class="input-blue ptp-result">
+                <span>dB HL</span>
+            </div>
+
+            <div class="ptp-field">
+                <input type="number" name="ptp_vo_od" class="input-red ptp-result">
+                <span>dB HL</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<!-- ACUMETRÍA -->
+<div class="card acumetria-card">
+    <h3>Acumetría</h3>
+
+    <div class="acumetria-box">
+
+        <!-- WEBER -->
+        <div class="acu-col">
+            <div class="acu-title">WEBER</div>
+
+            <div class="acu-freq">
+                <label>250 Hz</label>
+                <select name="weber_250">
+                    <option value="">--</option>
+                    <option value="central">Central</option>
+                    <option value="od">Lateraliza OD</option>
+                    <option value="oi">Lateraliza OI</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>500 Hz</label>
+                <select name="weber_500">
+                    <option value="">--</option>
+                    <option value="central">Central</option>
+                    <option value="od">Lateraliza OD</option>
+                    <option value="oi">Lateraliza OI</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>1000 Hz</label>
+                <select name="weber_1000">
+                    <option value="">--</option>
+                    <option value="central">Central</option>
+                    <option value="od">Lateraliza OD</option>
+                    <option value="oi">Lateraliza OI</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- RINNE -->
+        <div class="acu-col">
+            <div class="acu-title">RINNE</div>
+
+            <div class="acu-freq">
+                <label>250 Hz</label>
+                <select name="rinne_250_od">
+                    <option value="">OD</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+                <select name="rinne_250_oi">
+                    <option value="">OI</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>500 Hz</label>
+                <select name="rinne_500_od">
+                    <option value="">OD</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+                <select name="rinne_500_oi">
+                    <option value="">OI</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+            </div>
+
+            <div class="acu-freq">
+                <label>1000 Hz</label>
+                <select name="rinne_1000_od">
+                    <option value="">OD</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+                <select name="rinne_1000_oi">
+                    <option value="">OI</option>
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- TINNITUMETRÍA -->
+<div class="card">
+    <h3>Tinnitumetría</h3>
+
+    <div class="tinni-table">
+
+        <!-- HEADER -->
+        <div class="tinni-row header">
+            <div>Tinnitus</div>
+            <div>Oído</div>
+            <div>Cantidad</div>
+            <div>Duración</div>
+            <div>Intensidad</div>
+            <div>Frecuencia</div>
+            <div>Masking mínimo</div>
+            <div>Inhibición residual</div>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="tinni-row">
+
+            <!-- TINNITUS -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_presente"> Presente</label>
+                <label><input type="checkbox" name="tin_ausente"> Ausente</label>
+                <label><input type="checkbox" name="tin_ocasional"> Ocasional</label>
+                <label><input type="checkbox" name="tin_examen"> (+) al examen</label>
+            </div>
+
+            <!-- OÍDO -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_od"> OD</label>
+                <label><input type="checkbox" name="tin_oi"> OI</label>
+                <label><input type="checkbox" name="tin_bilateral"> Bilateral</label>
+            </div>
+
+            <!-- CANTIDAD -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_tono"> Tono puro</label>
+                <label><input type="checkbox" name="tin_ruido_blanco"> Ruido blanco</label>
+                <label><input type="checkbox" name="tin_ruido_banda"> Banda estrecha</label>
+            </div>
+
+            <!-- DURACIÓN -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_continuo"> Continuo</label>
+                <label><input type="checkbox" name="tin_pulsatil"> Pulsátil</label>
+                <label><input type="checkbox" name="tin_fluctuante"> Fluctuante</label>
+            </div>
+
+            <!-- INTENSIDAD -->
+            <div class="tinni-col">
+                <div class="tinni-field">
+                    <input type="number" name="tin_db_hl">
+                    <span>dB HL</span>
+                </div>
+                <div class="tinni-field">
+                    <input type="number" name="tin_db_sl">
+                    <span>dB SL</span>
+                </div>
+            </div>
+
+            <!-- FRECUENCIA -->
+            <div class="tinni-col">
+                <div class="tinni-field">
+                    <input type="number" name="tin_freq">
+                    <span>Hz</span>
+                </div>
+            </div>
+
+            <!-- MASKING -->
+            <div class="tinni-col">
+                <div class="tinni-field">
+                    <input type="number" name="tin_masking">
+                    <span>dB HL</span>
+                </div>
+            </div>
+
+            <!-- INHIBICIÓN -->
+            <div class="tinni-col">
+                <label><input type="checkbox" name="tin_inh_oi"> Izquierdo</label>
+                <label><input type="checkbox" name="tin_inh_od"> Derecho</label>
+                <label><input type="checkbox" name="tin_inh_bi"> Bilateral</label>
+                <label><input type="checkbox" name="tin_inh_tc"> T. Cráneo</label>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- DETERIORO TONAL -->
+<div class="card">
+    <h3>Deterioro tonal</h3>
+
+    <div class="deterioro-box">
+
+        <!-- TEST -->
+        <div class="deterioro-tests">
+            <label><input type="radio" name="deterioro_test" value="carhart"> Carhart</label>
+            <label><input type="radio" name="deterioro_test" value="rosenberg"> Rosenberg</label>
+            <label><input type="radio" name="deterioro_test" value="stat"> STAT</label>
+            <label><input type="radio" name="deterioro_test" value="sisi"> SISI</label>
+        </div>
+
+        <!-- TABLA -->
+        <div class="deterioro-table">
+
+            <!-- HEADER -->
+            <div class="det-row header">
+                <div></div>
+                <div>500 Hz</div>
+                <div>1000 Hz</div>
+                <div>2000 Hz</div>
+                <div>4000 Hz</div>
+            </div>
+
+            <!-- OI -->
+            <div class="det-row">
+                <div class="ear-label ear-left">O.I.</div>
+
+                <div class="det-field">
+                    <input type="number" name="det_500_oi" class="input-blue">
+                    <span>dB</span>
+                </div>
+
+                <div class="det-field">
+                    <input type="number" name="det_1000_oi" class="input-blue">
+                    <span>dB</span>
+                </div>
+
+                <div class="det-field">
+                    <input type="number" name="det_2000_oi" class="input-blue">
+                    <span>dB</span>
+                </div>
+
+                <div class="det-field">
+                    <input type="number" name="det_4000_oi" class="input-blue">
+                    <span>dB</span>
+                </div>
+            </div>
+
+            <!-- OD -->
+            <div class="det-row">
+                <div class="ear-label ear-right">O.D.</div>
+
+                <div class="det-field">
+                    <input type="number" name="det_500_od" class="input-red">
+                    <span>dB</span>
+                </div>
+
+                <div class="det-field">
+                    <input type="number" name="det_1000_od" class="input-red">
+                    <span>dB</span>
+                </div>
+
+                <div class="det-field">
+                    <input type="number" name="det_2000_od" class="input-red">
+                    <span>dB</span>
+                </div>
+
+                <div class="det-field">
+                    <input type="number" name="det_4000_od" class="input-red">
+                    <span>dB</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- BLOQUE ARCHIVO -->
+<div id="bloque-archivo" style="display:none;">
+    <div class="card upload-card">
+        <h3>Adjuntar archivo / video</h3>
+
+        <label class="upload-box">
+            <input type="file" name="archivo" accept=".pdf,image/*,video/*">
+            <div class="upload-content">
+                <span class="upload-icon">📎</span>
+                <span class="upload-text">Haz clic o arrastra un archivo</span>
+                <small>PDF, imágenes o video</small>
+            </div>
+        </label>
+    </div>
+</div>
+
+<!-- OBSERVACIONES -->
+<div class="card observaciones-card">
+    <h3>Observaciones</h3>
+    <textarea name="observaciones" placeholder="Escribe observaciones clínicas..."></textarea>
+</div>
+
+<!-- BOTÓN -->
+<div class="card action-card">
+    <button class="btn-primary">Guardar Audiometría</button>
+</div>
+
+</main>
+
+<!-- JS -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+const radiosTipo = document.querySelectorAll('input[name="tipo"]');
+
+const controlsTonal = document.getElementById("controls-tonal");
+const controlsCampo = document.getElementById("controls-campo");
+
+let modoAudiometria = "tonal";
+
+radiosTipo.forEach(radio => {
+    radio.addEventListener("change", () => {
+
+        if(radio.value === "campo_libre" && radio.checked){
+
+            modoAudiometria = "campo";
+
+            controlsTonal.style.display = "none";
+            controlsCampo.style.display = "block";
+
+            // reset estado
+            current = {
+                sf: "S",
+                category: "sf",
+                modifier: null
+            };
+
+            data = [];
+            drawGrid();
+        }
+
+        if(radio.value === "tonal" && radio.checked){
+
+            modoAudiometria = "tonal";
+
+            controlsTonal.style.display = "block";
+            controlsCampo.style.display = "none";
+
+            current = {
+                ear: "right",
+                type: "va",
+                category: "va",
+                modifier: null,
+                masked: false
+            };
+
+            data = [];
+            drawGrid();
+        }
+    });
+});
+
+const radiosModo = document.querySelectorAll('input[name="modo"]');
+const bloqueManual = document.getElementById("bloque-manual");
+const bloqueArchivo = document.getElementById("bloque-archivo");
+
+radiosModo.forEach(radio => {
+    radio.addEventListener("change", () => {
+        if (radio.value === "manual" && radio.checked) {
+            bloqueManual.style.display = "block";
+            bloqueArchivo.style.display = "none";
+        }
+
+        if (radio.value === "archivo" && radio.checked) {
+            bloqueManual.style.display = "none";
+            bloqueArchivo.style.display = "block";
+        }
+    });
+});
+
+// Audiograma //
+
+const canvas = document.getElementById("audiograma");
+const ctx = canvas.getContext("2d");
+
+/* CONFIG REAL */
+const freqs = [125,250,500,1000,2000,3000,4000,6000,8000];
+const dbs = [];
+for(let i=0;i<=120;i+=5) dbs.push(i);
+
+const padding = { top: 40, left: 50, right: 20, bottom: 20 };
+
+const chartWidth = canvas.width - padding.left - padding.right;
+const chartHeight = canvas.height - padding.top - padding.bottom;
+
+/* ESTADO CLÍNICO */
+let current = {
+    ear: "right",
+    type: "va",
+    category: "va",  
+    modifier: null,   
+    masked: false
+};
+
+let data = [];
+
+/* POSICIONES */
+function getX(index){
+    return padding.left + (index * (chartWidth/(freqs.length-1)));
+}
+
+function getY(db){
+    return padding.top + (db/120)*chartHeight;
+}
+
+/* GRID */
+function drawGrid(){
+    ctx.save(); 
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#333"; 
+
+    // FRECUENCIAS ARRIBA
+    freqs.forEach((f,i)=>{
+        let x = getX(i);
+
+        ctx.strokeStyle = "#ccc"; 
+        ctx.beginPath();
+        ctx.moveTo(x, padding.top);
+        ctx.lineTo(x, canvas.height-padding.bottom);
+        ctx.stroke();
+
+        ctx.fillText(f, x-10, 20);
+    });
+
+    // dB
+    dbs.forEach(d=>{
+        let y = getY(d);
+
+        ctx.strokeStyle = d % 10 === 0 ? "#bbb" : "#eee";
+
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(canvas.width-padding.right, y);
+        ctx.stroke();
+
+        if(d % 10 === 0){
+            ctx.fillStyle = "#333"; 
+            ctx.fillText(d, 5, y+4);
+        }
+    });
+
+    ctx.restore();
+}
+
+/* SÍMBOLOS */
+
+function drawCircle(x,y,color){
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.arc(x,y,7,0,Math.PI*2);
+    ctx.stroke();
+}
+
+function drawX(x,y,color){
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x-6,y-6);
+    ctx.lineTo(x+6,y+6);
+    ctx.moveTo(x+6,y-6);
+    ctx.lineTo(x-6,y+6);
+    ctx.stroke();
+}
+
+function drawTriangle(x,y,color){
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y-7);
+    ctx.lineTo(x-7, y+7);
+    ctx.lineTo(x+7, y+7);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+function drawSquare(x,y,color){
+    ctx.strokeStyle = color;
+    ctx.strokeRect(x-6, y-6, 12, 12);
+}
+
+function drawBone(x,y,ear,masked,color){
+    ctx.fillStyle = color;
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    let symbol = "";
+
+    if(ear === "right"){
+        symbol = masked ? "[" : "<";
+    } else {
+        symbol = masked ? "]" : ">";
+    }
+
+    ctx.fillText(symbol, x, y);
+}
+
+function drawNRArrow(x,y,color){
+    ctx.strokeStyle = color;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y+6);
+    ctx.lineTo(x, y+16);
+    ctx.lineTo(x-4, y+12);
+    ctx.moveTo(x, y+16);
+    ctx.lineTo(x+4, y+12);
+    ctx.stroke();
+}
+
+function drawLDL(x,y,color){
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x,y-8);
+    ctx.lineTo(x-6,y+6);
+    ctx.lineTo(x+6,y+6);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+/* DIBUJO */
+function drawPoints(){
+
+    // 🔊 CAMPO LIBRE
+    if(modoAudiometria === "campo"){
+
+        data.forEach(p=>{
+            const x = getX(freqs.indexOf(p.freq));
+            const y = getY(p.db);
+
+            drawSF(x, y, p.sf);
+
+            if(p.modifier === "nr"){
+                drawNRArrow(x,y,"black");
+            }
+
+            if(p.category === "ldl"){
+                drawLDL(x,y,"black");
+            }
+        });
+
+        return;
+    }
+
+    // 🎧 TONAL (tu lógica original)
+    data.forEach(p=>{
+        const x = getX(freqs.indexOf(p.freq));
+        const y = getY(p.db);
+
+        const color = p.ear === "right" ? "red" : "blue";
+
+        if(p.category === "ldl"){
+            drawLDL(x,y,color);
+            if(p.modifier === "nr") drawNRArrow(x,y,color);
+            return;
+        }
+
+        if(p.type === "vo"){
+            drawBone(x,y,p.ear,p.masked,color);
+        }
+        else if(p.type === "va"){
+            if(p.masked){
+                p.ear === "right"
+                    ? drawTriangle(x,y,color)
+                    : drawSquare(x,y,color);
+            } else {
+                p.ear === "right"
+                    ? drawCircle(x,y,color)
+                    : drawX(x,y,color);
+            }
+        }
+
+        if(p.modifier === "nr"){
+            drawNRArrow(x,y,color);
+        }
+    });
+}
+
+function drawLines(){
+
+    const ears = ["right", "left"];
+    const types = ["va", "vo"];
+
+    ears.forEach(ear=>{
+        types.forEach(type=>{
+
+            // filtrar puntos válidos
+            let points = data
+                .filter(p =>
+                    p.ear === ear &&
+                    p.type === type &&
+                    p.category !== "ldl" &&
+                    p.modifier !== "nr"
+                )
+                .sort((a,b)=> freqs.indexOf(a.freq) - freqs.indexOf(b.freq));
+
+            if(points.length < 2) return;
+
+            const color = ear === "right" ? "red" : "blue";
+
+            ctx.save();
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+
+            // tipo de línea
+            if(type === "vo"){
+                ctx.setLineDash([6,6]); // punteada
+            } else {
+                ctx.setLineDash([]); // continua
+            }
+
+            ctx.beginPath();
+
+            let started = false;
+            let lastWasNR = false;
+
+            freqs.forEach(freq => {
+
+                const p = points.find(pt => pt.freq === freq);
+
+                if(!p){
+                    started = false;
+                    lastWasNR = false;
+                    return;
+                }
+
+                const x = getX(freqs.indexOf(freq));
+                const y = getY(p.db);
+
+                if(!started){
+                    ctx.moveTo(x,y);
+                    started = true;
+                    lastWasNR = false;
+                } else {
+
+                    if(lastWasNR){
+                        // 🔥 no reconectar después de NR
+                        ctx.moveTo(x,y);
+                        lastWasNR = false;
+                    } else {
+                        ctx.lineTo(x,y);
+                    }
+                }
+            });
+
+            ctx.stroke();
+            ctx.restore();
+        });
+    });
+}
+
+function drawSF(x,y,text){
+    ctx.fillStyle = "#111";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x, y);
+}
+
+/* CLICK */
+canvas.addEventListener("click", function(e){
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    let closestFreq = freqs.reduce((a,b)=>
+        Math.abs(getX(freqs.indexOf(a))-x) < Math.abs(getX(freqs.indexOf(b))-x) ? a : b
+    );
+
+    let closestDb = Math.round((y - padding.top)/chartHeight * 120 / 5)*5;
+
+    if(closestDb < 0) closestDb = 0;
+    if(closestDb > 120) closestDb = 120;
+
+    // 🔊 CAMPO LIBRE
+    if(modoAudiometria === "campo"){
+
+        const existingIndex = data.findIndex(p =>
+            p.freq === closestFreq &&
+            p.category === current.category
+        );
+
+        if(existingIndex !== -1){
+            data.splice(existingIndex, 1);
+        } else {
+            data.push({
+                freq: closestFreq,
+                db: closestDb,
+                sf: current.sf,          // 🔥 CLAVE
+                category: current.category,
+                modifier: current.modifier
+            });
+        }
+
+    } 
+    // 🎧 TONAL (tu lógica actual)
+    else {
+
+        const existingIndex = data.findIndex(p =>
+            p.freq === closestFreq &&
+            p.ear === current.ear &&
+            p.category === current.category
+        );
+
+        if(existingIndex !== -1){
+            data.splice(existingIndex, 1);
+        } else {
+            data.push({
+                freq: closestFreq,
+                db: closestDb,
+                ear: current.ear,
+                type: current.type,
+                category: current.category,
+                modifier: current.modifier,
+                masked: current.masked
+            });
+        }
+    }
+
+    drawGrid();
+
+    if(modoAudiometria === "tonal"){
+        drawLines();
+    }
+
+    drawPoints();
+    calcularPTP();
+});
+
+function syncUI(){
+
+    document.querySelectorAll(".ctrl-btn")
+        .forEach(b => b.classList.remove("active"));
+
+    // 🔊 CAMPO LIBRE
+    if(modoAudiometria === "campo"){
+
+        document.querySelector(`[data-sf="${current.sf}"]`)
+            ?.classList.add("active");
+
+        if(current.category === "ldl"){
+            document.querySelector(`[data-extra="ldl"]`)
+                ?.classList.add("active");
+        }
+
+        if(current.modifier === "nr"){
+            document.querySelector(`[data-extra="nr"]`)
+                ?.classList.add("active");
+        }
+
+        return;
+    }
+
+    // 🎧 TONAL (lo tuyo)
+
+    document.querySelector(`[data-ear="${current.ear}"]`)
+        ?.classList.add("active");
+
+    if(current.category !== "ldl"){
+        document.querySelector(`[data-type="${current.type}"]`)
+            ?.classList.add("active");
+    }
+
+    if(current.category === "ldl"){
+        document.querySelector(`[data-extra="ldl"]`)
+            ?.classList.add("active");
+
+        document.querySelector(`[data-type="va"]`)
+            ?.classList.add("active");
+    }
+
+    if(current.modifier === "nr"){
+        document.querySelector(`[data-extra="nr"]`)
+            ?.classList.add("active");
+    }
+
+    if(current.masked){
+        document.querySelector(`[data-mask]`)
+            ?.classList.add("active");
+    }
+}
+
+/* BOTONES */
+document.querySelectorAll(".ctrl-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+
+        // 🔊 CAMPO LIBRE
+        if(modoAudiometria === "campo"){
+
+            // símbolo
+            if(btn.dataset.sf){
+                current.sf = btn.dataset.sf;
+                current.category = "sf";
+            }
+
+            // LDL
+            if(btn.dataset.extra === "ldl"){
+                current.category = current.category === "ldl" ? "sf" : "ldl";
+            }
+
+            // NR
+            if(btn.dataset.extra === "nr"){
+                current.modifier = current.modifier === "nr" ? null : "nr";
+            }
+
+            syncUI();
+            return;
+        }
+
+        // 🎧 TONAL (tu lógica actual intacta)
+
+        if(btn.dataset.ear){
+            current.ear = btn.dataset.ear;
+            current.modifier = null;
+        }
+
+        if(btn.dataset.type){
+            current.type = btn.dataset.type;
+            current.category = btn.dataset.type;
+            current.modifier = null;
+        }
+
+        if(btn.dataset.extra === "ldl"){
+            if(current.category === "ldl"){
+                current.category = current.type;
+            } else {
+                current.category = "ldl";
+                current.type = "va";
+            }
+        }
+
+        if(btn.dataset.extra === "nr"){
+            current.modifier = current.modifier === "nr" ? null : "nr";
+        }
+
+        if(btn.dataset.mask){
+            current.masked = !current.masked;
+            current.modifier = null;
+        }
+
+        syncUI();
+    });
+});
+
+/* INIT */
+drawGrid();
+syncUI();
+
+/* PROMEDIO TONAL PURO */
+
+function calcularPTP(){
+
+    const edadPaciente = 70; // 🔥 cámbialo luego dinámico
+
+    const frecuenciasBase = edadPaciente >= 65
+        ? [500, 1000, 2000, 4000]
+        : [500, 1000, 2000];
+
+    const oidos = ["right", "left"];
+    const tipos = ["va", "vo"];
+
+    let resultados = {
+        right: { va: null, vo: null },
+        left: { va: null, vo: null }
+    };
+
+    oidos.forEach(ear=>{
+        tipos.forEach(type=>{
+
+            const puntos = data.filter(p =>
+                p.ear === ear &&
+                p.type === type &&
+                p.category !== "ldl" &&
+                p.modifier !== "nr" &&
+                frecuenciasBase.includes(p.freq)
+            );
+
+            // asegurar que estén todas las frecuencias necesarias
+            const freqsEncontradas = puntos.map(p => p.freq);
+
+            const tieneTodas = frecuenciasBase.every(f =>
+                freqsEncontradas.includes(f)
+            );
+
+            if(!tieneTodas) return;
+
+            const suma = puntos.reduce((acc,p)=> acc + p.db, 0);
+            const promedio = Math.round(suma / puntos.length);
+
+            resultados[ear][type] = promedio;
+        });
+    });
+
+    // 🔴 OD
+    document.querySelector('[name="ptp_va_od"]').value =
+        resultados.right.va ?? "";
+
+    document.querySelector('[name="ptp_vo_od"]').value =
+        resultados.right.vo ?? "";
+
+    // 🔵 OI
+    document.querySelector('[name="ptp_va_oi"]').value =
+        resultados.left.va ?? "";
+
+    document.querySelector('[name="ptp_vo_oi"]').value =
+        resultados.left.vo ?? "";
+}
+
+});
+
+const fileInput = document.querySelector('input[name="archivo"]');
+const uploadText = document.querySelector('.upload-text');
+
+fileInput.addEventListener("change", () => {
+    if(fileInput.files.length > 0){
+        uploadText.textContent = fileInput.files[0].name;
+    }
+});
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+/*HEADER NO TOCAR*/
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Sora:wght@600&display=swap");
+
+:root {
+    /* Paleta de colores */
+    --bg: #f4f8fb;
+    --card: #ffffff;
+    --text: #1c2e33;
+    --muted: #6b7f94;
+    --line: #e1e8ef;
+
+    /* Identidad Audiología (Azul) */
+    --primary: #3f6aa3;
+    --primary-light: #e8f0fb;
+    --primary-dark: #2f4f7a;
+    --accent: #5aa6ff;
+    --soft: #f2f6fc;
+    --danger: #ef4444;
+
+    --radius: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Manrope", "Inter", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+}
+
+.header {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-text .title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2f5485;
+}
+
+.header-text .subtitle {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.logo-header {
+    height: 50px;
+    width: auto;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+    transition: transform 0.2s;
+}
+
+.logo-header:hover {
+    transform: scale(1.03);
+}
+
+.btn-logout {
+    background: transparent;
+    color: var(--danger);
+    padding: 8px 14px;
+    border: 1px solid var(--danger);
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: 0.25s;
+}
+
+.btn-logout:hover {
+    background: var(--danger);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
+}
+
+.btn-back {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-right: 10px;
+    transition: 0.2s;
+}
+
+.btn-back:hover {
+    background: #dbe8fb;
+}
+/* ACA TERMINA EL HEADER NO TOCAR */
+
+/* CONTENEDOR PRINCIPAL */
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.radio-group label {
+    background: #f1f5f9;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+}
+
+.radio-group input {
+    margin-right: 6px;
+}
+
+/* CONTENEDOR DE AUDIOGRAMAS */
+
+.audiometria-layout {
+    display: flex;
+    gap: 20px;
+}
+
+/* PANEL */
+
+.audio-controls {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.control-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ctrl-btn {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.ctrl-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* GRÁFICO */
+
+.audio-chart-container {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#audiograma {
+    background: #fff;
+    cursor: crosshair;
+}
+
+/* LOGOAUDIOMETRIA */
+
+.logo-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.logo-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.logo-row.header {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.ear-label {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.ear-right {
+    color: #dc2626; 
+}
+
+.ear-left {
+    color: #2563eb; 
+}
+
+.logo-row input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #d7e3e6;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.input-red {
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
+
+.input-blue {
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+.input-red:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220,38,38,0.2);
+}
+
+.input-blue:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+}
+
+/* LOGOAUDIOMETRIA */
+
+.logo-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.logo-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr 1fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-row.header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.logo-row input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #d7e3e6;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+
+/* ============================= */
+/* PTP ANTIGUO (DESACTIVADO)    */
+/* ============================= */
+
+.ptp-table,
+.ptp-row {
+    display: none;
+}
+
+
+/* PROMEDIO TONAL PURO */
+
+.ptp-clinico {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.ptp-c-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 1fr;
+    align-items: center;
+}
+
+.ptp-c-row.header {
+    background: #e5e7eb;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.ptp-c-row.header div {
+    padding: 6px;
+    border-right: 1px solid #cbd5e1;
+}
+
+.ptp-c-row.header div:last-child {
+    border-right: none;
+}
+
+.ptp-c-row:not(.header) {
+    border-top: 1px solid #cbd5e1;
+}
+
+.ptp-label {
+    text-align: center;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 6px;
+    border-right: 1px solid #cbd5e1;
+}
+
+.ptp-c-row input {
+    border: none;
+    border-right: 1px solid #cbd5e1;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.85rem;
+    background: #fff;
+}
+
+.ptp-c-row input:last-child {
+    border-right: none;
+}
+
+.ptp-result {
+    font-weight: 700;
+    background: #f8fafc;
+}
+
+.ptp-field {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.ptp-field span {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+
+/*CONTENEDORES GENERALES */
+
+.dual-tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.table-box {
+    background: #fbfdff;
+    border: 1px solid #e3edf7;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+/* ACUMETRÍA */
+
+.acumetria-card {
+    max-width: 400px;
+}
+
+.acumetria-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.acu-col {
+    border: 1px solid #e3edf7;
+    border-radius: 10px;
+    padding: 10px;
+    background: #f8fbff;
+}
+
+.acu-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.acu-freq {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.acu-freq label {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.acu-freq select {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #d7e3e6;
+    font-size: 12px;
+}
+
+.acu-col:nth-child(2) .acu-freq {
+    flex-direction: column;
+}
+
+.acu-col:nth-child(2) .acu-freq select {
+    margin-bottom: 3px;
+}
+
+/* TINITUMETRIA */
+
+.tinni-table {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-x: auto;
+}
+
+.tinni-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+}
+
+.tinni-row.header {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.tinni-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.tinni-col label {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.tinni-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tinni-field input {
+    width: 70px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #d7e3e6;
+    font-size: 12px;
+    text-align: center;
+}
+
+.tinni-field span {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* DETERIORO TONAL */
+
+.deterioro-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.deterioro-tests {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+}
+
+.deterioro-tests label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.deterioro-table {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.det-row {
+    display: grid;
+    grid-template-columns: 60px repeat(4, 1fr);
+    gap: 8px;
+    align-items: center;
+}
+
+.det-row.header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+}
+
+.det-field {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.det-field input {
+    width: 100%;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #d7e3e6;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.det-field span {
+    font-size: 11px;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+/* BLOQUE FINAL DE LA AUDIOMETRIA */
+
+.upload-box {
+    display: block;
+    border: 2px dashed #cbd5f5;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #f8fbff;
+}
+
+.upload-box:hover {
+    border-color: #2563eb;
+    background: #eef4ff;
+}
+
+.upload-box input {
+    display: none;
+}
+
+.upload-icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.upload-text {
+    font-weight: 600;
+    display: block;
+}
+
+.upload-box small {
+    color: #64748b;
+}
+
+.observaciones-card textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #d7e3e6;
+    resize: vertical;
+    font-size: 14px;
+}
+
+.observaciones-card textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+}
+
+.action-card {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* RESPONSIVE */
+
+
+@media (max-width: 900px) {
+    .dual-tables {
+        grid-template-columns: 1fr;
+    }
+}

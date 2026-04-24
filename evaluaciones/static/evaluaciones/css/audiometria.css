@@ -1,38 +1,10 @@
+/*HEADER NO TOCAR*/
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Sora:wght@600&display=swap");
-
-:root {
-    /* Paleta de colores */
-    --bg: #f4f8fb;
-    --card: #ffffff;
-    --text: #1c2e33;
-    --muted: #6b7f94;
-    --line: #e1e8ef;
-
-    /* Identidad Audiología (Azul) */
-    --primary: #3f6aa3;
-    --primary-light: #e8f0fb;
-    --primary-dark: #2f4f7a;
-    --accent: #5aa6ff;
-    --soft: #f2f6fc;
-    --danger: #ef4444;
-
-    /* Estructural */
-    --radius: 14px;
-}
 
 * {
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    font-family: "Manrope", "Inter", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 15px;
-}
-
-/* HEADER PRINCIPAL */
 .header {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
@@ -109,490 +81,403 @@ body {
     background: #dbe8fb;
 }
 
-/* CONTENEDOR PRINCIPAL */
-
-.radio-group {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+:root {
+    --bg-main: #f8fafc;
+    --primary: #2563eb;
+    --primary-soft: #eff6ff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --red: #ef4444;
+    --blue: #3b82f6;
 }
 
-.radio-group label {
-    background: #f1f5f9;
-    padding: 10px 14px;
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* CARDS REUTILIZABLES */
+.card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* HERO PACIENTE */
+.patient-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: white;
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 25px;
+}
+
+.patient-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.patient-info .avatar {
+    width: 60px;
+    height: 60px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.patient-info h1 { margin: 0; font-size: 1.5rem; }
+.patient-info p { margin: 0; opacity: 0.8; font-size: 0.9rem; }
+
+/* CONFIG RADIOS MODERNOS */
+.config-bar { display: flex; gap: 30px; }
+.config-section { display: flex; flex-direction: column; gap: 8px; }
+.config-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+
+.modern-radio-group {
+    display: flex;
+    background: rgba(255,255,255,0.1);
+    padding: 4px;
     border-radius: 10px;
-    cursor: pointer;
-    border: 1px solid #e2e8f0;
-    font-weight: 500;
 }
 
-.radio-group input {
-    margin-right: 6px;
+.radio-item { cursor: pointer; position: relative; }
+.radio-item input { display: none; }
+.radio-item span {
+    display: inline-block;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: 0.3s;
 }
 
-/* CONTENEDOR DE AUDIOGRAMAS */
+.radio-item input:checked + span {
+    background: var(--white);
+    color: var(--text-main);
+}
 
-.audiometria-layout {
-    display: flex;
+/* GRID PRINCIPAL */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
     gap: 20px;
 }
 
-/* PANEL */
-.audio-controls {
-    width: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+.audiometria-layout { display: flex; gap: 20px; }
+
+/* CONTROLES */
+.audio-controls { width: 180px; }
+.control-section { margin-bottom: 20px; }
+.control-section label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
 }
 
-.control-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
+.btn-group-toggle { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn-group-toggle.vertical { flex-direction: column; }
 
 .ctrl-btn {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
+    flex: 1;
+    min-width: 80px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    background: var(--white);
     border-radius: 8px;
-    background: white;
-    cursor: pointer;
     font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 .ctrl-btn.active {
     background: var(--primary);
     color: white;
+    border-color: var(--primary);
 }
 
 /* GRÁFICO */
 .audio-chart-container {
     background: white;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    flex-grow: 1;
+    border: 1px solid var(--border);
 }
 
-#audiograma {
-    background: #fff;
-    cursor: crosshair;
-}
-
-/* LOGOAUDIOMETRIA */
-
-/* LOGOAUDIOMETRÍA */
-
-.logo-table {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.logo-row {
+/* TABLAS MÉDICAS */
+.medical-table { width: 100%; }
+.table-head {
     display: grid;
-    grid-template-columns: 80px 1fr 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: 60px 1fr 1fr 1fr;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.t-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
     align-items: center;
 }
 
-.logo-row.header {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--muted);
-}
-
-/* OÍDOS */
-.ear-label {
-    font-weight: 700;
+.t-row input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
     font-size: 14px;
 }
 
-.ear-right {
-    color: #dc2626; /* rojo */
-}
-
-.ear-left {
-    color: #2563eb; /* azul */
-}
-
-/* INPUTS */
-.logo-row input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #d7e3e6;
-    font-size: 0.85rem;
-    text-align: center;
-}
-
-/* COLORES CLÍNICOS */
-.input-red {
-    border-color: #fca5a5;
-    color: #b91c1c;
-}
-
-.input-blue {
-    border-color: #93c5fd;
-    color: #1d4ed8;
-}
-
-.input-red:focus {
-    outline: none;
-    border-color: #dc2626;
-    box-shadow: 0 0 0 2px rgba(220,38,38,0.2);
-}
-
-.input-blue:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
-}
-
-/* ============================= */
-/* LOGOAUDIOMETRÍA + BASE       */
-/* ============================= */
-
-.logo-table {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.logo-row {
-    display: grid;
-    grid-template-columns: 60px 1fr 1fr 1fr;
-    align-items: center;
-    gap: 8px;
-}
-
-/* HEADER SOLO LOGO */
-.logo-row.header {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-}
-
-/* INPUTS LOGO */
-.logo-row input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #d7e3e6;
-    font-size: 0.85rem;
-    text-align: center;
-}
-
-
-/* ============================= */
-/* PTP ANTIGUO (DESACTIVADO)    */
-/* ============================= */
-
-.ptp-table,
-.ptp-row {
-    display: none;
-}
-
-
-/* ============================= */
-/* PTP FORMATO CLÍNICO (NUEVO)  */
-/* ============================= */
-
-.ptp-clinico {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #cbd5e1;
+.tag {
+    padding: 4px 0;
     border-radius: 6px;
-    overflow: hidden;
-}
-
-/* FILAS */
-.ptp-c-row {
-    display: grid;
-    grid-template-columns: 70px 1fr 1fr;
-    align-items: center;
-}
-
-/* HEADER SOLO PTP */
-.ptp-c-row.header {
-    background: #e5e7eb;
-    font-size: 12px;
-    font-weight: 600;
-    text-align: center;
-}
-
-.ptp-c-row.header div {
-    padding: 6px;
-    border-right: 1px solid #cbd5e1;
-}
-
-.ptp-c-row.header div:last-child {
-    border-right: none;
-}
-
-/* FILAS NORMALES */
-.ptp-c-row:not(.header) {
-    border-top: 1px solid #cbd5e1;
-}
-
-/* LABEL IZQUIERDA */
-.ptp-label {
-    text-align: center;
-    font-weight: 600;
-    background: #f1f5f9;
-    padding: 6px;
-    border-right: 1px solid #cbd5e1;
-}
-
-/* INPUTS PTP */
-.ptp-c-row input {
-    border: none;
-    border-right: 1px solid #cbd5e1;
-    padding: 8px;
-    text-align: center;
-    font-size: 0.85rem;
-    background: #fff;
-}
-
-.ptp-c-row input:last-child {
-    border-right: none;
-}
-
-/* RESULTADO */
-.ptp-result {
-    font-weight: 700;
-    background: #f8fafc;
-}
-
-/* CONTENEDOR INPUT + UNIDAD */
-.ptp-field {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-/* TEXTO dB HL */
-.ptp-field span {
     font-size: 11px;
-    color: #64748b;
-    font-weight: 500;
-}
-
-
-/* ============================= */
-/* CONTENEDOR GENERAL           */
-/* ============================= */
-
-.dual-tables {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.table-box {
-    background: #fbfdff;
-    border: 1px solid #e3edf7;
-    border-radius: 12px;
-    padding: 14px;
-}
-
-/* ACUMETRÍA */
-
-/* ACUMETRÍA */
-.acumetria-card {
-    max-width: 400px; /* 🔥 lo hace compacto */
-}
-
-.acumetria-box {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.acu-col {
-    border: 1px solid #e3edf7;
-    border-radius: 10px;
-    padding: 10px;
-    background: #f8fbff;
-}
-
-.acu-title {
+    font-weight: 800;
     text-align: center;
-    font-weight: 700;
+    color: white;
+}
+.tag.red { background: var(--red); }
+.tag.blue { background: var(--blue); }
+
+/* PTP BOXES */
+.ptp-container { display: flex; flex-direction: column; gap: 15px; }
+.ptp-box {
+    background: var(--bg-main);
+    padding: 12px;
+    border-radius: var(--radius-md);
+}
+.ptp-title { font-size: 12px; font-weight: 600; display: block; margin-bottom: 8px; }
+.ptp-inputs { display: flex; gap: 10px; }
+.ptp-inputs div { flex: 1; position: relative; }
+.ptp-inputs input {
+    width: 100%;
+    padding: 8px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: right;
+    padding-right: 30px;
+}
+.ptp-inputs span { position: absolute; right: 8px; top: 8px; font-size: 10px; color: var(--text-muted); }
+
+/* ACUMETRÍA & TINNITUS */
+.extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.acu-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+.acu-label { font-weight: 700; min-width: 60px; font-size: 13px; }
+select {
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
     font-size: 13px;
-    margin-bottom: 8px;
 }
 
-.acu-freq {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 8px;
-}
-
-.acu-freq label {
-    font-size: 11px;
-    color: #64748b;
-}
-
-.acu-freq select {
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #d7e3e6;
-    font-size: 12px;
-}
-
-/* RINNE doble select */
-.acu-col:nth-child(2) .acu-freq {
-    flex-direction: column;
-}
-
-.acu-col:nth-child(2) .acu-freq select {
-    margin-bottom: 3px;
-}
-
-/* TINITUMETRIA */
-
-/* TINNITUMETRÍA */
+/* Tinnitumetría */
 .tinni-table {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    overflow-x: auto;
+    overflow-x: auto; /* Evita que se corte en pantallas chicas */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
 }
 
 .tinni-row {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(8, minmax(120px, 1fr));
+    border-bottom: 1px solid #eee;
 }
 
-.tinni-row.header {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
+.header-row {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 5px;
+    font-size: 0.85rem;
+}
+
+.content-row {
+    background-color: #fff;
+    min-height: 150px;
 }
 
 .tinni-col {
+    padding: 10px;
+    border-right: 1px solid #eee;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    font-size: 12px;
+    gap: 5px;
 }
 
-.tinni-col label {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.tinni-field {
+.check-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-}
-
-.tinni-field input {
-    width: 70px;
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #d7e3e6;
-    font-size: 12px;
-    text-align: center;
-}
-
-.tinni-field span {
-    font-size: 11px;
-    color: #64748b;
-}
-
-/* BLOQUE FINAL DE LA AUDIOMETRIA */
-
-/* UPLOAD */
-.upload-box {
-    display: block;
-    border: 2px dashed #cbd5f5;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
+    gap: 5px;
+    font-size: 0.8rem;
     cursor: pointer;
-    transition: 0.2s;
-    background: #f8fbff;
 }
 
-.upload-box:hover {
-    border-color: #2563eb;
-    background: #eef4ff;
-}
-
-.upload-box input {
-    display: none;
-}
-
-.upload-icon {
-    font-size: 24px;
-    display: block;
+.input-unit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin-bottom: 8px;
 }
 
-.upload-text {
-    font-weight: 600;
-    display: block;
+.input-unit input {
+    width: 60px;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-.upload-box small {
-    color: #64748b;
+.input-unit span {
+    font-size: 0.75rem;
+    color: #666;
 }
+
+/* Deterioro Tonal */
+.deterioro-container {
+    padding: 15px;
+}
+
+.test-selector {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #ddd;
+}
+
+.radio-tag {
+    background: #f1f3f4;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.radio-tag:hover {
+    background: #e8eaed;
+}
+
+.deterioro-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(4, 1fr);
+    gap: 10px;
+    align-items: center;
+}
+
+.det-head {
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.ear-label {
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.ear-label.left { color: #0056b3; background: #e7f1ff; }
+.ear-label.right { color: #d32f2f; background: #ffebee; }
+
+.det-cell {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+}
+
+.det-cell input {
+    width: 70px;
+    padding: 6px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.input-blue { border-left: 4px solid #0056b3 !important; }
+.input-red { border-left: 4px solid #d32f2f !important; }
 
 /* OBSERVACIONES */
-.observaciones-card textarea {
+.obs-card textarea {
     width: 100%;
-    min-height: 120px;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #d7e3e6;
-    resize: vertical;
-    font-size: 14px;
+    height: 100px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    font-family: inherit;
+    resize: none;
 }
 
-.observaciones-card textarea:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
-}
-
-/* BOTÓN */
-.action-card {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.btn-primary {
-    background: #2563eb;
+/* BOTÓN GUARDAR */
+.form-actions { text-align: right; padding-bottom: 40px; }
+.btn-submit {
+    background: var(--primary);
     color: white;
-    padding: 12px 22px;
-    border-radius: 10px;
     border: none;
-    font-weight: 600;
+    padding: 15px 40px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-    transition: 0.2s;
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    transition: 0.3s;
 }
+.btn-submit:hover { transform: translateY(-2px); opacity: 0.9; }
 
-.btn-primary:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
+/* FILE UPLOAD */
+.drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
 }
-
-.btn-primary:active {
-    transform: scale(0.98);
-}
-
-/* ============================= */
-/* RESPONSIVE                   */
-/* ============================= */
-
-@media (max-width: 900px) {
-    .dual-tables {
-        grid-template-columns: 1fr;
-    }
-}
+.drop-zone:hover { border-color: var(--primary); background: var(--primary-soft); }
+.file-input { display: none; }
+.upload-text { font-weight: 600; margin: 10px 0; }
+.file-info { font-size: 12px; color: var(--text-muted); }

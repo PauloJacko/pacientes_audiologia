@@ -3,424 +3,331 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Audiometría</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiometría | Panel Clínico</title>
     <link rel="stylesheet" href="{% static 'evaluaciones/css/audiometria.css' %}">
 </head>
-
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <div class="header-left">
         <img src="{% static 'Login/img/logo-png.png' %}" class="logo-header">
-
         <div class="header-text">
             <span class="title">Audiometría</span>
             <span class="subtitle">Evaluación clínica</span>
         </div>
     </div>
-
     <div class="header-right">
         <a href="{% url 'ver_paciente' paciente.id %}" class="btn-back">← Volver</a>
         <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
     </div>
 </div>
 
-<!-- CONTENIDO -->
-<main class="dashboard">
-
-    <!-- PACIENTE -->
-    <div class="card">
-        <h2>{{ paciente.nombre }}</h2>
-        <p class="meta">RUT: {{ paciente.rut }}</p>
-    </div>
-
-    <!-- MODO -->
-    <div class="card">
-        <h3>Modo de registro</h3>
-
-        <div class="radio-group">
-            <label>
-                <input type="radio" name="modo" value="manual" checked>
-                Manual
-            </label>
-
-            <label>
-                <input type="radio" name="modo" value="archivo">
-                Adjuntar archivo / video
-            </label>
+<main class="dashboard-container">
+    
+    <header class="patient-hero">
+        <div class="patient-info">
+            <div class="avatar">
+                <span>{{ paciente.nombre|slice:":1" }}</span>
+            </div>
+            <div>
+                <h1>{{ paciente.nombre }}</h1>
+                <p>RUT: {{ paciente.rut }}</p>
+            </div>
         </div>
-    </div>
+        
+        <div class="config-bar">
+            <div class="config-section">
+                <span class="config-label">Modo</span>
+                <div class="modern-radio-group">
+                    <label class="radio-item">
+                        <input type="radio" name="modo" value="manual" checked>
+                        <span>Manual</span>
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="modo" value="archivo">
+                        <span>Archivo/Video</span>
+                    </label>
+                </div>
+            </div>
 
-    <!-- TIPO -->
-    <div class="card">
-        <h3>Tipo de audiometría</h3>
-
-        <div class="radio-group">
-            <label>
-                <input type="radio" name="tipo" value="tonal" checked>
-                Audiometría tonal clásica
-            </label>
-
-            <label>
-                <input type="radio" name="tipo" value="campo_libre">
-                Campo libre (binaural)
-            </label>
+            <div class="config-section">
+                <span class="config-label">Tipo de Examen</span>
+                <div class="modern-radio-group">
+                    <label class="radio-item">
+                        <input type="radio" name="tipo" value="tonal" checked>
+                        <span>Tonal Clásica</span>
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="tipo" value="campo_libre">
+                        <span>Campo Libre</span>
+                    </label>
+                </div>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- BLOQUE MANUAL -->
     <div id="bloque-manual">
+        <section class="main-grid">
+            <div class="card audiogram-card">
+                <div class="card-header">
+                    <h3>Gráfico de Audiograma</h3>
+                </div>
+                <div class="audiometria-layout">
+                    <aside class="audio-controls" id="audio-controls">
+                        <div id="controls-tonal" class="control-section">
+                            <label>Lateralidad</label>
+                            <div class="btn-group-toggle">
+                                <button class="ctrl-btn active" data-ear="right">OD (Rojo)</button>
+                                <button class="ctrl-btn" data-ear="left">OI (Azul)</button>
+                            </div>
 
-        <!-- AUDIOMETRÍA TONAL -->
-        <div class="card">
-            <h3>Audiometría</h3>
+                            <label>Vía de Conducción</label>
+                            <div class="btn-group-toggle">
+                                <button class="ctrl-btn active" data-type="va">Aérea</button>
+                                <button class="ctrl-btn" data-type="vo">Ósea</button>
+                                <button class="ctrl-btn" data-mask="true">Enmasc.</button>
+                            </div>
+                        </div>
 
-            <!-- Aquí irá la tabla -->
-            <div class="audiometria-layout">
+                        <div id="controls-campo" class="control-section" style="display:none;">
+                            <label>Condición</label>
+                            <div class="btn-group-toggle vertical">
+                                <button class="ctrl-btn active" data-sf="S">Sin amplif. (S)</button>
+                                <button class="ctrl-btn" data-sf="A">Con audífono (A)</button>
+                                <button class="ctrl-btn" data-sf="CI">Implante (CI)</button>
+                            </div>
+                        </div>
 
-    <!-- PANEL IZQUIERDO -->
-<div class="audio-controls" id="audio-controls">
+                        <div class="control-section">
+                            <label>Extras</label>
+                            <div class="btn-group-toggle">
+                                <button class="ctrl-btn" data-extra="nr">Sin Resp.</button>
+                                <button class="ctrl-btn" data-extra="ldl">LDL</button>
+                            </div>
+                        </div>
+                    </aside>
 
-    <!-- TONAL -->
-    <div id="controls-tonal">
-
-        <h4>Oído</h4>
-        <div class="control-group">
-            <button class="ctrl-btn active" data-ear="right">OD (Rojo)</button>
-            <button class="ctrl-btn" data-ear="left">OI (Azul)</button>
-        </div>
-
-        <h4>Tipo</h4>
-        <div class="control-group">
-            <button class="ctrl-btn active" data-type="va">Vía aérea</button>
-            <button class="ctrl-btn" data-type="vo">Vía ósea</button>
-            <button class="ctrl-btn" data-mask="true">Enmascarado</button>
-        </div>
-
-    </div>
-
-    <!-- CAMPO LIBRE -->
-    <div id="controls-campo" style="display:none;">
-
-        <h4>Condición</h4>
-        <div class="control-group">
-            <button class="ctrl-btn active" data-sf="S">Sin amplificación (S)</button>
-            <button class="ctrl-btn" data-sf="A">Con audífono (A)</button>
-            <button class="ctrl-btn" data-sf="CI">Implante (CI)</button>
-        </div>
-
-    </div>
-
-    <!-- COMUNES -->
-    <h4>Opciones</h4>
-    <div class="control-group">
-        <button class="ctrl-btn" data-extra="nr">Sin respuesta</button>
-        <button class="ctrl-btn" data-extra="ldl">LDL</button>
-    </div>
-
-</div>
-
-    <!-- GRÁFICO -->
-    <div class="audio-chart-container">
-        <canvas id="audiograma" width="800" height="450"></canvas>
-    </div>
-
-</div>
-        </div>
-
-<div class="card dual-tables">
-
-    <!-- LOGOAUDIOMETRÍA -->
-    <div class="table-box">
-        <h3>Logoaudiometría</h3>
-
-        <div class="logo-table">
-
-            <div class="logo-row header">
-                <div>Oído</div>
-                <div>% Disc.</div>
-                <div>dB</div>
-                <div>MKG</div>
+                    <div class="audio-chart-container">
+                        <canvas id="audiograma" width="750" height="420"></canvas>
+                    </div>
+                </div>
             </div>
 
-            <div class="logo-row">
-                <div class="ear-label ear-right">OD</div>
-                <input type="number" name="sds_od" class="input-red">
-                <input type="number" name="int_od" class="input-red">
-                <input type="number" name="mkg_od" class="input-blue">
+            <div class="secondary-grid">
+                <div class="card">
+                    <h3>Logoaudiometría</h3>
+                    <div class="medical-table logo-table">
+                        <div class="table-head">
+                            <div>Oído</div><div>% Disc</div><div>dB</div><div>MKG</div>
+                        </div>
+                        <div class="table-body">
+                            <div class="t-row">
+                                <span class="tag red">OD</span>
+                                <input type="number" name="sds_od" placeholder="0">
+                                <input type="number" name="int_od" placeholder="0">
+                                <input type="number" name="mkg_od" placeholder="0">
+                            </div>
+                            <div class="t-row">
+                                <span class="tag blue">OI</span>
+                                <input type="number" name="sds_oi" placeholder="0">
+                                <input type="number" name="int_oi" placeholder="0">
+                                <input type="number" name="mkg_oi" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>PTP</h3>
+                    <div class="ptp-container">
+                        <div class="ptp-box">
+                            <span class="ptp-title">Oído Derecho</span>
+                            <div class="ptp-inputs">
+                                <div><small>V.A.</small><input type="number" name="ptp_va_od" readonly><span>dB</span></div>
+                                <div><small>V.O.</small><input type="number" name="ptp_vo_od" readonly><span>dB</span></div>
+                            </div>
+                        </div>
+                        <div class="ptp-box">
+                            <span class="ptp-title">Oído Izquierdo</span>
+                            <div class="ptp-inputs">
+                                <div><small>V.A.</small><input type="number" name="ptp_va_oi" readonly><span>dB</span></div>
+                                <div><small>V.O.</small><input type="number" name="ptp_vo_oi" readonly><span>dB</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="extra-grid">
+            <div class="card">
+                <h3>Acumetría</h3>
+                <div class="acumetria-wrapper">
+                    <div class="acu-group">
+                        <span class="acu-label">Weber</span>
+                        <select name="weber_250"><option value="">250 Hz</option><option value="central">Central</option><option value="od">OD</option><option value="oi">OI</option></select>
+                        <select name="weber_500"><option value="">500 Hz</option><option value="central">Central</option><option value="od">OD</option><option value="oi">OI</option></select>
+                        <select name="weber_1000"><option value="">1000 Hz</option><option value="central">Central</option><option value="od">OD</option><option value="oi">OI</option></select>
+                    </div>
+                    <div class="acu-group">
+                        <span class="acu-label">Rinne</span>
+                        <div class="rinne-row">
+                            <small>250</small>
+                            <select name="rinne_250_od"><option value="">OD</option><option>+</option><option>-</option></select>
+                            <select name="rinne_250_oi"><option value="">OI</option><option>+</option><option>-</option></select>
+                        </div>
+                        <div class="rinne-row">
+                            <small>500</small>
+                            <select name="rinne_500_od"><option value="">OD</option><option>+</option><option>-</option></select>
+                            <select name="rinne_500_oi"><option value="">OI</option><option>+</option><option>-</option></select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="logo-row">
-                <div class="ear-label ear-left">OI</div>
-                <input type="number" name="sds_oi" class="input-blue">
-                <input type="number" name="int_oi" class="input-blue">
-                <input type="number" name="mkg_oi" class="input-red">
-            </div>
-
-        </div>
-    </div>
-
-    <!-- PTP -->
-<div class="table-box">
-    <h3>PTP (Promedio Tonal Puro)</h3>
-
-    <div class="ptp-clinico">
-
-        <!-- HEADER -->
-        <div class="ptp-c-row header">
-            <div>PTP</div>
-            <div>O.I.</div>
-            <div>O.D.</div>
-        </div>
-
-        <!-- VÍA AÉREA -->
-        <div class="ptp-c-row">
-            <div class="ptp-label">V.A.</div>
-
-            <div class="ptp-field">
-                <input type="number" name="ptp_va_oi" class="input-blue ptp-result">
-                <span>dB HL</span>
-            </div>
-
-            <div class="ptp-field">
-                <input type="number" name="ptp_va_od" class="input-red ptp-result">
-                <span>dB HL</span>
-            </div>
-        </div>
-
-        <!-- VÍA ÓSEA -->
-        <div class="ptp-c-row">
-            <div class="ptp-label">V.O.</div>
-
-            <div class="ptp-field">
-                <input type="number" name="ptp_vo_oi" class="input-blue ptp-result">
-                <span>dB HL</span>
-            </div>
-
-            <div class="ptp-field">
-                <input type="number" name="ptp_vo_od" class="input-red ptp-result">
-                <span>dB HL</span>
-            </div>
-        </div>
-
-    </div>
-</div>
-</div>
-
-<!-- ACUMETRÍA -->
-<div class="card acumetria-card">
-    <h3>Acumetría</h3>
-
-    <div class="acumetria-box">
-
-        <!-- WEBER -->
-        <div class="acu-col">
-            <div class="acu-title">WEBER</div>
-
-            <div class="acu-freq">
-                <label>250 Hz</label>
-                <select name="weber_250">
-                    <option value="">--</option>
-                    <option value="central">Central</option>
-                    <option value="od">Lateraliza OD</option>
-                    <option value="oi">Lateraliza OI</option>
-                </select>
-            </div>
-
-            <div class="acu-freq">
-                <label>500 Hz</label>
-                <select name="weber_500">
-                    <option value="">--</option>
-                    <option value="central">Central</option>
-                    <option value="od">Lateraliza OD</option>
-                    <option value="oi">Lateraliza OI</option>
-                </select>
-            </div>
-
-            <div class="acu-freq">
-                <label>1000 Hz</label>
-                <select name="weber_1000">
-                    <option value="">--</option>
-                    <option value="central">Central</option>
-                    <option value="od">Lateraliza OD</option>
-                    <option value="oi">Lateraliza OI</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- RINNE -->
-        <div class="acu-col">
-            <div class="acu-title">RINNE</div>
-
-            <div class="acu-freq">
-                <label>250 Hz</label>
-                <select name="rinne_250_od">
-                    <option value="">OD</option>
-                    <option value="+">+</option>
-                    <option value="-">−</option>
-                </select>
-                <select name="rinne_250_oi">
-                    <option value="">OI</option>
-                    <option value="+">+</option>
-                    <option value="-">−</option>
-                </select>
-            </div>
-
-            <div class="acu-freq">
-                <label>500 Hz</label>
-                <select name="rinne_500_od">
-                    <option value="">OD</option>
-                    <option value="+">+</option>
-                    <option value="-">−</option>
-                </select>
-                <select name="rinne_500_oi">
-                    <option value="">OI</option>
-                    <option value="+">+</option>
-                    <option value="-">−</option>
-                </select>
-            </div>
-
-            <div class="acu-freq">
-                <label>1000 Hz</label>
-                <select name="rinne_1000_od">
-                    <option value="">OD</option>
-                    <option value="+">+</option>
-                    <option value="-">−</option>
-                </select>
-                <select name="rinne_1000_oi">
-                    <option value="">OI</option>
-                    <option value="+">+</option>
-                    <option value="-">−</option>
-                </select>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- TINNITUMETRÍA -->
 <div class="card">
-    <h3>Tinnitumetría</h3>
+    <div class="card-header">
+        <h3>Tinnitumetría</h3>
+    </div>
+    <div class="card-body">
+        <div class="tinni-table">
+            <div class="tinni-row header-row">
+                <div>Tinnitus</div>
+                <div>Oído</div>
+                <div>Cualidad</div>
+                <div>Duración</div>
+                <div>Intensidad</div>
+                <div>Frecuencia</div>
+                <div>Masking</div>
+                <div>Inhibición Residual</div>
+            </div>
 
-    <div class="tinni-table">
+            <div class="tinni-row content-row">
+                <div class="tinni-col">
+                    <label class="check-item"><input type="checkbox" name="tin_presente"> Presente</label>
+                    <label class="check-item"><input type="checkbox" name="tin_ausente"> Ausente</label>
+                    <label class="check-item"><input type="checkbox" name="tin_ocasional"> Ocasional</label>
+                    <label class="check-item"><input type="checkbox" name="tin_examen"> (+) al examen</label>
+                </div>
 
-        <!-- HEADER -->
-        <div class="tinni-row header">
-            <div>Tinnitus</div>
-            <div>Oído</div>
-            <div>Cantidad</div>
-            <div>Duración</div>
-            <div>Intensidad</div>
-            <div>Frecuencia</div>
-            <div>Masking mínimo</div>
-            <div>Inhibición residual</div>
+                <div class="tinni-col">
+                    <label class="check-item"><input type="checkbox" name="tin_od"> OD</label>
+                    <label class="check-item"><input type="checkbox" name="tin_oi"> OI</label>
+                    <label class="check-item"><input type="checkbox" name="tin_bilateral"> Bilateral</label>
+                </div>
+
+                <div class="tinni-col">
+                    <label class="check-item"><input type="checkbox" name="tin_tono"> Tono puro</label>
+                    <label class="check-item"><input type="checkbox" name="tin_ruido_blanco"> Ruido blanco</label>
+                    <label class="check-item"><input type="checkbox" name="tin_ruido_banda"> Banda estrecha</label>
+                </div>
+
+                <div class="tinni-col">
+                    <label class="check-item"><input type="checkbox" name="tin_continuo"> Continuo</label>
+                    <label class="check-item"><input type="checkbox" name="tin_pulsatil"> Pulsátil</label>
+                    <label class="check-item"><input type="checkbox" name="tin_fluctuante"> Fluctuante</label>
+                </div>
+
+                <div class="tinni-col">
+                    <div class="input-unit">
+                        <input type="number" name="tin_db_hl" placeholder="0">
+                        <span>dB HL</span>
+                    </div>
+                    <div class="input-unit">
+                        <input type="number" name="tin_db_sl" placeholder="0">
+                        <span>dB SL</span>
+                    </div>
+                </div>
+
+                <div class="tinni-col">
+                    <div class="input-unit">
+                        <input type="number" name="tin_freq" placeholder="0">
+                        <span>Hz</span>
+                    </div>
+                </div>
+
+                <div class="tinni-col">
+                    <div class="input-unit">
+                        <input type="number" name="tin_masking" placeholder="0">
+                        <span>dB HL</span>
+                    </div>
+                </div>
+
+                <div class="tinni-col">
+                    <label class="check-item"><input type="checkbox" name="tin_inh_oi"> Izquierdo</label>
+                    <label class="check-item"><input type="checkbox" name="tin_inh_od"> Derecho</label>
+                    <label class="check-item"><input type="checkbox" name="tin_inh_bi"> Bilateral</label>
+                    <label class="check-item"><input type="checkbox" name="tin_inh_tc"> T. Cráneo</label>
+                </div>
+            </div>
         </div>
-
-        <!-- CONTENIDO -->
-        <div class="tinni-row">
-
-            <!-- TINNITUS -->
-            <div class="tinni-col">
-                <label><input type="checkbox" name="tin_presente"> Presente</label>
-                <label><input type="checkbox" name="tin_ausente"> Ausente</label>
-                <label><input type="checkbox" name="tin_ocasional"> Ocasional</label>
-                <label><input type="checkbox" name="tin_examen"> (+) al examen</label>
-            </div>
-
-            <!-- OÍDO -->
-            <div class="tinni-col">
-                <label><input type="checkbox" name="tin_od"> OD</label>
-                <label><input type="checkbox" name="tin_oi"> OI</label>
-                <label><input type="checkbox" name="tin_bilateral"> Bilateral</label>
-            </div>
-
-            <!-- CANTIDAD -->
-            <div class="tinni-col">
-                <label><input type="checkbox" name="tin_tono"> Tono puro</label>
-                <label><input type="checkbox" name="tin_ruido_blanco"> Ruido blanco</label>
-                <label><input type="checkbox" name="tin_ruido_banda"> Banda estrecha</label>
-            </div>
-
-            <!-- DURACIÓN -->
-            <div class="tinni-col">
-                <label><input type="checkbox" name="tin_continuo"> Continuo</label>
-                <label><input type="checkbox" name="tin_pulsatil"> Pulsátil</label>
-                <label><input type="checkbox" name="tin_fluctuante"> Fluctuante</label>
-            </div>
-
-            <!-- INTENSIDAD -->
-            <div class="tinni-col">
-                <div class="tinni-field">
-                    <input type="number" name="tin_db_hl">
-                    <span>dB HL</span>
-                </div>
-                <div class="tinni-field">
-                    <input type="number" name="tin_db_sl">
-                    <span>dB SL</span>
-                </div>
-            </div>
-
-            <!-- FRECUENCIA -->
-            <div class="tinni-col">
-                <div class="tinni-field">
-                    <input type="number" name="tin_freq">
-                    <span>Hz</span>
-                </div>
-            </div>
-
-            <!-- MASKING -->
-            <div class="tinni-col">
-                <div class="tinni-field">
-                    <input type="number" name="tin_masking">
-                    <span>dB HL</span>
-                </div>
-            </div>
-
-            <!-- INHIBICIÓN -->
-            <div class="tinni-col">
-                <label><input type="checkbox" name="tin_inh_oi"> Izquierdo</label>
-                <label><input type="checkbox" name="tin_inh_od"> Derecho</label>
-                <label><input type="checkbox" name="tin_inh_bi"> Bilateral</label>
-                <label><input type="checkbox" name="tin_inh_tc"> T. Cráneo</label>
-            </div>
-
-        </div>
-
     </div>
 </div>
 
-<!-- BLOQUE ARCHIVO -->
-<div id="bloque-archivo" style="display:none;">
-    <div class="card upload-card">
-        <h3>Adjuntar archivo / video</h3>
-
-        <label class="upload-box">
-            <input type="file" name="archivo" accept=".pdf,image/*,video/*">
-            <div class="upload-content">
-                <span class="upload-icon">📎</span>
-                <span class="upload-text">Haz clic o arrastra un archivo</span>
-                <small>PDF, imágenes o video</small>
+<div class="card">
+    <div class="card-header">
+        <h3>Deterioro Tonal</h3>
+    </div>
+    <div class="card-body">
+        <div class="deterioro-container">
+            <div class="test-selector">
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="carhart"> Carhart</label>
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="rosenberg"> Rosenberg</label>
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="stat"> STAT</label>
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="sisi"> SISI</label>
             </div>
-        </label>
+
+            <div class="deterioro-grid">
+                <div class="det-head"></div>
+                <div class="det-head">500 Hz</div>
+                <div class="det-head">1000 Hz</div>
+                <div class="det-head">2000 Hz</div>
+                <div class="det-head">4000 Hz</div>
+
+                <div class="ear-label left">O.I.</div>
+                <div class="det-cell"><input type="number" name="det_500_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_1000_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_2000_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_4000_oi" class="input-blue"><span>dB</span></div>
+
+                <div class="ear-label right">O.D.</div>
+                <div class="det-cell"><input type="number" name="det_500_od" class="input-red"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_1000_od" class="input-red"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_2000_od" class="input-red"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_4000_od" class="input-red"><span>dB</span></div>
+            </div>
+        </div>
     </div>
 </div>
-
-<!-- OBSERVACIONES -->
-<div class="card observaciones-card">
-    <h3>Observaciones</h3>
-    <textarea name="observaciones" placeholder="Escribe observaciones clínicas..."></textarea>
 </div>
+</section>
 
-<!-- BOTÓN -->
-<div class="card action-card">
-    <button class="btn-primary">Guardar Audiometría</button>
-</div>
+    <div id="bloque-archivo" style="display:none;">
+        <div class="card upload-area">
+            <h3>Gestión de Archivos</h3>
+            <label class="drop-zone">
+                <input type="file" name="archivo" class="file-input">
+                <div class="drop-zone-content">
+                    <span class="icon">📁</span>
+                    <p class="upload-text">Arrastra o selecciona un archivo clínico</p>
+                    <span class="file-info">PDF, PNG, JPG o MP4</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div class="card obs-card">
+        <h3>Observaciones Clínicas</h3>
+        <textarea name="observaciones" placeholder="Ingrese hallazgos o notas relevantes del examen..."></textarea>
+    </div>
+
+    <footer class="form-actions">
+        <button class="btn-submit">Guardar Audiometría</button>
+    </footer>
 
 </main>
 
-<!-- JS -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 const radiosTipo = document.querySelectorAll('input[name="tipo"]');
@@ -1039,8 +946,6 @@ fileInput.addEventListener("change", () => {
         uploadText.textContent = fileInput.files[0].name;
     }
 });
-
 </script>
-
 </body>
 </html>
