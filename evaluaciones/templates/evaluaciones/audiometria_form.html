@@ -124,15 +124,16 @@
                         <div class="table-body">
                             <div class="t-row">
                                 <span class="tag red">OD</span>
-                                <input type="number" name="sds_od" placeholder="0">
-                                <input type="number" name="int_od" placeholder="0">
-                                <input type="number" name="mkg_od" placeholder="0">
+                                <input type="number" class="disc od" name="sds_od" placeholder="0">
+                                <input type="number" class="int od" name="int_od" placeholder="0">
+                                <input type="number" class="mkg od" name="mkg_od" placeholder="0">
                             </div>
+
                             <div class="t-row">
                                 <span class="tag blue">OI</span>
-                                <input type="number" name="sds_oi" placeholder="0">
-                                <input type="number" name="int_oi" placeholder="0">
-                                <input type="number" name="mkg_oi" placeholder="0">
+                                <input type="number" class="disc oi" name="sds_oi" placeholder="0">
+                                <input type="number" class="int oi" name="int_oi" placeholder="0">
+                                <input type="number" class="mkg oi" name="mkg_oi" placeholder="0">
                             </div>
                         </div>
                     </div>
@@ -141,14 +142,15 @@
                 <div class="card">
                     <h3>PTP</h3>
                     <div class="ptp-container">
-                        <div class="ptp-box">
+                        <div class="ptp-box od">
                             <span class="ptp-title">Oído Derecho</span>
                             <div class="ptp-inputs">
                                 <div><small>V.A.</small><input type="number" name="ptp_va_od" readonly><span>dB</span></div>
                                 <div><small>V.O.</small><input type="number" name="ptp_vo_od" readonly><span>dB</span></div>
                             </div>
                         </div>
-                        <div class="ptp-box">
+
+                        <div class="ptp-box oi">
                             <span class="ptp-title">Oído Izquierdo</span>
                             <div class="ptp-inputs">
                                 <div><small>V.A.</small><input type="number" name="ptp_va_oi" readonly><span>dB</span></div>
@@ -232,17 +234,17 @@
                 <div class="det-head">2000 Hz</div>
                 <div class="det-head">4000 Hz</div>
 
-                <div class="ear-label left">O.I.</div>
-                <div class="det-cell"><input type="number" name="det_500_oi" class="input-blue"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_1000_oi" class="input-blue"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_2000_oi" class="input-blue"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_4000_oi" class="input-blue"><span>dB</span></div>
-
                 <div class="ear-label right">O.D.</div>
                 <div class="det-cell"><input type="number" name="det_500_od" class="input-red"><span>dB</span></div>
                 <div class="det-cell"><input type="number" name="det_1000_od" class="input-red"><span>dB</span></div>
                 <div class="det-cell"><input type="number" name="det_2000_od" class="input-red"><span>dB</span></div>
                 <div class="det-cell"><input type="number" name="det_4000_od" class="input-red"><span>dB</span></div>
+
+                <div class="ear-label left">O.I.</div>
+                <div class="det-cell"><input type="number" name="det_500_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_1000_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_2000_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_4000_oi" class="input-blue"><span>dB</span></div>
             </div>
         </div>
     </div>
@@ -583,12 +585,24 @@ function drawNRArrow(x,y,color){
     ctx.stroke();
 }
 
-function drawLDL(x,y,color){
+function drawLDL(x, y, ear, color){
     ctx.strokeStyle = color;
     ctx.beginPath();
-    ctx.moveTo(x,y-8);
-    ctx.lineTo(x-6,y+6);
-    ctx.lineTo(x+6,y+6);
+
+    const size = 10;
+
+    if(ear === "right"){
+        // 🔴 OD (se dibuja a la izquierda visual)
+        ctx.moveTo(x, y - size);        // vértice arriba
+        ctx.lineTo(x - size, y + size); // base izquierda
+        ctx.lineTo(x, y + size);        // base derecha (ángulo recto)
+    } else {
+        // 🔵 OI (se dibuja a la derecha visual)
+        ctx.moveTo(x, y - size);        // vértice arriba
+        ctx.lineTo(x + size, y + size); // base derecha
+        ctx.lineTo(x, y + size);        // base izquierda (ángulo recto)
+    }
+
     ctx.closePath();
     ctx.stroke();
 }
@@ -610,7 +624,7 @@ function drawPoints(){
             }
 
             if(p.category === "ldl"){
-                drawLDL(x,y,"black");
+                drawLDL(x, y, p.ear, color);
             }
         });
 
@@ -625,7 +639,7 @@ function drawPoints(){
         const color = p.ear === "right" ? "red" : "blue";
 
         if(p.category === "ldl"){
-            drawLDL(x,y,color);
+            drawLDL(x, y, p.ear, color);
             if(p.modifier === "nr") drawNRArrow(x,y,color);
             return;
         }
@@ -992,6 +1006,8 @@ fileInput.addEventListener("change", () => {
         uploadText.textContent = fileInput.files[0].name;
     }
 });
+
+
 </script>
 </body>
 </html>

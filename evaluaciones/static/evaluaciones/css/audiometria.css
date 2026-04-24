@@ -236,6 +236,31 @@ body {
     border-color: var(--primary);
 }
 
+.ctrl-btn[data-ear="right"].active {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+}
+
+.ctrl-btn[data-ear="left"].active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+}
+
+.ctrl-btn[data-type].active,
+.ctrl-btn[data-mask].active {
+    background: #64748b;     
+    border-color: #64748b;
+    color: white;
+}
+
+.ctrl-btn[data-extra].active {
+    background: #94a3b8;      
+    border-color: #94a3b8;
+    color: white;
+}
+
 /* GRÁFICO */
 .audio-chart-container {
     width: 100%;
@@ -287,7 +312,42 @@ body {
 .tag.red { background: var(--red); }
 .tag.blue { background: var(--blue); }
 
-/* PTP BOXES */
+input.od.disc,
+input.od.int {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+input.od.mkg {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+input.oi.disc,
+input.oi.int {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+input.oi.mkg {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+}
+
+input.od:focus {
+    box-shadow: 0 0 0 2px rgba(239,68,68,0.2);
+}
+
+input.oi:focus {
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+/* PTP */
 .ptp-container { display: flex; flex-direction: column; gap: 15px; }
 .ptp-box {
     background: var(--bg-main);
@@ -307,6 +367,40 @@ body {
     padding-right: 30px;
 }
 .ptp-inputs span { position: absolute; right: 8px; top: 8px; font-size: 10px; color: var(--text-muted); }
+
+.ptp-box.od .ptp-title {
+    color: var(--red);
+}
+
+.ptp-box.od small {
+    color: var(--red);
+}
+
+.ptp-box.od input {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.ptp-box.oi .ptp-title {
+    color: var(--blue);
+}
+
+.ptp-box.oi small {
+    color: var(--blue);
+}
+
+.ptp-box.oi input {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.ptp-box.od {
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.ptp-box.oi {
+    background: rgba(59, 130, 246, 0.05);
+}
 
 /* ACUMETRÍA & TINNITUS */
 .extra-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
