@@ -164,28 +164,92 @@
             <div class="card">
                 <h3>Acumetría</h3>
                 <div class="acumetria-wrapper">
-                    <div class="acu-group">
-                        <span class="acu-label">Weber</span>
-                        <select name="weber_250"><option value="">250 Hz</option><option value="central">Central</option><option value="od">OD</option><option value="oi">OI</option></select>
-                        <select name="weber_500"><option value="">500 Hz</option><option value="central">Central</option><option value="od">OD</option><option value="oi">OI</option></select>
-                        <select name="weber_1000"><option value="">1000 Hz</option><option value="central">Central</option><option value="od">OD</option><option value="oi">OI</option></select>
-                    </div>
-                    <div class="acu-group">
-                        <span class="acu-label">Rinne</span>
-                        <div class="rinne-row">
-                            <small>250</small>
-                            <select name="rinne_250_od"><option value="">OD</option><option>+</option><option>-</option></select>
-                            <select name="rinne_250_oi"><option value="">OI</option><option>+</option><option>-</option></select>
+
+                    <!-- WEBER -->
+                    <div class="acu-block">
+                        <h4 class="acu-title">Weber</h4>
+                        <div class="acu-content">
+                            <select name="weber_250">
+                                <option value="">250 Hz</option>
+                                <option value="central">Central</option>
+                                <option value="od">OD</option>
+                                <option value="oi">OI</option>
+                            </select>
+
+                            <select name="weber_500">
+                                <option value="">500 Hz</option>
+                                <option value="central">Central</option>
+                                <option value="od">OD</option>
+                                <option value="oi">OI</option>
+                            </select>
+
+                            <select name="weber_1000">
+                                <option value="">1000 Hz</option>
+                                <option value="central">Central</option>
+                                <option value="od">OD</option>
+                                <option value="oi">OI</option>
+                            </select>
                         </div>
-                        <div class="rinne-row">
-                            <small>500</small>
-                            <select name="rinne_500_od"><option value="">OD</option><option>+</option><option>-</option></select>
-                            <select name="rinne_500_oi"><option value="">OI</option><option>+</option><option>-</option></select>
+                    </div>
+
+                    <!-- RINNE -->
+                    <div class="acu-block">
+                        <h4 class="acu-title">Rinne</h4>
+                        <div class="acu-content">
+                            <div class="rinne-row">
+                                <small>250 Hz</small>
+                                <select name="rinne_250_od"><option value="">OD</option><option>+</option><option>-</option></select>
+                                <select name="rinne_250_oi"><option value="">OI</option><option>+</option><option>-</option></select>
+                            </div>
+
+                            <div class="rinne-row">
+                                <small>500 Hz</small>
+                                <select name="rinne_500_od"><option value="">OD</option><option>+</option><option>-</option></select>
+                                <select name="rinne_500_oi"><option value="">OI</option><option>+</option><option>-</option></select>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+<div class="card">
+    <div class="card-header">
+        <h3>Deterioro Tonal</h3>
+    </div>
+    <div class="card-body">
+        <div class="deterioro-container">
+            <div class="test-selector">
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="carhart"> Carhart</label>
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="rosenberg"> Rosenberg</label>
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="stat"> STAT</label>
+                <label class="radio-tag"><input type="radio" name="deterioro_test" value="sisi"> SISI</label>
+            </div>
+
+            <div class="deterioro-grid">
+                <div class="det-head"></div>
+                <div class="det-head">500 Hz</div>
+                <div class="det-head">1000 Hz</div>
+                <div class="det-head">2000 Hz</div>
+                <div class="det-head">4000 Hz</div>
+
+                <div class="ear-label left">O.I.</div>
+                <div class="det-cell"><input type="number" name="det_500_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_1000_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_2000_oi" class="input-blue"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_4000_oi" class="input-blue"><span>dB</span></div>
+
+                <div class="ear-label right">O.D.</div>
+                <div class="det-cell"><input type="number" name="det_500_od" class="input-red"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_1000_od" class="input-red"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_2000_od" class="input-red"><span>dB</span></div>
+                <div class="det-cell"><input type="number" name="det_4000_od" class="input-red"><span>dB</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<section class="tinni-full">
 <div class="card">
     <div class="card-header">
         <h3>Tinnitumetría</h3>
@@ -265,41 +329,6 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <h3>Deterioro Tonal</h3>
-    </div>
-    <div class="card-body">
-        <div class="deterioro-container">
-            <div class="test-selector">
-                <label class="radio-tag"><input type="radio" name="deterioro_test" value="carhart"> Carhart</label>
-                <label class="radio-tag"><input type="radio" name="deterioro_test" value="rosenberg"> Rosenberg</label>
-                <label class="radio-tag"><input type="radio" name="deterioro_test" value="stat"> STAT</label>
-                <label class="radio-tag"><input type="radio" name="deterioro_test" value="sisi"> SISI</label>
-            </div>
-
-            <div class="deterioro-grid">
-                <div class="det-head"></div>
-                <div class="det-head">500 Hz</div>
-                <div class="det-head">1000 Hz</div>
-                <div class="det-head">2000 Hz</div>
-                <div class="det-head">4000 Hz</div>
-
-                <div class="ear-label left">O.I.</div>
-                <div class="det-cell"><input type="number" name="det_500_oi" class="input-blue"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_1000_oi" class="input-blue"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_2000_oi" class="input-blue"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_4000_oi" class="input-blue"><span>dB</span></div>
-
-                <div class="ear-label right">O.D.</div>
-                <div class="det-cell"><input type="number" name="det_500_od" class="input-red"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_1000_od" class="input-red"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_2000_od" class="input-red"><span>dB</span></div>
-                <div class="det-cell"><input type="number" name="det_4000_od" class="input-red"><span>dB</span></div>
-            </div>
-        </div>
-    </div>
-</div>
 </div>
 </section>
 
@@ -424,8 +453,25 @@ let current = {
 let data = [];
 
 /* POSICIONES */
-function getX(index){
-    return padding.left + (index * (chartWidth/(freqs.length-1)));
+function getXByFreq(freq){
+
+    const positions = {
+        125: 0,
+        250: 0.6,
+        500: 1.2,
+        1000: 1.8,
+        2000: 2.4,
+        3000: 3,
+        4000: 3.6,
+        6000: 4.2,
+        8000: 4.8
+    };
+
+    const maxIndex = 6.2;
+
+    const index = positions[freq];
+
+    return padding.left + (index / maxIndex) * chartWidth;
 }
 
 function getY(db){
@@ -443,7 +489,7 @@ function drawGrid(){
 
     // FRECUENCIAS ARRIBA
     freqs.forEach((f,i)=>{
-        let x = getX(i);
+        let x = getXByFreq(f);
 
         ctx.strokeStyle = "#ccc"; 
         ctx.beginPath();
@@ -554,7 +600,7 @@ function drawPoints(){
     if(modoAudiometria === "campo"){
 
         data.forEach(p=>{
-            const x = getX(freqs.indexOf(p.freq));
+            const x = getXByFreq(p.freq);
             const y = getY(p.db);
 
             drawSF(x, y, p.sf);
@@ -573,7 +619,7 @@ function drawPoints(){
 
     // 🎧 TONAL (tu lógica original)
     data.forEach(p=>{
-        const x = getX(freqs.indexOf(p.freq));
+        const x = getXByFreq(p.freq);
         const y = getY(p.db);
 
         const color = p.ear === "right" ? "red" : "blue";
@@ -654,7 +700,7 @@ function drawLines(){
                     return;
                 }
 
-                const x = getX(freqs.indexOf(freq));
+                const x = getXByFreq(freq);
                 const y = getY(p.db);
 
                 if(!started){
@@ -694,7 +740,7 @@ canvas.addEventListener("click", function(e){
     const y = e.clientY - rect.top;
 
     let closestFreq = freqs.reduce((a,b)=>
-        Math.abs(getX(freqs.indexOf(a))-x) < Math.abs(getX(freqs.indexOf(b))-x) ? a : b
+        Math.abs(getXByFreq(a)-x) < Math.abs(getXByFreq(b)-x) ? a : b
     );
 
     let closestDb = Math.round((y - padding.top)/chartHeight * 120 / 5)*5;

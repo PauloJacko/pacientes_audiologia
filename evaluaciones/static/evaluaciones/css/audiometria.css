@@ -1,8 +1,31 @@
 /*HEADER NO TOCAR*/
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Sora:wght@600&display=swap");
 
+:root {
+    --bg-main: #f8fafc;
+    --primary: #2563eb;
+    --primary-soft: #eff6ff;
+    --primary2: #3f6aa3;
+    --primary-light: #e8f0fb;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --danger: #ef4444;
+    --red: #ef4444;
+    --blue: #3b82f6;
+}
+
 * {
     box-sizing: border-box;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .header {
@@ -68,7 +91,7 @@
 
 .btn-back {
     background: var(--primary-light);
-    color: var(--primary);
+    color: var(--primary2);
     padding: 8px 12px;
     border-radius: 8px;
     text-decoration: none;
@@ -79,21 +102,6 @@
 
 .btn-back:hover {
     background: #dbe8fb;
-}
-
-:root {
-    --bg-main: #f8fafc;
-    --primary: #2563eb;
-    --primary-soft: #eff6ff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --white: #ffffff;
-    --border: #e2e8f0;
-    --radius-lg: 16px;
-    --radius-md: 12px;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --red: #ef4444;
-    --blue: #3b82f6;
 }
 
 body {
@@ -190,7 +198,7 @@ body {
 /* GRID PRINCIPAL */
 .main-grid {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: minmax(0, 1fr) 320px;
     gap: 20px;
 }
 
@@ -230,6 +238,8 @@ body {
 
 /* GRÁFICO */
 .audio-chart-container {
+    width: 100%;
+    max-width: 100%;
     background: white;
     border-radius: var(--radius-md);
     overflow: hidden;
@@ -299,7 +309,7 @@ body {
 .ptp-inputs span { position: absolute; right: 8px; top: 8px; font-size: 10px; color: var(--text-muted); }
 
 /* ACUMETRÍA & TINNITUS */
-.extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.extra-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 .acu-group { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
 .acu-label { font-weight: 700; min-width: 60px; font-size: 13px; }
 select {
@@ -309,18 +319,66 @@ select {
     font-size: 13px;
 }
 
+.acumetria-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.acu-block {
+    background: var(--bg-main);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.acu-title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    color: var(--text-main);
+}
+
+.acu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rinne-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.rinne-row small {
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
 /* Tinnitumetría */
+
+.tinni-full {
+    width: 100%;
+}
+
 .tinni-table {
     display: flex;
     flex-direction: column;
-    overflow-x: auto; /* Evita que se corte en pantallas chicas */
+    max-width: 100%;
+    overflow-x: auto;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
 }
 
 .tinni-row {
     display: grid;
-    grid-template-columns: repeat(8, minmax(120px, 1fr));
+    grid-template-columns: repeat(8, 1fr);
     border-bottom: 1px solid #eee;
 }
 
