@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 class Paciente(models.Model):
 
@@ -23,11 +24,19 @@ class Paciente(models.Model):
     )
 
     creado = models.DateTimeField(auto_now_add=True)
+    @property
+    def edad(self):
+        if not self.fecha_nacimiento:
+            return None
+
+        hoy = date.today()
+        return hoy.year - self.fecha_nacimiento.year - (
+            (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        )
 
     def __str__(self):
         return f"{self.nombre} - {self.rut}"
     
-from django.db import models
 
 class Anamnesis(models.Model):
     paciente = models.ForeignKey('Paciente', on_delete=models.CASCADE, related_name='anamnesis')

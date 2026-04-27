@@ -15,7 +15,8 @@ def crear_audiometria(request, paciente_id):
         return redirect('ver_paciente', paciente_id)
 
     return render(request, 'evaluaciones/audiometria_form.html', {
-        'paciente': paciente
+        'paciente': paciente,
+        'edad': paciente.edad
     })
 
 
@@ -32,7 +33,8 @@ def crear_impedanciometria(request, paciente_id):
         return redirect('ver_paciente', paciente_id)
 
     return render(request, 'evaluaciones/impedanciometria_form.html', {
-        'paciente': paciente
+        'paciente': paciente,
+        'edad': paciente.edad
     })
 
 
@@ -49,7 +51,8 @@ def crear_otoscopia(request, paciente_id):
         return redirect('ver_paciente', paciente_id)
 
     return render(request, 'evaluaciones/otoscopia_form.html', {
-        'paciente': paciente
+        'paciente': paciente,
+        'edad': paciente.edad
     })
 
 
@@ -66,5 +69,6 @@ def crear_evaluacion_otro(request, paciente_id):
         return redirect('ver_paciente', paciente_id)
 
     return render(request, 'evaluaciones/otro_form.html', {
-        'paciente': paciente
+        'paciente': paciente,
+        'edad': paciente.edad
     })

@@ -9,6 +9,8 @@
 </head>
 <body>
 
+<div id="paciente-data" data-edad="{{ edad }}"></div>
+
 <div class="header">
     <div class="header-left">
         <img src="{% static 'Login/img/logo-png.png' %}" class="logo-header">
@@ -592,12 +594,12 @@ function drawLDL(x, y, ear, color){
     const size = 10;
 
     if(ear === "right"){
-        // 🔴 OD (se dibuja a la izquierda visual)
+        // 🔴 OD 
         ctx.moveTo(x, y - size);        // vértice arriba
         ctx.lineTo(x - size, y + size); // base izquierda
         ctx.lineTo(x, y + size);        // base derecha (ángulo recto)
     } else {
-        // 🔵 OI (se dibuja a la derecha visual)
+        // 🔵 OI 
         ctx.moveTo(x, y - size);        // vértice arriba
         ctx.lineTo(x + size, y + size); // base derecha
         ctx.lineTo(x, y + size);        // base izquierda (ángulo recto)
@@ -610,7 +612,7 @@ function drawLDL(x, y, ear, color){
 /* DIBUJO */
 function drawPoints(){
 
-    // 🔊 CAMPO LIBRE
+    // CAMPO LIBRE
     if(modoAudiometria === "campo"){
 
         data.forEach(p=>{
@@ -631,7 +633,7 @@ function drawPoints(){
         return;
     }
 
-    // 🎧 TONAL (tu lógica original)
+    // TONAL
     data.forEach(p=>{
         const x = getXByFreq(p.freq);
         const y = getY(p.db);
@@ -762,7 +764,7 @@ canvas.addEventListener("click", function(e){
     if(closestDb < 0) closestDb = 0;
     if(closestDb > 120) closestDb = 120;
 
-    // 🔊 CAMPO LIBRE
+    // CAMPO LIBRE
     if(modoAudiometria === "campo"){
 
         const existingIndex = data.findIndex(p =>
@@ -783,7 +785,7 @@ canvas.addEventListener("click", function(e){
         }
 
     } 
-    // 🎧 TONAL (tu lógica actual)
+    // TONAL
     else {
 
         const existingIndex = data.findIndex(p =>
@@ -822,7 +824,7 @@ function syncUI(){
     document.querySelectorAll(".ctrl-btn")
         .forEach(b => b.classList.remove("active"));
 
-    // 🔊 CAMPO LIBRE
+    // CAMPO LIBRE
     if(modoAudiometria === "campo"){
 
         document.querySelector(`[data-sf="${current.sf}"]`)
@@ -841,7 +843,7 @@ function syncUI(){
         return;
     }
 
-    // 🎧 TONAL (lo tuyo)
+    // TONAL
 
     document.querySelector(`[data-ear="${current.ear}"]`)
         ?.classList.add("active");
@@ -874,7 +876,7 @@ function syncUI(){
 document.querySelectorAll(".ctrl-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
 
-        // 🔊 CAMPO LIBRE
+        // CAMPO LIBRE
         if(modoAudiometria === "campo"){
 
             // símbolo
@@ -897,7 +899,7 @@ document.querySelectorAll(".ctrl-btn").forEach(btn=>{
             return;
         }
 
-        // 🎧 TONAL (tu lógica actual intacta)
+        // TONAL
 
         if(btn.dataset.ear){
             current.ear = btn.dataset.ear;
@@ -940,7 +942,9 @@ syncUI();
 
 function calcularPTP(){
 
-    const edadPaciente = 70; // 🔥 cámbialo luego dinámico
+    const edadPaciente = parseInt(
+    document.getElementById("paciente-data").dataset.edad
+);
 
     const frecuenciasBase = edadPaciente >= 65
         ? [500, 1000, 2000, 4000]

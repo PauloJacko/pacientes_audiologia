@@ -81,7 +81,7 @@
                         <div>
                             <span>Edad</span>
                             <p>
-                                {{ paciente.fecha_nacimiento|timesince|slice:":2" }} años
+                                {{ paciente.edad|default:"-" }} años
                             </p>
                         </div>
 
