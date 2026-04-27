@@ -172,45 +172,61 @@
                     <!-- WEBER -->
                     <div class="acu-block">
                         <h4 class="acu-title">Weber</h4>
-                        <div class="acu-content">
-                            <select name="weber_250">
-                                <option value="">250 Hz</option>
-                                <option value="central">Central</option>
-                                <option value="od">OD</option>
-                                <option value="oi">OI</option>
-                            </select>
 
-                            <select name="weber_500">
-                                <option value="">500 Hz</option>
-                                <option value="central">Central</option>
-                                <option value="od">OD</option>
-                                <option value="oi">OI</option>
-                            </select>
+                        <div class="weber-grid">
 
-                            <select name="weber_1000">
-                                <option value="">1000 Hz</option>
-                                <option value="central">Central</option>
-                                <option value="od">OD</option>
-                                <option value="oi">OI</option>
-                            </select>
+                            <!-- 250 -->
+                            <div class="weber-row" data-freq="250">
+                                <button class="arrow left" data-value="oi">←</button>
+                                <span class="freq">250 Hz</span>
+                                <button class="arrow right" data-value="od">→</button>
+                                <input type="hidden" name="weber_250">
+                            </div>
+
+                            <!-- 500 -->
+                            <div class="weber-row" data-freq="500">
+                                <button class="arrow left" data-value="oi">←</button>
+                                <span class="freq">500 Hz</span>
+                                <button class="arrow right" data-value="od">→</button>
+                                <input type="hidden" name="weber_500">
+                            </div>
+
+                            <!-- 1000 -->
+                            <div class="weber-row" data-freq="1000">
+                                <button class="arrow left" data-value="oi">←</button>
+                                <span class="freq">1000 Hz</span>
+                                <button class="arrow right" data-value="od">→</button>
+                                <input type="hidden" name="weber_1000">
+                            </div>
+
                         </div>
                     </div>
 
                     <!-- RINNE -->
                     <div class="acu-block">
-                        <h4 class="acu-title">Rinne</h4>
-                        <div class="acu-content">
-                            <div class="rinne-row">
-                                <small>250 Hz</small>
-                                <select name="rinne_250_od"><option value="">OD</option><option>+</option><option>-</option></select>
-                                <select name="rinne_250_oi"><option value="">OI</option><option>+</option><option>-</option></select>
+                        <h4 class="acu-title">Rinne 512Hz</h4>
+
+                        <div class="rinne-grid">
+
+                            <!-- 512 Hz -->
+                            <div class="rinne-row" data-freq="512">
+
+                                <div class="ear-group od">
+                                    <span class="ear-label">OD</span>
+                                    <button class="rinne-btn od" data-ear="od" data-value="+">+</button>
+                                    <button class="rinne-btn od" data-ear="od" data-value="-">−</button>
+                                </div>
+
+                                <div class="ear-group oi">
+                                    <span class="ear-label">OI</span>
+                                    <button class="rinne-btn oi" data-ear="oi" data-value="+">+</button>
+                                    <button class="rinne-btn oi" data-ear="oi" data-value="-">−</button>
+                                </div>
+
+                                <input type="hidden" name="rinne_512_od">
+                                <input type="hidden" name="rinne_512_oi">
                             </div>
 
-                            <div class="rinne-row">
-                                <small>500 Hz</small>
-                                <select name="rinne_500_od"><option value="">OD</option><option>+</option><option>-</option></select>
-                                <select name="rinne_500_oi"><option value="">OI</option><option>+</option><option>-</option></select>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1011,6 +1027,80 @@ fileInput.addEventListener("change", () => {
     }
 });
 
+/* ACUMETRIA WEBER */
+
+document.querySelectorAll(".weber-row").forEach(row => {
+
+    const left = row.querySelector(".left");
+    const right = row.querySelector(".right");
+    const input = row.querySelector("input");
+
+    left.addEventListener("click", () => {
+
+        if (left.classList.contains("active")) {
+            left.classList.remove("active");
+            input.value = "";
+            return;
+        }
+
+        row.classList.remove("bilateral");
+        left.classList.add("active");
+        right.classList.remove("active");
+        input.value = "od";
+    });
+
+    right.addEventListener("click", () => {
+
+        if (right.classList.contains("active")) {
+            right.classList.remove("active");
+            input.value = "";
+            return;
+        }
+
+        row.classList.remove("bilateral");
+        right.classList.add("active");
+        left.classList.remove("active");
+        input.value = "oi";
+    });
+
+    // CLICK DOBLE = bilateral
+    row.addEventListener("dblclick", () => {
+        row.classList.add("bilateral");
+        left.classList.remove("active");
+        right.classList.remove("active");
+        input.value = "central";
+    });
+
+});
+
+/* ACUMETRIA RINNE */
+
+document.querySelectorAll(".rinne-btn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+        const row = btn.closest(".rinne-row");
+        const ear = btn.dataset.ear;
+        const value = btn.dataset.value;
+
+        const input = row.querySelector(
+            `input[name="rinne_${row.querySelector('span').innerText.split(' ')[0]}_${ear}"]`
+        );
+
+        if (btn.classList.contains("active")) {
+            btn.classList.remove("active");
+            input.value = "";
+            return;
+        }
+
+        row.querySelectorAll(`.rinne-btn.${ear}`).forEach(b => b.classList.remove("active"));
+
+        btn.classList.add("active");
+        input.value = value;
+
+    });
+
+});
 
 </script>
 </body>
