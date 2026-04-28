@@ -39,19 +39,6 @@
         </div>
         
         <div class="config-bar">
-            <div class="config-section">
-                <span class="config-label">Modo</span>
-                <div class="modern-radio-group">
-                    <label class="radio-item">
-                        <input type="radio" name="modo" value="manual" checked>
-                        <span>Manual</span>
-                    </label>
-                    <label class="radio-item">
-                        <input type="radio" name="modo" value="archivo">
-                        <span>Archivo/Video</span>
-                    </label>
-                </div>
-            </div>
 
             <div class="config-section">
                 <span class="config-label">Tipo de Examen</span>
@@ -69,7 +56,6 @@
         </div>
     </header>
 
-    <div id="bloque-manual">
         <section class="main-grid">
             <div class="card audiogram-card">
                 <div class="card-header">
@@ -114,7 +100,15 @@
                         <canvas id="audiograma" width="750" height="420"></canvas>
                     </div>
                 </div>
+                    <div class="upload-inline">
+                        <label class="upload-btn">
+                            <input type="file" name="archivo" class="file-input">
+                            Adjuntar archivo
+                        </label>
+                        <span class="upload-hint">PDF, imagen o video clínico</span>
+                    </div>
             </div>
+            
 
             <div class="secondary-grid">
                 <div class="card">
@@ -143,6 +137,7 @@
 
                 <div class="card">
                     <h3>PTP</h3>
+                    <span class="frecuenciasptp">500, 1000, 2000 (+65 - 4000)</span>
                     <div class="ptp-container">
                         <div class="ptp-box od">
                             <span class="ptp-title">Oído Derecho</span>
@@ -348,23 +343,7 @@
         </div>
     </div>
 </div>
-
-</div>
 </section>
-
-    <div id="bloque-archivo" style="display:none;">
-        <div class="card upload-area">
-            <h3>Gestión de Archivos</h3>
-            <label class="drop-zone">
-                <input type="file" name="archivo" class="file-input">
-                <div class="drop-zone-content">
-                    <span class="icon">📁</span>
-                    <p class="upload-text">Arrastra o selecciona un archivo clínico</p>
-                    <span class="file-info">PDF, PNG, JPG o MP4</span>
-                </div>
-            </label>
-        </div>
-    </div>
 
     <div class="card obs-card">
         <h3>Observaciones Clínicas</h3>
@@ -424,24 +403,6 @@ radiosTipo.forEach(radio => {
 
             data = [];
             drawGrid();
-        }
-    });
-});
-
-const radiosModo = document.querySelectorAll('input[name="modo"]');
-const bloqueManual = document.getElementById("bloque-manual");
-const bloqueArchivo = document.getElementById("bloque-archivo");
-
-radiosModo.forEach(radio => {
-    radio.addEventListener("change", () => {
-        if (radio.value === "manual" && radio.checked) {
-            bloqueManual.style.display = "block";
-            bloqueArchivo.style.display = "none";
-        }
-
-        if (radio.value === "archivo" && radio.checked) {
-            bloqueManual.style.display = "none";
-            bloqueArchivo.style.display = "block";
         }
     });
 });
@@ -1019,11 +980,11 @@ function calcularPTP(){
 });
 
 const fileInput = document.querySelector('input[name="archivo"]');
-const uploadText = document.querySelector('.upload-text');
+const uploadBtn = document.querySelector('.upload-btn');
 
 fileInput.addEventListener("change", () => {
     if(fileInput.files.length > 0){
-        uploadText.textContent = fileInput.files[0].name;
+        uploadBtn.innerHTML = fileInput.files[0].name;
     }
 });
 
