@@ -1,0 +1,14 @@
+<h2>Audiometría</h2>
+
+<p><strong>Paciente:</strong> {{ evaluacion.paciente.nombre }}</p>
+<p><strong>Fecha:</strong> {{ evaluacion.fecha }}</p>
+
+<h3>Observaciones</h3>
+<p>{{ evaluacion.observaciones }}</p>
+
+{% if evaluacion.archivo %}
+    <a href="{{ evaluacion.archivo.url }}" target="_blank">Ver archivo</a>
+{% endif %}
+
+<br><br>
+<a href="{% url 'ver_paciente' evaluacion.paciente.id %}">Volver</a>

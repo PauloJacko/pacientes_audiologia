@@ -746,3 +746,60 @@ textarea { min-height: 70px; }
     transform: translateY(-2px);
     opacity: 0.9;
 }
+
+.evaluaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.eval-column {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid #eee;
+}
+
+.eval-title {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.eval-title.audio { color: #e74c3c; }
+.eval-title.impe { color: #f39c12; }
+.eval-title.oto { color: #3498db; }
+.eval-title.otro { color: #777; }
+
+.eval-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #fafafa;
+}
+
+.eval-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn.small {
+    font-size: 12px;
+    padding: 3px 6px;
+}
+
+.btn.edit { background: #3498db; color: white; }
+.btn.delete { background: #e74c3c; color: white; }
+
+.file-link {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 13px;
+    color: #555;
+}

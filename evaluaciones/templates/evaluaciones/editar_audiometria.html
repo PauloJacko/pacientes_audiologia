@@ -1,0 +1,11 @@
+<h2>Editar Audiometría</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <textarea name="observaciones">{{ evaluacion.observaciones }}</textarea>
+
+    <input type="file" name="archivo">
+
+    <button type="submit">Guardar cambios</button>
+</form>

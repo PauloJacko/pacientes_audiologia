@@ -217,46 +217,89 @@
                     <a href="{% url 'evaluaciones:crear_evaluacion_otro' paciente.id %}" class="eval-btn eval-otro">
                         + Otro
                     </a>
-
                 </div>
 
-                <!-- LISTADO -->
-                {% if evaluaciones %}
-                    <div class="anamnesis-list">
-                        {% for e in evaluaciones %}
-                            <div class="anamnesis-item">
+<div class="evaluaciones-grid">
 
-                                <div class="anamnesis-top">
-                                    <strong>{{ e.get_tipo_display }}</strong>
-                                    <span>{{ e.fecha|date:"d/m/Y" }}</span>
-                                </div>
+    <!-- AUDIO -->
+    <div class="eval-column">
+        <h3 class="eval-title audio">Audiometrías</h3>
 
-                                <div class="anamnesis-table">
+        {% for e in audiometrias %}
+        <div class="eval-card">
 
-                                    <div>
-                                        <span>Observaciones</span>
-                                        <p>{{ e.observaciones|default:"-" }}</p>
-                                    </div>
+            <div class="eval-top">
+                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
 
-                                    <div>
-                                        <span>Archivo</span>
-                                        <p>
-                                            {% if e.archivo %}
-                                                <a href="{{ e.archivo.url }}" target="_blank">Ver archivo</a>
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </p>
-                                    </div>
+                <div class="actions">
+                    <a href="{% url 'evaluaciones:ver_audiometria' e.id %}" class="btn small">Ver</a>
+                    <a href="{% url 'evaluaciones:editar_audiometria' e.id %}" class="btn small edit">Editar</a>
+                    <a href="{% url 'evaluaciones:eliminar_evaluacion' e.id %}" class="btn small delete">Eliminar</a>
+                </div>
+            </div>
 
-                                </div>
+            <div class="eval-body">
+                <p>{{ e.observaciones|default:"Sin observaciones" }}</p>
 
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="empty">No hay evaluaciones registradas</p>
+                {% if e.archivo %}
+                    <a href="{{ e.archivo.url }}" target="_blank" class="file-link">
+                        📎 Ver archivo adjunto
+                    </a>
                 {% endif %}
+            </div>
+
+        </div>
+        {% empty %}
+            <p class="empty">Sin registros</p>
+        {% endfor %}
+    </div>
+
+
+    <!-- IMPEDANCIA -->
+    <div class="eval-column">
+        <h3 class="eval-title impe">Impedanciometría</h3>
+
+        {% for e in impedancias %}
+            <div class="eval-card">
+                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
+                <p>{{ e.observaciones|default:"-" }}</p>
+            </div>
+        {% empty %}
+            <p class="empty">Sin registros</p>
+        {% endfor %}
+    </div>
+
+
+    <!-- OTOSCOPIA -->
+    <div class="eval-column">
+        <h3 class="eval-title oto">Otoscopía</h3>
+
+        {% for e in otoscopias %}
+            <div class="eval-card">
+                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
+                <p>{{ e.observaciones|default:"-" }}</p>
+            </div>
+        {% empty %}
+            <p class="empty">Sin registros</p>
+        {% endfor %}
+    </div>
+
+
+    <!-- OTROS -->
+    <div class="eval-column">
+        <h3 class="eval-title otro">Otros</h3>
+
+        {% for e in otros %}
+            <div class="eval-card">
+                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
+                <p>{{ e.observaciones|default:"-" }}</p>
+            </div>
+        {% empty %}
+            <p class="empty">Sin registros</p>
+        {% endfor %}
+    </div>
+
+</div>
 
             </div>
         </div>

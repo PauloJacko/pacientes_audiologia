@@ -56,13 +56,22 @@ def dashboard_view(request):
 @login_required
 def ver_paciente(request, id):
     paciente = get_object_or_404(Paciente, id=id)
+
     anamnesis = paciente.anamnesis.all().order_by('-fecha')
     evaluaciones = paciente.evaluaciones.all().order_by('-fecha')
+    
+    audiometrias = evaluaciones.filter(tipo='audiometria')
+    impedancias = evaluaciones.filter(tipo='impedanciometria')
+    otoscopias = evaluaciones.filter(tipo='otoscopia')
+    otros = evaluaciones.filter(tipo='otro')
 
     return render(request, 'Login/ver_paciente.html', {
         'paciente': paciente,
         'anamnesis': anamnesis,
-        'evaluaciones': evaluaciones
+        'audiometrias': audiometrias,
+        'impedancias': impedancias,
+        'otoscopias': otoscopias,
+        'otros': otros,
     })
 
 @login_required

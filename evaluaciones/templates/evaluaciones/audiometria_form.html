@@ -55,7 +55,9 @@
             </div>
         </div>
     </header>
-
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="audiograma_json" id="audiograma_json">
         <section class="main-grid">
             <div class="card audiogram-card">
                 <div class="card-header">
@@ -66,32 +68,32 @@
                         <div id="controls-tonal" class="control-section">
                             <label>Lateralidad</label>
                             <div class="btn-group-toggle">
-                                <button class="ctrl-btn active" data-ear="right">OD (Rojo)</button>
-                                <button class="ctrl-btn" data-ear="left">OI (Azul)</button>
+                                <button type="button" class="ctrl-btn active" data-ear="right">OD (Rojo)</button>
+                                <button type="button" class="ctrl-btn" data-ear="left">OI (Azul)</button>
                             </div>
 
                             <label>Vía de Conducción</label>
                             <div class="btn-group-toggle">
-                                <button class="ctrl-btn active" data-type="va">Aérea</button>
-                                <button class="ctrl-btn" data-type="vo">Ósea</button>
-                                <button class="ctrl-btn" data-mask="true">Enmasc.</button>
+                                <button type="button" class="ctrl-btn active" data-type="va">Aérea</button>
+                                <button type="button" class="ctrl-btn" data-type="vo">Ósea</button>
+                                <button type="button" class="ctrl-btn" data-mask="true">Enmasc.</button>
                             </div>
                         </div>
 
                         <div id="controls-campo" class="control-section" style="display:none;">
                             <label>Condición</label>
                             <div class="btn-group-toggle vertical">
-                                <button class="ctrl-btn active" data-sf="S">Sin amplif. (S)</button>
-                                <button class="ctrl-btn" data-sf="A">Con audífono (A)</button>
-                                <button class="ctrl-btn" data-sf="CI">Implante (CI)</button>
+                                <button type="button" class="ctrl-btn active" data-sf="S">Sin amplif. (S)</button>
+                                <button type="button" class="ctrl-btn" data-sf="A">Con audífono (A)</button>
+                                <button type="button" class="ctrl-btn" data-sf="CI">Implante (CI)</button>
                             </div>
                         </div>
 
                         <div class="control-section">
                             <label>Extras</label>
                             <div class="btn-group-toggle">
-                                <button class="ctrl-btn" data-extra="nr">Sin Resp.</button>
-                                <button class="ctrl-btn" data-extra="ldl">LDL</button>
+                                <button type="button" class="ctrl-btn" data-extra="nr">Sin Resp.</button>
+                                <button type="button" class="ctrl-btn" data-extra="ldl">LDL</button>
                             </div>
                         </div>
                     </aside>
@@ -172,25 +174,25 @@
 
                             <!-- 250 -->
                             <div class="weber-row" data-freq="250">
-                                <button class="arrow left" data-value="oi">←</button>
+                                <button type="button" class="arrow left" data-value="oi">←</button>
                                 <span class="freq">250 Hz</span>
-                                <button class="arrow right" data-value="od">→</button>
+                                <button type="button" class="arrow right" data-value="od">→</button>
                                 <input type="hidden" name="weber_250">
                             </div>
 
                             <!-- 500 -->
                             <div class="weber-row" data-freq="500">
-                                <button class="arrow left" data-value="oi">←</button>
+                                <button type="button" class="arrow left" data-value="oi">←</button>
                                 <span class="freq">500 Hz</span>
-                                <button class="arrow right" data-value="od">→</button>
+                                <button type="button" class="arrow right" data-value="od">→</button>
                                 <input type="hidden" name="weber_500">
                             </div>
 
                             <!-- 1000 -->
                             <div class="weber-row" data-freq="1000">
-                                <button class="arrow left" data-value="oi">←</button>
+                                <button type="button" class="arrow left" data-value="oi">←</button>
                                 <span class="freq">1000 Hz</span>
-                                <button class="arrow right" data-value="od">→</button>
+                                <button type="button" class="arrow right" data-value="od">→</button>
                                 <input type="hidden" name="weber_1000">
                             </div>
 
@@ -208,14 +210,14 @@
 
                                 <div class="ear-group od">
                                     <span class="ear-label">OD</span>
-                                    <button class="rinne-btn od" data-ear="od" data-value="+">+</button>
-                                    <button class="rinne-btn od" data-ear="od" data-value="-">−</button>
+                                    <button type="button" class="rinne-btn od" data-ear="od" data-value="+">+</button>
+                                    <button type="button" class="rinne-btn od" data-ear="od" data-value="-">−</button>
                                 </div>
 
                                 <div class="ear-group oi">
                                     <span class="ear-label">OI</span>
-                                    <button class="rinne-btn oi" data-ear="oi" data-value="+">+</button>
-                                    <button class="rinne-btn oi" data-ear="oi" data-value="-">−</button>
+                                    <button type="button" class="rinne-btn oi" data-ear="oi" data-value="+">+</button>
+                                    <button type="button" class="rinne-btn oi" data-ear="oi" data-value="-">−</button>
                                 </div>
 
                                 <input type="hidden" name="rinne_512_od">
@@ -353,6 +355,7 @@
     <footer class="form-actions">
         <button class="btn-submit">Guardar Audiometría</button>
     </footer>
+</form>
 
 </main>
 
@@ -1060,6 +1063,13 @@ document.querySelectorAll(".rinne-btn").forEach(btn => {
         input.value = value;
 
     });
+
+});
+
+document.querySelector("form").addEventListener("submit", function(){
+
+    const json = JSON.stringify(data);
+    document.getElementById("audiograma_json").value = json;
 
 });
 
