@@ -1,14 +1,494 @@
-<h2>Audiometría</h2>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Audiométrico - {{ evaluacion.paciente.nombre }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0f172a;
+            --bg-page: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --text-dark: #0f172a;
+            
+            /* Convención Clínica Audiológica */
+            --od-color: #dc2626;        /* Rojo Oído Derecho */
+            --od-bg: #fef2f2;
+            --od-border: #fecaca;
+            
+            --oi-color: #2563eb;        /* Azul Oído Izquierdo */
+            --oi-bg: #eff6ff;
+            --oi-border: #bfdbfe;
+            
+            --accent: #0d9488;          /* Verde Teal Clínico */
+        }
 
-<p><strong>Paciente:</strong> {{ evaluacion.paciente.nombre }}</p>
-<p><strong>Fecha:</strong> {{ evaluacion.fecha }}</p>
+        * {
+            box-sizing: border-box;
+        }
 
-<h3>Observaciones</h3>
-<p>{{ evaluacion.observaciones }}</p>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
 
-{% if evaluacion.archivo %}
-    <a href="{{ evaluacion.archivo.url }}" target="_blank">Ver archivo</a>
-{% endif %}
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
 
-<br><br>
-<a href="{% url 'ver_paciente' evaluacion.paciente.id %}">Volver</a>
+        /* HEADER DE ACCIONES Y FICHA PACIENTE */
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.35rem 0.85rem;
+            background: #ccfbf1;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        /* TARJETAS CLÍNICAS */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        }
+
+        .card-header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 1.25rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* PACIENTE HEADER CARD */
+        .patient-card {
+            border-top: 4px solid var(--accent);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .data-group label {
+            display: block;
+            font-size: 0.725rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .data-group p {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* GRIDS DE SECCIONES */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.25rem;
+        }
+
+        /* TABLAS ESTILIZADAS */
+        table.clinical-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        table.clinical-table th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.725rem;
+            letter-spacing: 0.03em;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        table.clinical-table td {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+        }
+
+        table.clinical-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* IDENTIFICADORES DE OÍDO CON COLORES OFICIALES */
+        .ear-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .ear-od {
+            background-color: var(--od-bg);
+            color: var(--od-color);
+            border: 1px solid var(--od-border);
+        }
+
+        .ear-oi {
+            background-color: var(--oi-bg);
+            color: var(--oi-color);
+            border: 1px solid var(--oi-border);
+        }
+
+        /* BADGES Y ETIQUETAS */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .badge-pill.active {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        /* ADJUNTO DE ARCHIVO */
+        .file-card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 1.25rem;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            color: #166534;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .file-card-link:hover {
+            background: #dcfce7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- BARRA SUPERIOR DE ACCIONES -->
+    <div class="header-actions">
+        <a href="{% url 'ver_paciente' evaluacion.paciente.id %}" class="btn-back">
+            <span>←</span> Volver a la ficha del paciente
+        </a>
+        <span class="mode-badge">
+            ● MODO {{ evaluacion.audiometria.modo|upper|default:"TONAL" }}
+        </span>
+    </div>
+
+    <!-- FICHA PRINCIPAL DEL EXAMEN -->
+    <div class="card patient-card">
+        <div class="data-group">
+            <label>Paciente</label>
+            <p>{{ evaluacion.paciente.nombre }}</p>
+        </div>
+        <div class="data-group">
+            <label>RUT</label>
+            <p>{{ evaluacion.paciente.rut }}</p>
+        </div>
+        <div class="data-group">
+            <label>Fecha de Realización</label>
+            <p>{{ evaluacion.fecha|date:"d/m/Y - H:i" }} hrs.</p>
+        </div>
+        <div class="data-group">
+            <label>Examen</label>
+            <p>{{ evaluacion.get_tipo_display }}</p>
+        </div>
+    </div>
+
+    {% with a=evaluacion.audiometria %}
+
+    <!-- SECCIÓN 1: PTP Y LOGOAUDIOMETRÍA -->
+    <div class="grid-2">
+        <!-- PTP -->
+        <div class="card">
+            <h3 class="card-header-title">Promedio Tonal Puro (PTP)</h3>
+            <table class="clinical-table">
+                <thead>
+                    <tr>
+                        <th>Oído</th>
+                        <th>Vía Aérea (VA)</th>
+                        <th>Vía Ósea (VO)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="ear-tag ear-od">OD (Derecho)</span></td>
+                        <td style="color: var(--od-color);">{{ a.ptp_va_od|default:"-" }} dB</td>
+                        <td style="color: var(--od-color);">{{ a.ptp_vo_od|default:"-" }} dB</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ear-tag ear-oi">OI (Izquierdo)</span></td>
+                        <td style="color: var(--oi-color);">{{ a.ptp_va_oi|default:"-" }} dB</td>
+                        <td style="color: var(--oi-color);">{{ a.ptp_vo_oi|default:"-" }} dB</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- LOGOAUDIOMETRÍA -->
+        <div class="card">
+            <h3 class="card-header-title">Logoaudiometría</h3>
+            <table class="clinical-table">
+                <thead>
+                    <tr>
+                        <th>Oído</th>
+                        <th>SDS (%)</th>
+                        <th>Intensidad</th>
+                        <th>Enmascaramiento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="ear-tag ear-od">OD</span></td>
+                        <td style="color: var(--od-color);">{{ a.sds_od|default:"-" }}%</td>
+                        <td>{{ a.int_od|default:"-" }} dB</td>
+                        <td>{{ a.mkg_od|default:"-" }} dB</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ear-tag ear-oi">OI</span></td>
+                        <td style="color: var(--oi-color);">{{ a.sds_oi|default:"-" }}%</td>
+                        <td>{{ a.int_oi|default:"-" }} dB</td>
+                        <td>{{ a.mkg_oi|default:"-" }} dB</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: ACUMETRÍA Y DETERIORO TONAL -->
+    <div class="grid-2">
+        <!-- ACUMETRÍA -->
+        <div class="card">
+            <h3 class="card-header-title">Pruebas Acumétricas</h3>
+            <div class="data-group" style="margin-bottom: 1.25rem;">
+                <label>Test de Weber</label>
+                <div style="display: flex; gap: 0.75rem; margin-top: 0.25rem;">
+                    <span class="badge-pill">250 Hz: <strong>{{ a.weber_250|default:"-" }}</strong></span>
+                    <span class="badge-pill">500 Hz: <strong>{{ a.weber_500|default:"-" }}</strong></span>
+                    <span class="badge-pill">1000 Hz: <strong>{{ a.weber_1000|default:"-" }}</strong></span>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="data-group">
+                    <label>Rinne 512 Hz (OD)</label>
+                    <p class="ear-tag ear-od" style="display: inline-block;">{{ a.rinne_512_od|default:"-" }}</p>
+                </div>
+                <div class="data-group">
+                    <label>Rinne 512 Hz (OI)</label>
+                    <p class="ear-tag ear-oi" style="display: inline-block;">{{ a.rinne_512_oi|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETERIORO TONAL -->
+        <div class="card">
+            <h3 class="card-header-title">Deterioro Tonal ({{ a.deterioro_test|default:"No evaluado" }})</h3>
+            <table class="clinical-table">
+                <thead>
+                    <tr>
+                        <th>Oído</th>
+                        <th>500 Hz</th>
+                        <th>1000 Hz</th>
+                        <th>2000 Hz</th>
+                        <th>4000 Hz</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="ear-tag ear-od">OD</span></td>
+                        <td>{{ a.det_500_od|default:"-" }}</td>
+                        <td>{{ a.det_1000_od|default:"-" }}</td>
+                        <td>{{ a.det_2000_od|default:"-" }}</td>
+                        <td>{{ a.det_4000_od|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <td><span class="ear-tag ear-oi">OI</span></td>
+                        <td>{{ a.det_500_oi|default:"-" }}</td>
+                        <td>{{ a.det_1000_oi|default:"-" }}</td>
+                        <td>{{ a.det_2000_oi|default:"-" }}</td>
+                        <td>{{ a.det_4000_oi|default:"-" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: ACUFENOMETRÍA / TINNITUS -->
+    <div class="card">
+        <h3 class="card-header-title">Evaluación de Tinnitus / Acufenometría</h3>
+        
+        <div class="data-group" style="margin-bottom: 1.25rem;">
+            <label>Estado Clínico del Sintoma</label>
+            <div class="tag-list">
+                {% if a.tin_presente %}<span class="badge-pill active">● Sintomático / Presente</span>{% endif %}
+                {% if a.tin_ausente %}<span class="badge-pill">Ausente</span>{% endif %}
+                {% if a.tin_ocasional %}<span class="badge-pill">Ocasional</span>{% endif %}
+                {% if a.tin_examen_positivo %}<span class="badge-pill active">Examen Positivo</span>{% endif %}
+            </div>
+        </div>
+
+        <div class="grid-4" style="margin-bottom: 1.25rem;">
+            <div class="data-group">
+                <label>Lateralidad</label>
+                <p>
+                    {% if a.tin_od %}<span class="ear-tag ear-od">OD</span>{% endif %}
+                    {% if a.tin_oi %}<span class="ear-tag ear-oi">OI</span>{% endif %}
+                    {% if a.tin_bilateral %}<span class="badge-pill">Bilateral</span>{% endif %}
+                    {% if not a.tin_od and not a.tin_oi and not a.tin_bilateral %}-{% endif %}
+                </p>
+            </div>
+            <div class="data-group">
+                <label>Tipo de Acúfeno</label>
+                <p>
+                    {% if a.tin_tono_puro %}Tono Puro{% endif %}
+                    {% if a.tin_ruido_blanco %}Ruido Blanco{% endif %}
+                    {% if a.tin_ruido_banda %}Ruido de Banda{% endif %}
+                    {% if not a.tin_tono_puro and not a.tin_ruido_blanco and not a.tin_ruido_banda %}-{% endif %}
+                </p>
+            </div>
+            <div class="data-group">
+                <label>Comportamiento</label>
+                <p>
+                    {% if a.tin_continuo %}Continuo{% endif %}
+                    {% if a.tin_pulsatil %}Pulsátil{% endif %}
+                    {% if a.tin_fluctuante %}Fluctuante{% endif %}
+                    {% if not a.tin_continuo and not a.tin_pulsatil and not a.tin_fluctuante %}-{% endif %}
+                </p>
+            </div>
+            <div class="data-group">
+                <label>Frecuencia / MASK</label>
+                <p>{{ a.tin_freq|default:"-" }} Hz / {{ a.tin_masking|default:"-" }} dB</p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="data-group">
+                <label>Umbral de Acúfeno</label>
+                <p>{{ a.tin_db_hl|default:"-" }} dB HL | {{ a.tin_db_sl|default:"-" }} dB SL</p>
+            </div>
+            <div class="data-group">
+                <label>Inhibición Residual</label>
+                <p>
+                    {% if a.tin_inh_od %}<span class="ear-tag ear-od">OD</span>{% endif %}
+                    {% if a.tin_inh_oi %}<span class="ear-tag ear-oi">OI</span>{% endif %}
+                    {% if a.tin_inh_bi %}<span class="badge-pill">Bilateral</span>{% endif %}
+                    {% if a.tin_inh_tc %}<span class="badge-pill">Total / Corta</span>{% endif %}
+                    {% if not a.tin_inh_od and not a.tin_inh_oi and not a.tin_inh_bi and not a.tin_inh_tc %}-{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% endwith %}
+
+    <!-- SECCIÓN 4: OBSERVACIONES Y ADJUNTOS -->
+    <div class="card">
+        <h3 class="card-header-title">Conclusión y Observaciones Clínicas</h3>
+        <p style="white-space: pre-wrap; margin-bottom: 1.5rem; color: var(--text-main); font-size: 0.95rem;">{{ evaluacion.observaciones|default:"Sin observaciones adicionales registradas." }}</p>
+
+        {% if evaluacion.archivo %}
+            <a href="{{ evaluacion.archivo.url }}" target="_blank" class="file-card-link">
+                📄 Abrir documento
+            </a>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

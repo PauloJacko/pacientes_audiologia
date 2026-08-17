@@ -202,6 +202,10 @@
                 <!-- BOTONES -->
                 <div class="evaluacion-actions">
 
+                    <a href="{% url 'evaluaciones:crear_otoscopia' paciente.id %}" class="eval-btn eval-oto">
+                        + Otoscopía
+                    </a>
+
                     <a href="{% url 'evaluaciones:crear_audiometria' paciente.id %}" class="eval-btn eval-audio">
                         + Audiometría
                     </a>
@@ -210,16 +214,26 @@
                         + Impedanciometría
                     </a>
 
-                    <a href="{% url 'evaluaciones:crear_otoscopia' paciente.id %}" class="eval-btn eval-oto">
-                        + Otoscopía
-                    </a>
-
                     <a href="{% url 'evaluaciones:crear_evaluacion_otro' paciente.id %}" class="eval-btn eval-otro">
                         + Otro
                     </a>
                 </div>
 
 <div class="evaluaciones-grid">
+
+        <!-- OTOSCOPIA -->
+    <div class="eval-column">
+        <h3 class="eval-title oto">Otoscopía</h3>
+
+        {% for e in otoscopias %}
+            <div class="eval-card">
+                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
+                <p>{{ e.observaciones|default:"-" }}</p>
+            </div>
+        {% empty %}
+            <p class="empty">Sin registros</p>
+        {% endfor %}
+    </div>
 
     <!-- AUDIO -->
     <div class="eval-column">
@@ -260,21 +274,6 @@
         <h3 class="eval-title impe">Impedanciometría</h3>
 
         {% for e in impedancias %}
-            <div class="eval-card">
-                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
-                <p>{{ e.observaciones|default:"-" }}</p>
-            </div>
-        {% empty %}
-            <p class="empty">Sin registros</p>
-        {% endfor %}
-    </div>
-
-
-    <!-- OTOSCOPIA -->
-    <div class="eval-column">
-        <h3 class="eval-title oto">Otoscopía</h3>
-
-        {% for e in otoscopias %}
             <div class="eval-card">
                 <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
                 <p>{{ e.observaciones|default:"-" }}</p>

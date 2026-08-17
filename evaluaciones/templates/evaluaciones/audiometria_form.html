@@ -26,6 +26,11 @@
 </div>
 
 <main class="dashboard-container">
+
+    <!-- 1. EL FORMULARIO DEBE ABRAZAR TODO EL CONTENIDO -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="audiograma_json" id="audiograma_json">
     
     <header class="patient-hero">
         <div class="patient-info">
@@ -55,9 +60,7 @@
             </div>
         </div>
     </header>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="hidden" name="audiograma_json" id="audiograma_json">
+    
         <section class="main-grid">
             <div class="card audiogram-card">
                 <div class="card-header">
@@ -980,15 +983,28 @@ function calcularPTP(){
         resultados.left.vo ?? "";
 }
 
-});
+    const fileInput = document.querySelector('input[name="archivo"]');
+    const uploadBtn = document.querySelector('.upload-btn');
+    const uploadHint = document.querySelector('.upload-hint'); // Opcional para mostrar el nombre aquí
 
-const fileInput = document.querySelector('input[name="archivo"]');
-const uploadBtn = document.querySelector('.upload-btn');
-
-fileInput.addEventListener("change", () => {
-    if(fileInput.files.length > 0){
-        uploadBtn.innerHTML = fileInput.files[0].name;
+    if (fileInput) {
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                if (uploadHint) {
+                    uploadHint.textContent = "Archivo seleccionado: " + fileInput.files[0].name;
+                }
+            }
+        });
     }
+
+    const mainForm = document.querySelector("form");
+    if (mainForm) {
+        mainForm.addEventListener("submit", function () {
+            const json = JSON.stringify(data);
+            document.getElementById("audiograma_json").value = json;
+        });
+    }
+
 });
 
 /* ACUMETRIA WEBER */

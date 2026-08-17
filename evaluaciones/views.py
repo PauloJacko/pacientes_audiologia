@@ -120,15 +120,42 @@ def ver_audiometria(request, id):
 
 def editar_audiometria(request, id):
     evaluacion = get_object_or_404(Evaluacion, id=id)
+    audiometria = evaluacion.audiometria
     paciente_id = evaluacion.paciente.id
 
     if request.method == "POST":
-        evaluacion.observaciones = request.POST.get("observaciones")
-        
+        # 1. EVALUACION (CONTENEDOR)
+        evaluacion.observaciones = request.POST.get("observaciones", "")
         if request.FILES.get("archivo"):
             evaluacion.archivo = request.FILES.get("archivo")
-
         evaluacion.save()
+
+        # 2. AUDIOGRAMA (JSON)
+        audiograma_json = request.POST.get("audiograma_json")
+        try:
+            audiograma = json.loads(audiograma_json) if audiograma_json else []
+        except:
+            audiograma = audiometria.audiograma
+
+        # 3. ACTUALIZAR DETALLE AUDIOMETRÍA
+        audiometria.modo = request.POST.get("tipo", "tonal")
+        audiometria.audiograma = audiograma
+
+        # LOGOAUDIOMETRÍA
+        audiometria.sds_od = request.POST.get("sds_od") or None
+        audiometria.sds_oi = request.POST.get("sds_oi") or None
+        audiometria.int_od = request.POST.get("int_od") or None
+        audiometria.int_oi = request.POST.get("int_oi") or None
+        audiometria.mkg_od = request.POST.get("mkg_od") or None
+        audiometria.mkg_oi = request.POST.get("mkg_oi") or None
+
+        # PTP
+        audiometria.ptp_va_od = request.POST.get("ptp_va_od") or None
+        audiometria.ptp_vo_od = request.POST.get("ptp_vo_od") or None
+        audiometria.ptp_va_oi = request.POST.get("ptp_va_oi") or None
+        audiometria.ptp_vo_oi = request.POST.get("ptp_vo_oi") or None
+
+        audiometria.save()
 
         return redirect('ver_paciente', id=paciente_id)
 
