@@ -4,491 +4,657 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informe Audiométrico - {{ evaluacion.paciente.nombre }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>Vista Previa Audiometría | Panel Clínico</title>
+    <link rel="stylesheet" href="{% static 'evaluaciones/css/audiometria.css' %}">
     <style>
-        :root {
-            --primary: #0f172a;
-            --bg-page: #f1f5f9;
-            --surface: #ffffff;
-            --border: #e2e8f0;
-            --text-main: #334155;
-            --text-muted: #64748b;
-            --text-dark: #0f172a;
-            
-            /* Convención Clínica Audiológica */
-            --od-color: #dc2626;        /* Rojo Oído Derecho */
-            --od-bg: #fef2f2;
-            --od-border: #fecaca;
-            
-            --oi-color: #2563eb;        /* Azul Oído Izquierdo */
-            --oi-bg: #eff6ff;
-            --oi-border: #bfdbfe;
-            
-            --accent: #0d9488;          /* Verde Teal Clínico */
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-main);
-            margin: 0;
-            padding: 2rem 1rem;
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1040px;
-            margin: 0 auto;
-        }
-
-        /* HEADER DE ACCIONES Y FICHA PACIENTE */
-        .header-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.25rem;
-        }
-
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-dark);
-            text-decoration: none;
-            font-size: 0.875rem;
+        /* ==========================================
+           ESTILOS Y MEJORAS VISUALES MODO LECTURA
+           ========================================== */
+        
+        /* 1. Reset general de campos en modo lectura */
+        .read-only-view input, 
+        .read-only-view textarea, 
+        .read-only-view select {
+            pointer-events: none;
+            background-color: #f8fafc !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #1e293b !important;
             font-weight: 600;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
         }
 
-        .btn-back:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
+        .read-only-view button.ctrl-btn,
+        .read-only-view button.rinne-btn,
+        .read-only-view button.arrow {
+            pointer-events: none;
+            opacity: 0.85;
         }
 
-        .mode-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.35rem 0.85rem;
-            background: #ccfbf1;
-            color: #0f766e;
-            border: 1px solid #99f6e4;
+        .badge-mode {
+            padding: 6px 14px;
+            background: #e2e8f0;
             border-radius: 20px;
-            font-size: 0.8rem;
             font-weight: 700;
-            letter-spacing: 0.03em;
+            font-size: 0.85rem;
+            color: #334155;
+            letter-spacing: 0.5px;
         }
 
-        /* TARJETAS CLÍNICAS */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        /* 2. Distinctivos y Bordes por Oído */
+        .tag.red, .ear-label.right, .ptp-box.od {
+            border-left: 4px solid #dc2626 !important;
         }
 
-        .card-header-title {
+        .tag.blue, .ear-label.left, .ptp-box.oi {
+            border-left: 4px solid #2563eb !important;
+        }
+
+        .ptp-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .ptp-box.od .ptp-title {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .ptp-box.oi .ptp-title {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        /* 3. Estilización destacada de Checkboxes (Tinnitumetría) */
+        .check-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin: 0 0 1.25rem 0;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border);
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #475569;
+            cursor: default;
+            user-select: none;
+            padding: 3px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
         }
 
-        /* PACIENTE HEADER CARD */
-        .patient-card {
-            border-top: 4px solid var(--accent);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.25rem;
+        .check-item input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #94a3b8 !important;
+            border-radius: 4px;
+            outline: none;
+            background-color: #ffffff !important;
+            position: relative;
+            cursor: default;
         }
 
-        .data-group label {
-            display: block;
-            font-size: 0.725rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 0.25rem;
+        .check-item input[type="checkbox"]:checked {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
         }
 
-        .data-group p {
-            margin: 0;
-            font-size: 1rem;
+        .check-item input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Resaltar la fila de checkbox activa */
+        .check-item:has(input:checked) {
+            background-color: #eff6ff;
+            color: #1e3a8a;
             font-weight: 600;
-            color: var(--text-dark);
         }
 
-        /* GRIDS DE SECCIONES */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.25rem;
-        }
-
-        /* TABLAS ESTILIZADAS */
-        table.clinical-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
+        /* 4. Mejoras en Tablas y Grillas */
+        .tinni-table, .deterioro-container, .acumetria-wrapper {
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid var(--border);
+            background: #ffffff;
         }
 
-        table.clinical-table th {
-            background-color: #f8fafc;
-            color: var(--text-muted);
+        .tinni-row.header-row, .det-head {
+            background-color: #f1f5f9;
+            color: #475569;
             font-weight: 700;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            font-size: 0.725rem;
-            letter-spacing: 0.03em;
-            padding: 0.75rem 0.5rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
         }
 
-        table.clinical-table td {
-            padding: 0.75rem 0.5rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            font-weight: 600;
+        .acu-block {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 12px;
         }
 
-        table.clinical-table tr:last-child td {
+        .acu-block:last-child {
             border-bottom: none;
         }
 
-        /* IDENTIFICADORES DE OÍDO CON COLORES OFICIALES */
-        .ear-tag {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
-
-        .ear-od {
-            background-color: var(--od-bg);
-            color: var(--od-color);
-            border: 1px solid var(--od-border);
-        }
-
-        .ear-oi {
-            background-color: var(--oi-bg);
-            color: var(--oi-color);
-            border: 1px solid var(--oi-border);
-        }
-
-        /* BADGES Y ETIQUETAS */
-        .tag-list {
+        .input-unit {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .badge-pill {
-            display: inline-block;
-            padding: 0.3rem 0.65rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-        }
-
-        .badge-pill.active {
-            background: #fef3c7;
-            color: #92400e;
-            border-color: #fde68a;
-        }
-
-        /* ADJUNTO DE ARCHIVO */
-        .file-card-link {
-            display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
-            padding: 0.85rem 1.25rem;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 8px;
-            color: #166534;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: background 0.2s ease;
+            gap: 4px;
         }
 
-        .file-card-link:hover {
-            background: #dcfce7;
+        .input-unit span {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 600;
         }
     </style>
 </head>
-<body>
+<body class="read-only-view">
 
-<div class="container">
-
-    <!-- BARRA SUPERIOR DE ACCIONES -->
-    <div class="header-actions">
-        <a href="{% url 'ver_paciente' evaluacion.paciente.id %}" class="btn-back">
-            <span>←</span> Volver a la ficha del paciente
-        </a>
-        <span class="mode-badge">
-            ● MODO {{ evaluacion.audiometria.modo|upper|default:"TONAL" }}
-        </span>
-    </div>
-
-    <!-- FICHA PRINCIPAL DEL EXAMEN -->
-    <div class="card patient-card">
-        <div class="data-group">
-            <label>Paciente</label>
-            <p>{{ evaluacion.paciente.nombre }}</p>
-        </div>
-        <div class="data-group">
-            <label>RUT</label>
-            <p>{{ evaluacion.paciente.rut }}</p>
-        </div>
-        <div class="data-group">
-            <label>Fecha de Realización</label>
-            <p>{{ evaluacion.fecha|date:"d/m/Y - H:i" }} hrs.</p>
-        </div>
-        <div class="data-group">
-            <label>Examen</label>
-            <p>{{ evaluacion.get_tipo_display }}</p>
+<div class="header">
+    <div class="header-left">
+        <img src="{% static 'Login/img/logo-png.png' %}" class="logo-header">
+        <div class="header-text">
+            <span class="title">Audiometría</span>
+            <span class="subtitle">Informe y Detalle Clínico</span>
         </div>
     </div>
+    <div class="header-right">
+        <a href="{% url 'ver_paciente' evaluacion.paciente.id %}" class="btn-back">← Volver a la ficha</a>
+        <a href="{% url 'evaluaciones:editar_audiometria' evaluacion.id %}" class="btn-submit" style="...">Editar Examen</a>
+    </div>
+</div>
+
+<main class="dashboard-container">
 
     {% with a=evaluacion.audiometria %}
-
-    <!-- SECCIÓN 1: PTP Y LOGOAUDIOMETRÍA -->
-    <div class="grid-2">
-        <!-- PTP -->
-        <div class="card">
-            <h3 class="card-header-title">Promedio Tonal Puro (PTP)</h3>
-            <table class="clinical-table">
-                <thead>
-                    <tr>
-                        <th>Oído</th>
-                        <th>Vía Aérea (VA)</th>
-                        <th>Vía Ósea (VO)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="ear-tag ear-od">OD (Derecho)</span></td>
-                        <td style="color: var(--od-color);">{{ a.ptp_va_od|default:"-" }} dB</td>
-                        <td style="color: var(--od-color);">{{ a.ptp_vo_od|default:"-" }} dB</td>
-                    </tr>
-                    <tr>
-                        <td><span class="ear-tag ear-oi">OI (Izquierdo)</span></td>
-                        <td style="color: var(--oi-color);">{{ a.ptp_va_oi|default:"-" }} dB</td>
-                        <td style="color: var(--oi-color);">{{ a.ptp_vo_oi|default:"-" }} dB</td>
-                    </tr>
-                </tbody>
-            </table>
+    <header class="patient-hero">
+        <div class="patient-info">
+            <div class="avatar">
+                <span>{{ evaluacion.paciente.nombre|slice:":1" }}</span>
+            </div>
+            <div>
+                <h1>{{ evaluacion.paciente.nombre }}</h1>
+                <p>RUT: {{ evaluacion.paciente.rut }} | Fecha: {{ evaluacion.fecha|date:"d/m/Y - H:i" }} hrs.</p>
+            </div>
         </div>
 
-        <!-- LOGOAUDIOMETRÍA -->
-        <div class="card">
-            <h3 class="card-header-title">Logoaudiometría</h3>
-            <table class="clinical-table">
-                <thead>
-                    <tr>
-                        <th>Oído</th>
-                        <th>SDS (%)</th>
-                        <th>Intensidad</th>
-                        <th>Enmascaramiento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="ear-tag ear-od">OD</span></td>
-                        <td style="color: var(--od-color);">{{ a.sds_od|default:"-" }}%</td>
-                        <td>{{ a.int_od|default:"-" }} dB</td>
-                        <td>{{ a.mkg_od|default:"-" }} dB</td>
-                    </tr>
-                    <tr>
-                        <td><span class="ear-tag ear-oi">OI</span></td>
-                        <td style="color: var(--oi-color);">{{ a.sds_oi|default:"-" }}%</td>
-                        <td>{{ a.int_oi|default:"-" }} dB</td>
-                        <td>{{ a.mkg_oi|default:"-" }} dB</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="config-bar">
+            <div class="config-section">
+                <span class="config-label">Modo Registrado</span>
+                <span class="badge-mode">
+                    ● {{ a.modo|upper|default:"TONAL" }}
+                </span>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- SECCIÓN 2: ACUMETRÍA Y DETERIORO TONAL -->
-    <div class="grid-2">
-        <!-- ACUMETRÍA -->
-        <div class="card">
-            <h3 class="card-header-title">Pruebas Acumétricas</h3>
-            <div class="data-group" style="margin-bottom: 1.25rem;">
-                <label>Test de Weber</label>
-                <div style="display: flex; gap: 0.75rem; margin-top: 0.25rem;">
-                    <span class="badge-pill">250 Hz: <strong>{{ a.weber_250|default:"-" }}</strong></span>
-                    <span class="badge-pill">500 Hz: <strong>{{ a.weber_500|default:"-" }}</strong></span>
-                    <span class="badge-pill">1000 Hz: <strong>{{ a.weber_1000|default:"-" }}</strong></span>
+    <section class="main-grid">
+        <div class="card audiogram-card">
+            <h3>Gráfico de Audiograma</h3>
+            <div class="audio-chart-container" style="display: flex; justify-content: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
+                <canvas id="audiograma" width="750" height="420"></canvas>
+            </div>
+            {% if evaluacion.archivo %}
+            <div class="upload-inline" style="margin-top: 15px;">
+                <a href="{{ evaluacion.archivo.url }}" target="_blank" class="upload-btn" style="text-decoration:none; display:inline-block;">
+                    📄 Abrir archivo adjunto
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="secondary-grid">
+            <div class="card">
+                <h3>Logoaudiometría</h3>
+                <div class="medical-table logo-table">
+                    <div class="table-head">
+                        <div>Oído</div><div>% Disc</div><div>dB</div><div>MKG</div>
+                    </div>
+                    <div class="table-body">
+                        <div class="t-row">
+                            <span class="tag red" style="font-weight: bold; color: #dc2626;">OD</span>
+                            <input type="number" value="{{ a.sds_od|default:'' }}" readonly placeholder="-">
+                            <input type="number" value="{{ a.int_od|default:'' }}" readonly placeholder="-">
+                            <input type="number" value="{{ a.mkg_od|default:'' }}" readonly placeholder="-">
+                        </div>
+                        <div class="t-row">
+                            <span class="tag blue" style="font-weight: bold; color: #2563eb;">OI</span>
+                            <input type="number" value="{{ a.sds_oi|default:'' }}" readonly placeholder="-">
+                            <input type="number" value="{{ a.int_oi|default:'' }}" readonly placeholder="-">
+                            <input type="number" value="{{ a.mkg_oi|default:'' }}" readonly placeholder="-">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="grid-2">
-                <div class="data-group">
-                    <label>Rinne 512 Hz (OD)</label>
-                    <p class="ear-tag ear-od" style="display: inline-block;">{{ a.rinne_512_od|default:"-" }}</p>
-                </div>
-                <div class="data-group">
-                    <label>Rinne 512 Hz (OI)</label>
-                    <p class="ear-tag ear-oi" style="display: inline-block;">{{ a.rinne_512_oi|default:"-" }}</p>
+
+            <div class="card">
+                <h3>PTP</h3>
+                <span class="frecuenciasptp" style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 8px;">Promedio Tonal Puro</span>
+                <div class="ptp-container" style="display: flex; gap: 10px;">
+                    <div class="ptp-box od" style="flex: 1;">
+                        <span class="ptp-title">Oído Derecho</span>
+                        <div class="ptp-inputs">
+                            <div><small>V.A.</small><input type="text" value="{{ a.ptp_va_od|default:'-' }}" readonly><span>dB</span></div>
+                            <div><small>V.O.</small><input type="text" value="{{ a.ptp_vo_od|default:'-' }}" readonly><span>dB</span></div>
+                        </div>
+                    </div>
+                    <div class="ptp-box oi" style="flex: 1;">
+                        <span class="ptp-title">Oído Izquierdo</span>
+                        <div class="ptp-inputs">
+                            <div><small>V.A.</small><input type="text" value="{{ a.ptp_va_oi|default:'-' }}" readonly><span>dB</span></div>
+                            <div><small>V.O.</small><input type="text" value="{{ a.ptp_vo_oi|default:'-' }}" readonly><span>dB</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- DETERIORO TONAL -->
+    <section class="extra-grid">
         <div class="card">
-            <h3 class="card-header-title">Deterioro Tonal ({{ a.deterioro_test|default:"No evaluado" }})</h3>
-            <table class="clinical-table">
-                <thead>
-                    <tr>
-                        <th>Oído</th>
-                        <th>500 Hz</th>
-                        <th>1000 Hz</th>
-                        <th>2000 Hz</th>
-                        <th>4000 Hz</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="ear-tag ear-od">OD</span></td>
-                        <td>{{ a.det_500_od|default:"-" }}</td>
-                        <td>{{ a.det_1000_od|default:"-" }}</td>
-                        <td>{{ a.det_2000_od|default:"-" }}</td>
-                        <td>{{ a.det_4000_od|default:"-" }}</td>
-                    </tr>
-                    <tr>
-                        <td><span class="ear-tag ear-oi">OI</span></td>
-                        <td>{{ a.det_500_oi|default:"-" }}</td>
-                        <td>{{ a.det_1000_oi|default:"-" }}</td>
-                        <td>{{ a.det_2000_oi|default:"-" }}</td>
-                        <td>{{ a.det_4000_oi|default:"-" }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h3>Acumetría</h3>
+            <div class="acumetria-wrapper">
+                <div class="acu-block">
+                    <h4 class="acu-title" style="margin-bottom: 6px;">Weber</h4>
+                    <div class="weber-grid">
+                        <div class="weber-row">
+                            <span class="freq">250 Hz: <strong>{{ a.weber_250|default:"-" }}</strong></span>
+                        </div>
+                        <div class="weber-row">
+                            <span class="freq">500 Hz: <strong>{{ a.weber_500|default:"-" }}</strong></span>
+                        </div>
+                        <div class="weber-row">
+                            <span class="freq">1000 Hz: <strong>{{ a.weber_1000|default:"-" }}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="acu-block">
+                    <h4 class="acu-title" style="margin-bottom: 6px;">Rinne 512Hz</h4>
+                    <div class="rinne-grid">
+                        <div class="rinne-row" style="display: flex; gap: 15px;">
+                            <div class="ear-group od" style="border-left: 3px solid #dc2626; padding-left: 8px;">
+                                <span class="ear-label">OD: <strong style="color: #dc2626;">{{ a.rinne_512_od|default:"-" }}</strong></span>
+                            </div>
+                            <div class="ear-group oi" style="border-left: 3px solid #2563eb; padding-left: 8px;">
+                                <span class="ear-label">OI: <strong style="color: #2563eb;">{{ a.rinne_512_oi|default:"-" }}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Deterioro Tonal ({{ a.deterioro_test|default:"No evaluado"|upper }})</h3>
+            </div>
+            <div class="card-body">
+                <div class="deterioro-container">
+                    <div class="deterioro-grid">
+                        <div class="det-head"></div>
+                        <div class="det-head">500 Hz</div>
+                        <div class="det-head">1000 Hz</div>
+                        <div class="det-head">2000 Hz</div>
+                        <div class="det-head">4000 Hz</div>
+
+                        <div class="ear-label right" style="color: #dc2626; font-weight: bold; padding-left: 6px;">O.D.</div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_500_od|default:'-' }}" readonly></div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_1000_od|default:'-' }}" readonly></div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_2000_od|default:'-' }}" readonly></div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_4000_od|default:'-' }}" readonly></div>
+
+                        <div class="ear-label left" style="color: #2563eb; font-weight: bold; padding-left: 6px;">O.I.</div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_500_oi|default:'-' }}" readonly></div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_1000_oi|default:'-' }}" readonly></div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_2000_oi|default:'-' }}" readonly></div>
+                        <div class="det-cell"><input type="text" value="{{ a.det_4000_oi|default:'-' }}" readonly></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tinni-full">
+        <div class="card">
+            <div class="card-header">
+                <h3>Tinnitumetría</h3>
+            </div>
+            <div class="card-body">
+                <div class="tinni-table">
+                    <div class="tinni-row header-row">
+                        <div>Tinnitus</div>
+                        <div>Oído</div>
+                        <div>Cualidad</div>
+                        <div>Duración</div>
+                        <div>Intensidad</div>
+                        <div>Frecuencia</div>
+                        <div>Masking</div>
+                        <div>Inhibición Residual</div>
+                    </div>
+
+                    <div class="tinni-row content-row">
+                        <div class="tinni-col">
+                            <label class="check-item"><input type="checkbox" {% if a.tin_presente %}checked{% endif %} disabled> Presente</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_ausente %}checked{% endif %} disabled> Ausente</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_ocasional %}checked{% endif %} disabled> Ocasional</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_examen_positivo %}checked{% endif %} disabled> (+) al examen</label>
+                        </div>
+
+                        <div class="tinni-col">
+                            <label class="check-item"><input type="checkbox" {% if a.tin_od %}checked{% endif %} disabled> OD</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_oi %}checked{% endif %} disabled> OI</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_bilateral %}checked{% endif %} disabled> Bilateral</label>
+                        </div>
+
+                        <div class="tinni-col">
+                            <label class="check-item"><input type="checkbox" {% if a.tin_tono_puro %}checked{% endif %} disabled> Tono puro</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_ruido_blanco %}checked{% endif %} disabled> Ruido blanco</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_ruido_banda %}checked{% endif %} disabled> Banda estrecha</label>
+                        </div>
+
+                        <div class="tinni-col">
+                            <label class="check-item"><input type="checkbox" {% if a.tin_continuo %}checked{% endif %} disabled> Continuo</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_pulsatil %}checked{% endif %} disabled> Pulsátil</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_fluctuante %}checked{% endif %} disabled> Fluctuante</label>
+                        </div>
+
+                        <div class="tinni-col">
+                            <div class="input-unit">
+                                <input type="text" value="{{ a.tin_db_hl|default:'-' }}" readonly>
+                                <span>dB HL</span>
+                            </div>
+                            <div class="input-unit">
+                                <input type="text" value="{{ a.tin_db_sl|default:'-' }}" readonly>
+                                <span>dB SL</span>
+                            </div>
+                        </div>
+
+                        <div class="tinni-col">
+                            <div class="input-unit">
+                                <input type="text" value="{{ a.tin_freq|default:'-' }}" readonly>
+                                <span>Hz</span>
+                            </div>
+                        </div>
+
+                        <div class="tinni-col">
+                            <div class="input-unit">
+                                <input type="text" value="{{ a.tin_masking|default:'-' }}" readonly>
+                                <span>dB HL</span>
+                            </div>
+                        </div>
+
+                        <div class="tinni-col">
+                            <label class="check-item"><input type="checkbox" {% if a.tin_inh_oi %}checked{% endif %} disabled> Izquierdo</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_inh_od %}checked{% endif %} disabled> Derecho</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_inh_bi %}checked{% endif %} disabled> Bilateral</label>
+                            <label class="check-item"><input type="checkbox" {% if a.tin_inh_tc %}checked{% endif %} disabled> T. Cráneo</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="card obs-card" style="margin-bottom: 2rem;">
+        <h3>Observaciones Clínicas</h3>
+        <textarea readonly style="height: 100px;">{{ evaluacion.observaciones|default:"Sin observaciones registradas." }}</textarea>
     </div>
-
-    <!-- SECCIÓN 3: ACUFENOMETRÍA / TINNITUS -->
-    <div class="card">
-        <h3 class="card-header-title">Evaluación de Tinnitus / Acufenometría</h3>
-        
-        <div class="data-group" style="margin-bottom: 1.25rem;">
-            <label>Estado Clínico del Sintoma</label>
-            <div class="tag-list">
-                {% if a.tin_presente %}<span class="badge-pill active">● Sintomático / Presente</span>{% endif %}
-                {% if a.tin_ausente %}<span class="badge-pill">Ausente</span>{% endif %}
-                {% if a.tin_ocasional %}<span class="badge-pill">Ocasional</span>{% endif %}
-                {% if a.tin_examen_positivo %}<span class="badge-pill active">Examen Positivo</span>{% endif %}
-            </div>
-        </div>
-
-        <div class="grid-4" style="margin-bottom: 1.25rem;">
-            <div class="data-group">
-                <label>Lateralidad</label>
-                <p>
-                    {% if a.tin_od %}<span class="ear-tag ear-od">OD</span>{% endif %}
-                    {% if a.tin_oi %}<span class="ear-tag ear-oi">OI</span>{% endif %}
-                    {% if a.tin_bilateral %}<span class="badge-pill">Bilateral</span>{% endif %}
-                    {% if not a.tin_od and not a.tin_oi and not a.tin_bilateral %}-{% endif %}
-                </p>
-            </div>
-            <div class="data-group">
-                <label>Tipo de Acúfeno</label>
-                <p>
-                    {% if a.tin_tono_puro %}Tono Puro{% endif %}
-                    {% if a.tin_ruido_blanco %}Ruido Blanco{% endif %}
-                    {% if a.tin_ruido_banda %}Ruido de Banda{% endif %}
-                    {% if not a.tin_tono_puro and not a.tin_ruido_blanco and not a.tin_ruido_banda %}-{% endif %}
-                </p>
-            </div>
-            <div class="data-group">
-                <label>Comportamiento</label>
-                <p>
-                    {% if a.tin_continuo %}Continuo{% endif %}
-                    {% if a.tin_pulsatil %}Pulsátil{% endif %}
-                    {% if a.tin_fluctuante %}Fluctuante{% endif %}
-                    {% if not a.tin_continuo and not a.tin_pulsatil and not a.tin_fluctuante %}-{% endif %}
-                </p>
-            </div>
-            <div class="data-group">
-                <label>Frecuencia / MASK</label>
-                <p>{{ a.tin_freq|default:"-" }} Hz / {{ a.tin_masking|default:"-" }} dB</p>
-            </div>
-        </div>
-
-        <div class="grid-2">
-            <div class="data-group">
-                <label>Umbral de Acúfeno</label>
-                <p>{{ a.tin_db_hl|default:"-" }} dB HL | {{ a.tin_db_sl|default:"-" }} dB SL</p>
-            </div>
-            <div class="data-group">
-                <label>Inhibición Residual</label>
-                <p>
-                    {% if a.tin_inh_od %}<span class="ear-tag ear-od">OD</span>{% endif %}
-                    {% if a.tin_inh_oi %}<span class="ear-tag ear-oi">OI</span>{% endif %}
-                    {% if a.tin_inh_bi %}<span class="badge-pill">Bilateral</span>{% endif %}
-                    {% if a.tin_inh_tc %}<span class="badge-pill">Total / Corta</span>{% endif %}
-                    {% if not a.tin_inh_od and not a.tin_inh_oi and not a.tin_inh_bi and not a.tin_inh_tc %}-{% endif %}
-                </p>
-            </div>
-        </div>
-    </div>
-
     {% endwith %}
 
-    <!-- SECCIÓN 4: OBSERVACIONES Y ADJUNTOS -->
-    <div class="card">
-        <h3 class="card-header-title">Conclusión y Observaciones Clínicas</h3>
-        <p style="white-space: pre-wrap; margin-bottom: 1.5rem; color: var(--text-main); font-size: 0.95rem;">{{ evaluacion.observaciones|default:"Sin observaciones adicionales registradas." }}</p>
+</main>
 
-        {% if evaluacion.archivo %}
-            <a href="{{ evaluacion.archivo.url }}" target="_blank" class="file-card-link">
-                📄 Abrir documento
-            </a>
-        {% endif %}
-    </div>
+{{ evaluacion.audiometria.audiograma|json_script:"audiograma-data" }}
 
-</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.getElementById("audiograma");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    // 1. CARGA Y NORMALIZACIÓN DE DATOS
+    let rawData = [];
+    const scriptTag = document.getElementById("audiograma-data");
+
+    if (scriptTag && scriptTag.textContent) {
+        try {
+            rawData = JSON.parse(scriptTag.textContent);
+            if (typeof rawData === 'string') rawData = JSON.parse(rawData);
+        } catch (e) {
+            console.error("Error al cargar el JSON:", e);
+            rawData = [];
+        }
+    }
+
+    // Normalizamos los datos para compatibilizar la estructura
+    const data = (Array.isArray(rawData) ? rawData : []).map(p => ({
+        ...p,
+        freq: Number(p.freq),
+        db: Number(p.db),
+        ear: p.ear || (p.oido === "derecho" ? "right" : p.oido === "izquierdo" ? "left" : p.oido),
+        type: p.type || p.tipo
+    }));
+
+    const modoAudiometria = "{{ evaluacion.audiometria.modo|default:'tonal' }}";
+
+    // 2. CONFIGURACIÓN DE FRECUENCIAS Y DIBUJO DE GRILLA
+    const freqs = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000];
+
+    function getX(freq) {
+        const margin = 50;
+        const width = canvas.width - 2 * margin;
+        const index = freqs.indexOf(Number(freq));
+        if (index !== -1) {
+            return margin + index * (width / (freqs.length - 1));
+        }
+        return margin;
+    }
+
+    function getY(db) {
+        const marginTop = 40;
+        const height = canvas.height - 60;
+        return marginTop + ((Number(db) + 10) / 130) * height;
+    }
+
+    function drawGrid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1;
+
+        // Líneas Verticales (Frecuencias)
+        freqs.forEach(f => {
+            const x = getX(f);
+            ctx.beginPath();
+            ctx.moveTo(x, 40);
+            ctx.lineTo(x, canvas.height - 20);
+            ctx.stroke();
+
+            ctx.fillStyle = "#64748b";
+            ctx.font = "12px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(f >= 1000 ? (f / 1000) + "k" : f, x, 25);
+        });
+
+        // Líneas Horizontales (dB)
+        for (let db = -10; db <= 120; db += 10) {
+            const y = getY(db);
+            ctx.beginPath();
+            ctx.moveTo(50, y);
+            ctx.lineTo(canvas.width - 50, y);
+            ctx.stroke();
+
+            ctx.fillStyle = "#64748b";
+            ctx.font = "11px sans-serif";
+            ctx.textAlign = "right";
+            ctx.fillText(db, 40, y + 4);
+        }
+    }
+
+    function drawLines() {
+        const oidos = ["right", "left"];
+        const tipos = ["va", "vo"];
+
+        oidos.forEach(ear => {
+            tipos.forEach(type => {
+                const puntos = data.filter(p => p.ear === ear && p.type === type && !p.extra)
+                                   .sort((a, b) => a.freq - b.freq);
+
+                if (puntos.length < 2) return;
+
+                ctx.beginPath();
+                ctx.strokeStyle = ear === "right" ? "#ef4444" : "#3b82f6";
+                ctx.lineWidth = 2;
+                if (type === "vo") ctx.setLineDash([5, 5]);
+                else ctx.setLineDash([]);
+
+                puntos.forEach((p, index) => {
+                    const x = getX(p.freq);
+                    const y = getY(p.db);
+                    if (index === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+        });
+    }
+
+    function drawPoints() {
+        data.forEach(p => {
+            const x = getX(p.freq);
+            const y = getY(p.db);
+            const isRight = p.ear === "right";
+            const color = isRight ? "#ef4444" : "#3b82f6";
+            const isMasked = Boolean(p.masked || p.enmascarado);
+            const isNoResponse = Boolean(p.no_response || p.sin_respuesta || p.nr);
+            const pType = (p.type || p.tipo || "va").toLowerCase();
+
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2;
+
+            // Helper para dibujar la flecha de "Sin Respuesta" (NR)
+            function drawNRArrow(startX, startY, rightEar) {
+                ctx.beginPath();
+                // Ángulo de la flecha: hacia abajo-izquierda para OD, abajo-derecha para OI
+                const dx = rightEar ? -8 : 8;
+                const dy = 10;
+                const endX = startX + dx;
+                const endY = startY + dy;
+
+                // Línea principal de la flecha
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+
+                // Cabeza de la flecha
+                const angle = Math.atan2(dy, dx);
+                const headLen = 4;
+                ctx.lineTo(endX - headLen * Math.cos(angle - Math.PI / 6), endY - headLen * Math.sin(angle - Math.PI / 6));
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(endX - headLen * Math.cos(angle + Math.PI / 6), endY - headLen * Math.sin(angle + Math.PI / 6));
+                
+                ctx.stroke();
+            }
+
+            // ==========================================
+            // 1. DIBUJO DE VÍA AÉREA (VA)
+            // ==========================================
+            if (pType === "va") {
+                if (isRight) {
+                    if (isMasked) {
+                        // OD Enmascarado: Triángulo
+                        ctx.beginPath();
+                        ctx.moveTo(x, y - 6);
+                        ctx.lineTo(x + 6, y + 5);
+                        ctx.lineTo(x - 6, y + 5);
+                        ctx.closePath();
+                        ctx.stroke();
+                        if (isNoResponse) drawNRArrow(x - 4, y + 5, true);
+                    } else {
+                        // OD Normal: Círculo
+                        ctx.beginPath();
+                        ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                        ctx.stroke();
+                        if (isNoResponse) drawNRArrow(x - 4, y + 4, true);
+                    }
+                } else {
+                    if (isMasked) {
+                        // OI Enmascarado: Cuadrado
+                        ctx.beginPath();
+                        ctx.rect(x - 5, y - 5, 10, 10);
+                        ctx.stroke();
+                        if (isNoResponse) drawNRArrow(x + 5, y + 5, false);
+                    } else {
+                        // OI Normal: Cruz (X)
+                        ctx.beginPath();
+                        ctx.moveTo(x - 6, y - 6);
+                        ctx.lineTo(x + 6, y + 6);
+                        ctx.moveTo(x + 6, y - 6);
+                        ctx.lineTo(x - 6, y + 6);
+                        ctx.stroke();
+                        if (isNoResponse) drawNRArrow(x + 4, y + 4, false);
+                    }
+                }
+            } 
+            // ==========================================
+            // 2. DIBUJO DE VÍA ÓSEA (VO)
+            // ==========================================
+            else if (pType === "vo") {
+                ctx.font = "bold 15px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                if (isRight) {
+                    // OD: '<' si no enmascarado, '[' si enmascarado
+                    const symbol = isMasked ? "[" : "<";
+                    ctx.fillText(symbol, x, y);
+                    if (isNoResponse) drawNRArrow(x - 6, y + 4, true);
+                } else {
+                    // OI: '>' si no enmascarado, ']' si enmascarado
+                    const symbol = isMasked ? "]" : ">";
+                    ctx.fillText(symbol, x, y);
+                    if (isNoResponse) drawNRArrow(x + 6, y + 4, false);
+                }
+            } 
+            // ==========================================
+            // 3. DIBUJO DE LDL (Threshold Discomfort)
+            // ==========================================
+            else if (pType === "ldl") {
+                ctx.beginPath();
+                ctx.moveTo(x - 6, y - 6);
+                ctx.lineTo(x + 6, y - 6);
+                ctx.lineTo(x + 6, y + 4);
+                
+                ctx.moveTo(x - 6, y - 6);
+                ctx.lineTo(x - 6, y + 4);
+                ctx.stroke();
+
+                ctx.font = "9px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("L", x, y + 12);
+
+                if (isNoResponse) {
+                    drawNRArrow(isRight ? x - 6 : x + 6, y + 4, isRight);
+                }
+            }
+        });
+    }
+
+    // 3. EJECUCIÓN DEL DIBUJO
+    drawGrid();
+    if (modoAudiometria !== "campo_libre" && modoAudiometria !== "campo") {
+        drawLines();
+    }
+    drawPoints();
+});
+</script>
 
 </body>
 </html>
