@@ -497,100 +497,173 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function drawLines() {
-        const oidos = ["right", "left"];
-        const tipos = ["va", "vo"];
+/* DIBUJO DE LÍNEAS INTERCONECTADAS (ADAPTADO AL FORM) */
+function drawLines() {
+    if (!ctx) return;
+    const ears = ["right", "left"];
+    const tipos = ["va", "vo"];
 
-        oidos.forEach(ear => {
-            tipos.forEach(type => {
-                const puntos = data.filter(p => p.ear === ear && p.type === type && !p.extra)
-                                   .sort((a, b) => a.freq - b.freq);
+    ears.forEach(ear => {
+        tipos.forEach(type => {
+            // Filtra excluyendo LDL y "Sin Respuesta" (modifier === 'nr') para conectar solo umbrales reales
+            let puntos = data
+                .filter(p => p.ear === ear && p.type === type && p.category !== "ldl" && p.modifier !== "nr")
+                .sort((a, b) => Number(a.freq) - Number(b.freq));
 
-                if (puntos.length < 2) return;
+            if (puntos.length < 2) return;
 
-                ctx.beginPath();
-                ctx.strokeStyle = ear === "right" ? "#ef4444" : "#3b82f6";
-                ctx.lineWidth = 2;
-                if (type === "vo") ctx.setLineDash([5, 5]);
-                else ctx.setLineDash([]);
+            const color = ear === "right" ? "#ef4444" : "#3b82f6";
 
-                puntos.forEach((p, index) => {
-                    const x = getX(p.freq);
-                    const y = getY(p.db);
-                    if (index === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-                ctx.setLineDash([]);
-            });
-        });
-    }
-
-    function drawPoints() {
-        data.forEach(p => {
-            const x = getX(p.freq);
-            const y = getY(p.db);
-            const isRight = p.ear === "right";
-            const color = isRight ? "#ef4444" : "#3b82f6";
-            const isMasked = Boolean(p.masked || p.enmascarado);
-            const isNoResponse = Boolean(p.no_response || p.sin_respuesta || p.nr);
-            const pType = (p.type || p.tipo || "va").toLowerCase();
-
+            ctx.save();
             ctx.strokeStyle = color;
-            ctx.fillStyle = color;
             ctx.lineWidth = 2;
+            ctx.setLineDash(type === "vo" ? [6, 4] : []); // Vía ósea punteada
 
-            // Helper para dibujar la flecha de "Sin Respuesta" (NR)
-            function drawNRArrow(startX, startY, rightEar) {
+            ctx.beginPath();
+            let started = false;
+
+            // Recorremos las frecuencias conocidas para trazar líneas de forma continua
+            const freqsList = [125, 250, 500, 1000, 2000, 3000, 4000, 6000, 8000];
+            freqsList.forEach(freq => {
+                const p = puntos.find(pt => Number(pt.freq) === Number(freq));
+
+                if (!p) {
+                    started = false; // Rompe la línea si falta una frecuencia contigua
+                    return;
+                }
+
+                const x = getX(freq);
+                const y = getY(p.db);
+
+                if (!started) {
+                    ctx.moveTo(x, y);
+                    started = true;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+            ctx.restore();
+        });
+    });
+}
+
+        /* DIBUJO DE PUNTOS Y SÍMBOLOS CLÍNICOS (ADAPTADO AL FORM) */
+        function drawPoints() {
+            if (!ctx) return;
+
+            // Helper: Dibuja la flecha diagonal para "Sin Respuesta" (modifier === 'nr')
+            function drawNRArrow(x, y, isRight, color) {
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+
+                const dx = isRight ? -10 : 10;
+                const dy = 12;
+                const endX = x + dx;
+                const endY = y + dy;
+
                 ctx.beginPath();
-                // Ángulo de la flecha: hacia abajo-izquierda para OD, abajo-derecha para OI
-                const dx = rightEar ? -8 : 8;
-                const dy = 10;
-                const endX = startX + dx;
-                const endY = startY + dy;
-
-                // Línea principal de la flecha
-                ctx.moveTo(startX, startY);
+                ctx.moveTo(x, y);
                 ctx.lineTo(endX, endY);
 
-                // Cabeza de la flecha
                 const angle = Math.atan2(dy, dx);
-                const headLen = 4;
+                const headLen = 5;
                 ctx.lineTo(endX - headLen * Math.cos(angle - Math.PI / 6), endY - headLen * Math.sin(angle - Math.PI / 6));
                 ctx.moveTo(endX, endY);
                 ctx.lineTo(endX - headLen * Math.cos(angle + Math.PI / 6), endY - headLen * Math.sin(angle + Math.PI / 6));
-                
+
                 ctx.stroke();
+                ctx.restore();
             }
 
-            // ==========================================
-            // 1. DIBUJO DE VÍA AÉREA (VA)
-            // ==========================================
-            if (pType === "va") {
+            // Helper: Dibuja el símbolo técnico de LDL (Loudness Discomfort Level)
+            function drawLDL(x, y, color) {
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = 2;
+
+                const size = 6;
+                ctx.beginPath();
+                ctx.moveTo(x - size, y + size);
+                ctx.lineTo(x - size, y - size);
+                ctx.lineTo(x + size, y - size);
+                ctx.lineTo(x + size, y + size);
+                ctx.stroke();
+
+                ctx.font = "bold 10px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                ctx.fillText("L", x, y + size + 2);
+                ctx.restore();
+            }
+
+            data.forEach(p => {
+                const x = getX(p.freq);
+                const y = getY(p.db);
+                const isRight = p.ear === "right";
+                const color = isRight ? "#ef4444" : "#3b82f6";
+                const isMasked = Boolean(p.masked || p.enmascarado);
+                const isNR = p.modifier === "nr" || Boolean(p.no_response || p.sin_respuesta || p.nr);
+                const category = p.category || (p.type === "ldl" ? "ldl" : p.type);
+                const type = p.type || "va";
+
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = 2;
+
+                // 1. CASO: LDL
+                if (category === "ldl") {
+                    drawLDL(x, y, color);
+                    if (isNR) {
+                        drawNRArrow(isRight ? x - 6 : x + 6, y + 6, isRight, color);
+                    }
+                    ctx.restore();
+                    return;
+                }
+
+                // 2. CASO: VÍA ÓSEA (VO)
+                if (type === "vo") {
+                    ctx.font = "bold 16px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+
+                    const symbol = isRight ? (isMasked ? "[" : "<") : (isMasked ? "]" : ">");
+                    ctx.fillText(symbol, x, y);
+
+                    if (isNR) {
+                        drawNRArrow(isRight ? x - 8 : x + 8, y + 4, isRight, color);
+                    }
+                    ctx.restore();
+                    return;
+                }
+
+                // 3. CASO: VÍA AÉREA (VA)
                 if (isRight) {
                     if (isMasked) {
                         // OD Enmascarado: Triángulo
                         ctx.beginPath();
-                        ctx.moveTo(x, y - 6);
-                        ctx.lineTo(x + 6, y + 5);
-                        ctx.lineTo(x - 6, y + 5);
+                        ctx.moveTo(x, y - 7);
+                        ctx.lineTo(x - 7, y + 7);
+                        ctx.lineTo(x + 7, y + 7);
                         ctx.closePath();
                         ctx.stroke();
-                        if (isNoResponse) drawNRArrow(x - 4, y + 5, true);
+                        if (isNR) drawNRArrow(x - 5, y + 5, true, color);
                     } else {
                         // OD Normal: Círculo
                         ctx.beginPath();
-                        ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                        ctx.arc(x, y, 7, 0, Math.PI * 2);
                         ctx.stroke();
-                        if (isNoResponse) drawNRArrow(x - 4, y + 4, true);
+                        if (isNR) drawNRArrow(x - 5, y + 5, true, color);
                     }
                 } else {
                     if (isMasked) {
                         // OI Enmascarado: Cuadrado
-                        ctx.beginPath();
-                        ctx.rect(x - 5, y - 5, 10, 10);
-                        ctx.stroke();
-                        if (isNoResponse) drawNRArrow(x + 5, y + 5, false);
+                        ctx.strokeRect(x - 6, y - 6, 12, 12);
+                        if (isNR) drawNRArrow(x + 5, y + 5, false, color);
                     } else {
                         // OI Normal: Cruz (X)
                         ctx.beginPath();
@@ -599,53 +672,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         ctx.moveTo(x + 6, y - 6);
                         ctx.lineTo(x - 6, y + 6);
                         ctx.stroke();
-                        if (isNoResponse) drawNRArrow(x + 4, y + 4, false);
+                        if (isNR) drawNRArrow(x + 5, y + 5, false, color);
                     }
                 }
-            } 
-            // ==========================================
-            // 2. DIBUJO DE VÍA ÓSEA (VO)
-            // ==========================================
-            else if (pType === "vo") {
-                ctx.font = "bold 15px sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
 
-                if (isRight) {
-                    // OD: '<' si no enmascarado, '[' si enmascarado
-                    const symbol = isMasked ? "[" : "<";
-                    ctx.fillText(symbol, x, y);
-                    if (isNoResponse) drawNRArrow(x - 6, y + 4, true);
-                } else {
-                    // OI: '>' si no enmascarado, ']' si enmascarado
-                    const symbol = isMasked ? "]" : ">";
-                    ctx.fillText(symbol, x, y);
-                    if (isNoResponse) drawNRArrow(x + 6, y + 4, false);
-                }
-            } 
-            // ==========================================
-            // 3. DIBUJO DE LDL (Threshold Discomfort)
-            // ==========================================
-            else if (pType === "ldl") {
-                ctx.beginPath();
-                ctx.moveTo(x - 6, y - 6);
-                ctx.lineTo(x + 6, y - 6);
-                ctx.lineTo(x + 6, y + 4);
-                
-                ctx.moveTo(x - 6, y - 6);
-                ctx.lineTo(x - 6, y + 4);
-                ctx.stroke();
-
-                ctx.font = "9px sans-serif";
-                ctx.textAlign = "center";
-                ctx.fillText("L", x, y + 12);
-
-                if (isNoResponse) {
-                    drawNRArrow(isRight ? x - 6 : x + 6, y + 4, isRight);
-                }
-            }
-        });
-    }
+                ctx.restore();
+            });
+        }
 
     // 3. EJECUCIÓN DEL DIBUJO
     drawGrid();
