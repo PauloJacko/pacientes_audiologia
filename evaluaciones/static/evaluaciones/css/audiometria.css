@@ -822,3 +822,194 @@ select {
     font-weight: bold;
     margin-top: 10px;
 }
+
+/* =========================================================
+   OVERRIDE PARA IMPRESIÓN A4 EN 1 SOLA HOJA (SIN COLISIONES)
+   ========================================================= */
+@media print {
+    /* 1. CONFIGURACIÓN GENERAL Y REINICIO DE MÁRGENES */
+    @page {
+        size: A4 portrait;
+        margin: 4mm 6mm 4mm 6mm !important;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        box-sizing: border-box !important;
+    }
+
+    html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        height: auto !important;
+        font-size: 7.5pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* Anular ancho fijo del dashboard */
+    .dashboard-container, .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 2. OCULTAR ELEMENTOS INTERACTIVOS DE LA PANTALLA */
+    .upload-inline,
+    .config-bar,
+    .header-right,
+    .btn-back,
+    .btn-logout,
+    .btn-submit,
+    .form-actions,
+    .audio-controls,
+    button,
+    input[type="file"] {
+        display: none !important;
+    }
+
+    /* 3. TRANSFORMAR EL HERO AZUL GIGANTE EN UN BANNER MEDICO DELGADO */
+    .header {
+        padding: 4px 0 !important;
+        border-bottom: 1px solid #000 !important;
+        background: transparent !important;
+        margin-bottom: 6px !important;
+    }
+
+    .logo-header {
+        height: 26px !important;
+    }
+
+    .patient-hero {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 4px 8px !important;
+        border: 1px solid #000000 !important;
+        border-radius: 4px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .patient-info h1 {
+        font-size: 1rem !important;
+        color: #000000 !important;
+    }
+
+    .patient-info p {
+        font-size: 0.75rem !important;
+        color: #333333 !important;
+    }
+
+    .patient-info .avatar {
+        display: none !important; /* Quita el círculo azul del avatar para ahorrar espacio */
+    }
+
+    /* 4. ANULAR EL GRID FIJO DE 320PX Y PASAR A 2 COLUMNAS EQUITATIVAS */
+    .main-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; /* Anula los 320px y reparte 50/50 */
+        gap: 8px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .audiometria-layout {
+        display: block !important;
+    }
+
+    /* 5. COMPACTAR CARDS, TABLAS Y PTP */
+    .card {
+        background: #ffffff !important;
+        border: 1px solid #64748b !important;
+        box-shadow: none !important;
+        border-radius: 4px !important;
+        padding: 4px 6px !important;
+        margin-bottom: 4px !important;
+        page-break-inside: avoid !important;
+    }
+
+    .card h3, .acu-title {
+        font-size: 0.75rem !important;
+        margin: 0 0 4px 0 !important;
+        padding-bottom: 2px !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+        color: #000000 !important;
+    }
+
+    /* Reducir el gráfico para dar espacio a todo */
+    .audio-chart-container, #audiograma, canvas {
+        max-height: 175px !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Compactar PTP y quitar fondos pesados */
+    .ptp-container { gap: 4px !important; }
+    .ptp-box {
+        padding: 4px !important;
+        border-radius: 4px !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    .ptp-inputs input {
+        padding: 2px 4px !important;
+        font-size: 7.5pt !important;
+        height: auto !important;
+    }
+
+    /* Compactar Acumetría y Tinnitometría */
+    .acumetria-wrapper, .extra-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+    }
+    .acu-block { padding: 4px !important; background: transparent !important; }
+    .rinne-row, .weber-row { padding: 2px !important; gap: 4px !important; }
+
+    .tinni-table { border: 1px solid #000 !important; }
+    .tinni-row { grid-template-columns: repeat(4, 1fr) !important; } /* Pasa de 8 a 4 columnas para no apretar */
+    .content-row { min-height: auto !important; }
+    .tinni-col { padding: 2px 4px !important; }
+
+    /* Observaciones */
+    .obs-card textarea {
+        height: 35px !important;
+        padding: 4px !important;
+        font-size: 7.5pt !important;
+        border: 1px solid #64748b !important;
+    }
+
+    /* 6. PIE DE PÁGINA (FIRMA Y TIMBRE FONOAUDIÓLOGA) */
+    .professional-signature-container, .signature-container {
+        display: flex !important;
+        justify-content: flex-end !important;
+        margin-top: 8px !important;
+        padding-top: 0 !important;
+        page-break-inside: avoid !important;
+    }
+
+    .signature-box {
+        width: 190px !important;
+        text-align: center !important;
+    }
+
+    .signature-line {
+        border-bottom: 1.5px solid #000000 !important;
+        height: 30px !important; /* Espacio exacto para el timbre */
+        margin-bottom: 2px !important;
+    }
+
+    .prof-title {
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        color: #000000 !important;
+        margin: 0 !important;
+    }
+
+    .prof-sub {
+        font-size: 0.65rem !important;
+        color: #475569 !important;
+        margin: 0 !important;
+    }
+}

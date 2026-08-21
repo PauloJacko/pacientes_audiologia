@@ -6,154 +6,493 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vista Previa Audiometría | Panel Clínico</title>
     <link rel="stylesheet" href="{% static 'evaluaciones/css/audiometria.css' %}">
-    <style>
-        /* ==========================================
-           ESTILOS Y MEJORAS VISUALES MODO LECTURA
-           ========================================== */
-        
-        /* 1. Reset general de campos en modo lectura */
-        .read-only-view input, 
-        .read-only-view textarea, 
-        .read-only-view select {
-            pointer-events: none;
-            background-color: #f8fafc !important;
-            border: 1px solid #cbd5e1 !important;
-            color: #1e293b !important;
-            font-weight: 600;
-        }
+<style>
+    /* =========================================================
+       1. READ-ONLY VIEW
+       ========================================================= */
 
-        .read-only-view button.ctrl-btn,
-        .read-only-view button.rinne-btn,
-        .read-only-view button.arrow {
-            pointer-events: none;
-            opacity: 0.85;
-        }
+    .read-only-view input,
+    .read-only-view textarea,
+    .read-only-view select {
+        pointer-events: none;
+        background-color: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        font-weight: 600;
+        box-shadow: none !important;
+    }
 
-        .badge-mode {
-            padding: 6px 14px;
-            background: #e2e8f0;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: #334155;
-            letter-spacing: 0.5px;
-        }
+    .read-only-view button.ctrl-btn,
+    .read-only-view button.rinne-btn,
+    .read-only-view button.arrow {
+        pointer-events: none;
+        opacity: 0.85;
+    }
 
-        /* 2. Distinctivos y Bordes por Oído */
-        .tag.red, .ear-label.right, .ptp-box.od {
-            border-left: 4px solid #dc2626 !important;
-        }
 
-        .tag.blue, .ear-label.left, .ptp-box.oi {
-            border-left: 4px solid #2563eb !important;
-        }
+    /* =========================================================
+       2. BADGES & TAGS
+       ========================================================= */
 
-        .ptp-box {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+    .badge-mode {
+        padding: 5px 12px;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #334155;
+        letter-spacing: 0.5px;
+    }
 
-        .ptp-box.od .ptp-title {
-            color: #dc2626;
-            font-weight: 700;
-        }
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 8px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        border-radius: 4px;
+        letter-spacing: 0.5px;
+    }
 
-        .ptp-box.oi .ptp-title {
-            color: #2563eb;
-            font-weight: 700;
-        }
+    /* Right / Red */
+    .tag.red,
+    .ear-label.right {
+        background-color: #fef2f2 !important;
+        color: #991b1b !important;
+        border: 1px solid #fca5a5 !important;
+        border-left: 4px solid #dc2626 !important;
+    }
 
-        /* 3. Estilización destacada de Checkboxes (Tinnitumetría) */
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #475569;
-            cursor: default;
-            user-select: none;
-            padding: 3px 6px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
+    /* Left / Blue */
+    .tag.blue,
+    .ear-label.left {
+        background-color: #eff6ff !important;
+        color: #1e40af !important;
+        border: 1px solid #93c5fd !important;
+        border-left: 4px solid #2563eb !important;
+    }
 
-        .check-item input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid #94a3b8 !important;
-            border-radius: 4px;
-            outline: none;
-            background-color: #ffffff !important;
-            position: relative;
-            cursor: default;
-        }
 
-        .check-item input[type="checkbox"]:checked {
-            background-color: #2563eb !important;
-            border-color: #2563eb !important;
-        }
+    /* =========================================================
+       3. PTP BOXES
+       ========================================================= */
 
-        .check-item input[type="checkbox"]:checked::after {
-            content: '';
-            position: absolute;
-            left: 5px;
-            top: 2px;
-            width: 4px;
-            height: 8px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
+    .ptp-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
 
-        /* Resaltar la fila de checkbox activa */
-        .check-item:has(input:checked) {
-            background-color: #eff6ff;
-            color: #1e3a8a;
-            font-weight: 600;
-        }
+    .ptp-box.od {
+        border-left: 4px solid #dc2626 !important;
+    }
 
-        /* 4. Mejoras en Tablas y Grillas */
-        .tinni-table, .deterioro-container, .acumetria-wrapper {
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #ffffff;
-        }
+    .ptp-box.oi {
+        border-left: 4px solid #2563eb !important;
+    }
 
-        .tinni-row.header-row, .det-head {
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
+    .ptp-box.od .ptp-title {
+        color: #991b1b;
+        font-weight: 700;
+    }
 
-        .acu-block {
-            border-bottom: 1px solid #f1f5f9;
-            padding: 12px;
-        }
+    .ptp-box.oi .ptp-title {
+        color: #1e40af;
+        font-weight: 700;
+    }
 
-        .acu-block:last-child {
-            border-bottom: none;
-        }
 
-        .input-unit {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+    /* =========================================================
+       4. CHECKBOX ITEMS
+       ========================================================= */
 
-        .input-unit span {
-            font-size: 0.8rem;
-            color: #64748b;
-            font-weight: 600;
-        }
-    </style>
+    .check-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        border-radius: 4px;
+
+        font-size: 0.9rem;
+        color: #334155;
+
+        cursor: default;
+        user-select: none;
+
+        transition: background 0.2s;
+    }
+
+    .check-item input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+
+        width: 18px;
+        height: 18px;
+
+        border: 2px solid #64748b !important;
+        border-radius: 4px;
+
+        outline: none;
+        background-color: #ffffff !important;
+
+        position: relative;
+        cursor: default;
+    }
+
+    .check-item input[type="checkbox"]:checked {
+        background-color: #1e293b !important;
+        border-color: #1e293b !important;
+    }
+
+    .check-item input[type="checkbox"]:checked::after {
+        content: '';
+
+        position: absolute;
+        left: 5px;
+        top: 2px;
+
+        width: 4px;
+        height: 8px;
+
+        border: solid white;
+        border-width: 0 2px 2px 0;
+
+        transform: rotate(45deg);
+    }
+
+    .check-item:has(input:checked) {
+        background-color: #f1f5f9;
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       5. TABLES & CONTAINERS
+       ========================================================= */
+
+    .tinni-table,
+    .deterioro-container,
+    .acumetria-wrapper,
+    .medical-table {
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #ffffff;
+    }
+
+    .tinni-row.header-row,
+    .det-head,
+    .table-head {
+        background-color: #f1f5f9;
+        color: #334155;
+
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+
+        border-bottom: 1px solid #cbd5e1;
+    }
+
+    .acu-block {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .acu-block:last-child {
+        border-bottom: none;
+    }
+
+
+    /* =========================================================
+       6. INPUTS WITH UNITS
+       ========================================================= */
+
+    .input-unit {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .input-unit span {
+        font-size: 0.8rem;
+        color: #475569;
+        font-weight: 600;
+    }
+
+
+    /* =========================================================
+       7. DOWNLOAD PDF BUTTON
+       ========================================================= */
+
+    .btn-download-pdf {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        background: linear-gradient(
+            135deg,
+            #0f172a 0%,
+            #1e293b 100%
+        );
+
+        color: #ffffff !important;
+
+        border: 1px solid #334155;
+        border-radius: 8px;
+
+        padding: 9px 16px;
+
+        font-weight: 600;
+        font-size: 0.88rem;
+
+        cursor: pointer;
+
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+
+        text-decoration: none;
+    }
+
+    .btn-download-pdf:hover {
+        background: linear-gradient(
+            135deg,
+            #1e293b 0%,
+            #334155 100%
+        );
+
+        transform: translateY(-1px);
+
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-download-pdf svg {
+        stroke: #ffffff;
+    }
+
+
+    /* =========================================================
+       8. PROFESSIONAL SIGNATURE
+       ========================================================= */
+
+    .professional-signature-container {
+        display: flex;
+        justify-content: flex-end;
+
+        margin-top: 40px;
+        padding-top: 20px;
+
+        page-break-inside: avoid;
+    }
+
+    .signature-box {
+        width: 280px;
+        text-align: center;
+    }
+
+    .signature-line {
+        height: 60px;
+
+        margin-bottom: 8px;
+
+        border-bottom: 2px dashed #94a3b8;
+    }
+
+    .prof-title {
+        margin: 0;
+
+        font-weight: 700;
+        font-size: 0.9rem;
+
+        color: #0f172a;
+    }
+
+    .prof-sub {
+        margin-top: 2px;
+
+        font-size: 0.78rem;
+        color: #64748b;
+    }
+
+
+    /* =========================================================
+       9. PRINT STYLES
+       ========================================================= */
+
+@media print {
+    /* ---------- 1. Configuración de Hoja A4 Única ---------- */
+    @page {
+        size: A4 portrait;
+        margin: 5mm 8mm 5mm 8mm !important; /* Margen superior e inferior mínimo */
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        box-sizing: border-box !important;
+    }
+
+    html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        height: auto !important;
+        font-size: 8pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* ---------- 2. Eliminar Elementos de Interfaz y Barras Grandes ---------- */
+    .upload-inline,
+    .config-bar,
+    .header-right,
+    .btn-back,
+    .btn-download-pdf,
+    .mode-badge,
+    button {
+        display: none !important;
+    }
+
+    /* Limpiar la cabecera azul gigante */
+    .header, .header-bar, .patient-card {
+        background: #ffffff !important;
+        border: 1px solid #000000 !important;
+        border-top: 1px solid #000000 !important; /* Quita el borde azul grueso */
+        padding: 4px 8px !important;
+        margin-bottom: 6px !important;
+        box-shadow: none !important;
+    }
+
+    .header-text .title, .title {
+        font-size: 1.1rem !important;
+        color: #000000 !important;
+    }
+
+    .logo-header {
+        height: 28px !important; /* Logo compacto */
+    }
+
+    /* ---------- 3. Layout de 2 Columnas para Ahorrar Espacio Vertical ---------- */
+    .grid-2, .main-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        margin-bottom: 4px !important;
+    }
+
+    /* Reducción drástica de tarjetas y líneas separadoras */
+    .card {
+        background: #ffffff !important;
+        border: 1px solid #64748b !important;
+        box-shadow: none !important;
+        padding: 4px 6px !important;
+        margin-bottom: 4px !important;
+        border-radius: 3px !important;
+        page-break-inside: avoid !important;
+    }
+
+    .card-header-title, .card-title {
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        margin: 0 0 4px 0 !important;
+        padding-bottom: 2px !important;
+        border-bottom: 1px solid #cbd5e1 !important; /* Línea separadora muy delgada */
+        text-transform: uppercase !important;
+    }
+
+    /* ---------- 4. Optimización de Audiograma y Tablas Pequeñas ---------- */
+    /* Reduce la caja gigante del audiograma sin distorsionar el lienzo */
+    .audiogram-container, .audiogram-card {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    #audiograma, canvas {
+        max-height: 180px !important; /* Alto justo para el gráfico */
+        width: 100% !important;
+        max-width: 420px !important;
+        height: auto !important;
+    }
+
+    /* Tablas súper compactas (PTP, Rinne, Weber, Tinnitometría) */
+    table.clinical-table, table.data-table, .tinni-table {
+        font-size: 7.5pt !important;
+        margin-top: 2px !important;
+        margin-bottom: 2px !important;
+        border: 1px solid #000000 !important;
+    }
+
+    table.clinical-table th, table.clinical-table td,
+    table.data-table th, table.data-table td {
+        padding: 2px 4px !important; /* Relleno mínimo en celdas */
+        height: auto !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    .ear-tag, .badge-pill, .tag {
+        padding: 1px 4px !important;
+        font-size: 0.65rem !important;
+    }
+
+    /* Bloque de Observaciones */
+    .notes-box, .observation-field {
+        font-size: 7.5pt !important;
+        padding: 4px !important;
+        min-height: 35px !important;
+        border: 1px solid #64748b !important;
+    }
+
+    /* ---------- 5. Firma y Timbre Fonoaudiológico al Pie ---------- */
+    .professional-signature-container, .signature-container {
+        display: flex !important;
+        justify-content: flex-end !important;
+        margin-top: 10px !important;
+        padding-top: 0 !important;
+        page-break-inside: avoid !important;
+    }
+
+    .signature-box {
+        width: 200px !important;
+        text-align: center !important;
+    }
+
+    .signature-line {
+        border-bottom: 1.5px solid #000000 !important;
+        height: 35px !important; /* Alto cómodo para el timbre/firma física */
+        margin-bottom: 2px !important;
+    }
+
+    .prof-title {
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        color: #000000 !important;
+        margin: 0 !important;
+    }
+
+    .prof-sub {
+        font-size: 0.65rem !important;
+        color: #475569 !important;
+        margin: 0 !important;
+    }
+}
+</style>
 </head>
 <body class="read-only-view">
 
@@ -167,7 +506,16 @@
     </div>
     <div class="header-right">
         <a href="{% url 'ver_paciente' evaluacion.paciente.id %}" class="btn-back">← Volver a la ficha</a>
-        <a href="{% url 'evaluaciones:editar_audiometria' evaluacion.id %}" class="btn-submit" style="...">Editar Examen</a>
+        
+        <!-- Botón de Descargar PDF -->
+        <button type="button" class="btn-download-pdf" onclick="window.print();">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Descargar PDF</span>
+        </button>
     </div>
 </div>
 
@@ -409,6 +757,15 @@
     </div>
     {% endwith %}
 
+<!-- SECCIÓN DE FIRMA -->
+<div class="professional-signature-container">
+    <div class="signature-box">
+        <div class="signature-line"></div>
+        <p class="prof-title">Fonoaudióloga / Profesional Evaluador</p>
+        <p class="prof-sub">Firma y Timbre Profesional</p>
+    </div>
+</div>
+
 </main>
 
 {{ evaluacion.audiometria.audiograma|json_script:"audiograma-data" }}
@@ -578,107 +935,108 @@ function drawLines() {
                 ctx.restore();
             }
 
-            // Helper: Dibuja el símbolo técnico de LDL (Loudness Discomfort Level)
-            function drawLDL(x, y, color) {
-                ctx.save();
-                ctx.strokeStyle = color;
-                ctx.fillStyle = color;
-                ctx.lineWidth = 2;
+// Helper: Dibuja el LDL como semi-triángulo identico al audiometria_form.html
+    function drawLDL(x, y, ear, color) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
 
-                const size = 6;
-                ctx.beginPath();
-                ctx.moveTo(x - size, y + size);
-                ctx.lineTo(x - size, y - size);
-                ctx.lineTo(x + size, y - size);
-                ctx.lineTo(x + size, y + size);
-                ctx.stroke();
-
-                ctx.font = "bold 10px sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "top";
-                ctx.fillText("L", x, y + size + 2);
-                ctx.restore();
-            }
-
-            data.forEach(p => {
-                const x = getX(p.freq);
-                const y = getY(p.db);
-                const isRight = p.ear === "right";
-                const color = isRight ? "#ef4444" : "#3b82f6";
-                const isMasked = Boolean(p.masked || p.enmascarado);
-                const isNR = p.modifier === "nr" || Boolean(p.no_response || p.sin_respuesta || p.nr);
-                const category = p.category || (p.type === "ldl" ? "ldl" : p.type);
-                const type = p.type || "va";
-
-                ctx.save();
-                ctx.strokeStyle = color;
-                ctx.fillStyle = color;
-                ctx.lineWidth = 2;
-
-                // 1. CASO: LDL
-                if (category === "ldl") {
-                    drawLDL(x, y, color);
-                    if (isNR) {
-                        drawNRArrow(isRight ? x - 6 : x + 6, y + 6, isRight, color);
-                    }
-                    ctx.restore();
-                    return;
-                }
-
-                // 2. CASO: VÍA ÓSEA (VO)
-                if (type === "vo") {
-                    ctx.font = "bold 16px sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-
-                    const symbol = isRight ? (isMasked ? "[" : "<") : (isMasked ? "]" : ">");
-                    ctx.fillText(symbol, x, y);
-
-                    if (isNR) {
-                        drawNRArrow(isRight ? x - 8 : x + 8, y + 4, isRight, color);
-                    }
-                    ctx.restore();
-                    return;
-                }
-
-                // 3. CASO: VÍA AÉREA (VA)
-                if (isRight) {
-                    if (isMasked) {
-                        // OD Enmascarado: Triángulo
-                        ctx.beginPath();
-                        ctx.moveTo(x, y - 7);
-                        ctx.lineTo(x - 7, y + 7);
-                        ctx.lineTo(x + 7, y + 7);
-                        ctx.closePath();
-                        ctx.stroke();
-                        if (isNR) drawNRArrow(x - 5, y + 5, true, color);
-                    } else {
-                        // OD Normal: Círculo
-                        ctx.beginPath();
-                        ctx.arc(x, y, 7, 0, Math.PI * 2);
-                        ctx.stroke();
-                        if (isNR) drawNRArrow(x - 5, y + 5, true, color);
-                    }
-                } else {
-                    if (isMasked) {
-                        // OI Enmascarado: Cuadrado
-                        ctx.strokeRect(x - 6, y - 6, 12, 12);
-                        if (isNR) drawNRArrow(x + 5, y + 5, false, color);
-                    } else {
-                        // OI Normal: Cruz (X)
-                        ctx.beginPath();
-                        ctx.moveTo(x - 6, y - 6);
-                        ctx.lineTo(x + 6, y + 6);
-                        ctx.moveTo(x + 6, y - 6);
-                        ctx.lineTo(x - 6, y + 6);
-                        ctx.stroke();
-                        if (isNR) drawNRArrow(x + 5, y + 5, false, color);
-                    }
-                }
-
-                ctx.restore();
-            });
+        const size = 10;
+        if (ear === "right") {
+            ctx.moveTo(x, y - size);
+            ctx.lineTo(x - size, y + size);
+            ctx.lineTo(x, y + size);
+        } else {
+            ctx.moveTo(x, y - size);
+            ctx.lineTo(x + size, y + size);
+            ctx.lineTo(x, y + size);
         }
+
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    data.forEach(p => {
+        const x = getX(p.freq);
+        const y = getY(p.db);
+        const isRight = p.ear === "right";
+        const color = isRight ? "#ef4444" : "#3b82f6";
+        const isMasked = Boolean(p.masked || p.enmascarado);
+        const isNR = p.modifier === "nr" || Boolean(p.no_response || p.sin_respuesta || p.nr);
+        const category = p.category || (p.type === "ldl" ? "ldl" : p.type);
+        const type = p.type || "va";
+
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2;
+
+        // 1. CASO: LDL (Dibuja el semi-triángulo según el oído)
+        if (category === "ldl") {
+            drawLDL(x, y, p.ear, color);
+            if (isNR) {
+                drawNRArrow(isRight ? x - 6 : x + 6, y + 6, isRight, color);
+            }
+            ctx.restore();
+            return;
+        }
+
+        // 2. CASO: VÍA ÓSEA (VO)
+        if (type === "vo") {
+            ctx.font = "bold 16px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            const symbol = isRight ? (isMasked ? "[" : "<") : (isMasked ? "]" : ">");
+            ctx.fillText(symbol, x, y);
+
+            if (isNR) {
+                drawNRArrow(isRight ? x - 8 : x + 8, y + 4, isRight, color);
+            }
+            ctx.restore();
+            return;
+        }
+
+        // 3. CASO: VÍA AÉREA (VA)
+        if (isRight) {
+            if (isMasked) {
+                // OD Enmascarado: Triángulo
+                ctx.beginPath();
+                ctx.moveTo(x, y - 7);
+                ctx.lineTo(x - 7, y + 7);
+                ctx.lineTo(x + 7, y + 7);
+                ctx.closePath();
+                ctx.stroke();
+                if (isNR) drawNRArrow(x - 5, y + 5, true, color);
+            } else {
+                // OD Normal: Círculo
+                ctx.beginPath();
+                ctx.arc(x, y, 7, 0, Math.PI * 2);
+                ctx.stroke();
+                if (isNR) drawNRArrow(x - 5, y + 5, true, color);
+            }
+        } else {
+            if (isMasked) {
+                // OI Enmascarado: Cuadrado
+                ctx.strokeRect(x - 6, y - 6, 12, 12);
+                if (isNR) drawNRArrow(x + 5, y + 5, false, color);
+            } else {
+                // OI Normal: Cruz (X)
+                ctx.beginPath();
+                ctx.moveTo(x - 6, y - 6);
+                ctx.lineTo(x + 6, y + 6);
+                ctx.moveTo(x + 6, y - 6);
+                ctx.lineTo(x - 6, y + 6);
+                ctx.stroke();
+                if (isNR) drawNRArrow(x + 5, y + 5, false, color);
+            }
+        }
+
+        ctx.restore();
+    });
+}
 
     // 3. EJECUCIÓN DEL DIBUJO
     drawGrid();
