@@ -235,38 +235,40 @@
         {% endfor %}
     </div>
 
-    <!-- AUDIO -->
-    <div class="eval-column">
-        <h3 class="eval-title audio">Audiometrías</h3>
+ <!-- AUDIO -->
+<div class="eval-column">
+    <h3 class="eval-title audio">Audiometrías</h3>
 
-        {% for e in audiometrias %}
-        <div class="eval-card">
+    {% for e in audiometrias %}
+    <div class="eval-card">
 
-            <div class="eval-top">
-                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
+        <div class="eval-top">
+            <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
 
-                <div class="actions">
-                    <a href="{% url 'evaluaciones:ver_audiometria' e.id %}" class="btn small">Ver</a>
-                    <a href="{% url 'evaluaciones:editar_audiometria' e.id %}" class="btn small edit">Editar</a>
-                    <a href="{% url 'evaluaciones:eliminar_evaluacion' e.id %}" class="btn small delete">Eliminar</a>
-                </div>
+            <div class="actions">
+
+                <a href="{% url 'evaluaciones:ver_audiometria_pdf' e.id %}" target="_blank" class="btn small">Ver PDF</a>
+
+                <a href="{% url 'evaluaciones:editar_audiometria' e.id %}" class="btn small edit">Editar</a>
+                <a href="{% url 'evaluaciones:eliminar_evaluacion' e.id %}" class="btn small delete">Eliminar</a>
             </div>
-
-            <div class="eval-body">
-                <p>{{ e.observaciones|default:"Sin observaciones" }}</p>
-
-                {% if e.archivo %}
-                    <a href="{{ e.archivo.url }}" target="_blank" class="file-link">
-                        📎 Ver archivo adjunto
-                    </a>
-                {% endif %}
-            </div>
-
         </div>
-        {% empty %}
-            <p class="empty">Sin registros</p>
-        {% endfor %}
+
+        <div class="eval-body">
+            <p>{{ e.observaciones|default:"Sin observaciones" }}</p>
+
+            {% if e.archivo %}
+                <a href="{{ e.archivo.url }}" target="_blank" class="file-link">
+                    📎 Ver archivo adjunto
+                </a>
+            {% endif %}
+        </div>
+
     </div>
+    {% empty %}
+        <p class="empty">Sin registros</p>
+    {% endfor %}
+</div>
 
 
     <!-- IMPEDANCIA -->

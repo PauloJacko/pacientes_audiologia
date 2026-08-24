@@ -118,6 +118,10 @@ def ver_audiometria(request, id):
         'audiometria': evaluacion.audiometria
     })
 
+def ver_audiometria_pdf(request, id):
+    evaluacion = get_object_or_404(Evaluacion, id=id)
+    return render(request, 'evaluaciones/audiometria_pdf.html', {'evaluacion': evaluacion})
+
 def editar_audiometria(request, id):
     evaluacion = get_object_or_404(Evaluacion, id=id)
     audiometria = evaluacion.audiometria

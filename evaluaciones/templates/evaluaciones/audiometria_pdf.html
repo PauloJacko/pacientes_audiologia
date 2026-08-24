@@ -1,0 +1,431 @@
+{% load static %}
+{% with a=evaluacion.audiometria %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Protocolo de Audiometría - {{ evaluacion.paciente.nombre }}</title>
+    <style>
+        /* CONFIGURACIÓN A4 VERTICAL CON MÁRGENES SEGUROS DE IMPRESIÓN */
+        @page {
+            size: A4 portrait;
+            margin: 12mm 15mm 12mm 15mm; /* Ampliado para evitar cortes laterales en impresoras */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #ffffff;
+            color: #000000;
+            font-size: 8pt;
+            line-height: 1.1;
+            width: 100%;
+        }
+
+        /* BOTÓN FLOTANTE PARA IMPRIMIR (SÓLO EN PANTALLA) */
+        .no-print {
+            background: #1e293b;
+            padding: 10px;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .btn-print {
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 9pt;
+        }
+
+        /* HEADER */
+        .header-table {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .logo-img {
+            height: 42px;
+            width: auto;
+        }
+        .doc-title {
+            text-align: center;
+            font-size: 13pt;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            padding-top: 5px;
+        }
+
+        /* DATOS DEL PACIENTE (LÍNEAS CONTINUAS RECORTE DE ESPACIO) */
+        .patient-info {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .info-row {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 4px;
+            font-size: 8.5pt;
+            font-weight: bold;
+        }
+        .info-label {
+            white-space: nowrap;
+            padding-right: 6px;
+        }
+        .info-line {
+            flex-grow: 1;
+            border-bottom: 1px dashed #000000;
+            padding-left: 6px;
+            font-weight: normal;
+            font-size: 8.5pt;
+        }
+
+        /* SECCIÓN CENTRAL: AUDIOGRAMA + TABLAS LATERALES */
+        .middle-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        /* AUDIOGRAMA (IZQUIERDA) */
+        .chart-container {
+            width: 62%;
+        }
+        #audiogramaCanvas {
+            width: 100% !important;
+            height: 250px !important;
+            border: 2px solid #000000;
+        }
+
+        /* TABLAS LATERALES (DERECHA) */
+        .side-tables {
+            width: 36%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* ESTILOS GENERALES DE TABLAS CON BORDES NEGROS */
+        table.protocol-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 7.5pt;
+            text-align: center;
+        }
+        table.protocol-table th, 
+        table.protocol-table td {
+            border: 1.5px solid #000000;
+            padding: 2px 3px;
+            height: 17px;
+        }
+        table.protocol-table th {
+            font-weight: bold;
+            background: #ffffff;
+        }
+
+        /* TABLA MASKING / LOGO */
+        .full-table {
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        /* MATERIAL FONÉTICO */
+        .fonetico-row {
+            display: flex;
+            border: 1.5px solid #000000;
+            margin-bottom: 6px;
+            font-size: 7pt;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+        .fonetico-title {
+            background: #ffffff;
+            padding: 3px 6px;
+            border-right: 1.5px solid #000000;
+            white-space: nowrap;
+        }
+        .fonetico-item {
+            flex: 1;
+            padding: 3px 2px;
+            border-right: 1.5px solid #000000;
+        }
+        .fonetico-item:last-child {
+            border-right: none;
+        }
+
+        /* SECCIÓN INFERIOR: PRUEBAS ESPECIALES */
+        .special-tests-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        .tests-left { width: 26%; }
+        .tests-right { width: 74%; }
+
+        /* OBSERVACIONES CON LÍNEAS HORIZONTALES */
+        .obs-container {
+            margin-top: 6px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .obs-title {
+            font-weight: bold;
+            font-size: 8.5pt;
+            margin-bottom: 4px;
+        }
+        .obs-line {
+            width: 100%;
+            border-bottom: 2px solid #000000;
+            height: 18px;
+            font-size: 8.5pt;
+            padding-left: 4px;
+        }
+
+        /* FIRMA DEL FONOAUDIÓLOGO */
+        .signature-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            page-break-inside: avoid;
+            width: 100%;
+        }
+        .signature-box {
+            width: 210px;
+            text-align: center;
+        }
+        .signature-line-mark {
+            border-bottom: 2px solid #000000;
+            height: 30px;
+            margin-bottom: 4px;
+        }
+        .signature-title {
+            font-weight: bold;
+            font-size: 8.5pt;
+            letter-spacing: 0.5px;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BOTÓN SOLO VISIBLE EN PANTALLA -->
+    <div class="no-print">
+        <button onclick="window.print();" class="btn-print">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+
+    <!-- ENCABEZADO -->
+    <table class="header-table">
+        <tr>
+            <td style="width: 30%;">
+                <img src="{% static 'Login/img/logo-png.png' %}" class="logo-img" alt="Logo">
+            </td>
+            <td style="width: 70%;">
+                <div class="doc-title">PROTOCOLO DE AUDIOMETRÍA</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- DATOS DEL PACIENTE (SIN MOTIVO DE CONSULTA) -->
+    <div class="patient-info">
+        <div class="info-row">
+            <span class="info-label">NOMBRE DEL PACIENTE:</span>
+            <span class="info-line">{{ evaluacion.paciente.nombre }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">RUT / EDAD:</span>
+            <span class="info-line">{{ evaluacion.paciente.rut|default:"-" }} / {{ evaluacion.paciente.edad|default:"-" }} años</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">FECHA DE EVALUACIÓN:</span>
+            <span class="info-line">{{ evaluacion.fecha|date:"d/m/Y" }}</span>
+        </div>
+    </div>
+
+    <!-- BLOQUE CENTRAL: AUDIOGRAMA + TABLAS LATERALES -->
+    <div class="middle-section">
+        
+        <!-- AUDIOGRAMA CANVAS (IZQUIERDA) -->
+        <div class="chart-container">
+            <canvas id="audiogramaCanvas" width="380" height="250"></canvas>
+        </div>
+
+        <!-- TABLAS LATERALES (DERECHA) -->
+        <div class="side-tables">
+            <!-- WEBER -->
+            <table class="protocol-table">
+                <thead>
+                    <tr><th colspan="2">WEBER</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td style="width: 50%;">125</td><td>{{ a.weber_125|default:"" }}</td></tr>
+                    <tr><td>250</td><td>{{ a.weber_250|default:"" }}</td></tr>
+                    <tr><td>500</td><td>{{ a.weber_500|default:"" }}</td></tr>
+                    <tr><td>1000</td><td>{{ a.weber_1000|default:"" }}</td></tr>
+                </tbody>
+            </table>
+
+            <!-- RINNE -->
+            <table class="protocol-table">
+                <thead>
+                    <tr><th colspan="3">RINNE</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td style="width: 40%;">125</td><td style="width: 30%;">{{ a.rinne_125_od|default:"" }}</td><td style="width: 30%;">{{ a.rinne_125_oi|default:"" }}</td></tr>
+                    <tr><td>250</td><td>{{ a.rinne_250_od|default:"" }}</td><td>{{ a.rinne_250_oi|default:"" }}</td></tr>
+                    <tr><td>500</td><td>{{ a.rinne_500_od|default:"" }}</td><td>{{ a.rinne_500_oi|default:"" }}</td></tr>
+                    <tr><td>1000</td><td>{{ a.rinne_1000_od|default:"" }}</td><td>{{ a.rinne_1000_oi|default:"" }}</td></tr>
+                </tbody>
+            </table>
+
+            <!-- PTP -->
+            <table class="protocol-table">
+                <tbody>
+                    <tr><td colspan="3" style="font-weight: bold;">PTP CLÁSICO</td></tr>
+                    <tr><td colspan="3" style="font-weight: bold;">PTP EXTENDIDO</td></tr>
+                    <tr>
+                        <td style="width: 34%;"></td>
+                        <td style="width: 33%; font-weight: bold;">V.A.</td>
+                        <td style="width: 33%; font-weight: bold;">V.O.</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">OD</td>
+                        <td>{{ a.ptp_va_od|default:"" }}</td>
+                        <td>{{ a.ptp_vo_od|default:"" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">OI</td>
+                        <td>{{ a.ptp_va_oi|default:"" }}</td>
+                        <td>{{ a.ptp_vo_oi|default:"" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TABLA DISCRIMINACIÓN / MASKING -->
+    <table class="protocol-table full-table">
+        <thead>
+            <tr>
+                <th style="width: 20%;">DISCRIMINACIÓN</th>
+                <th style="width: 16%;">SDT</th>
+                <th style="width: 16%;">SRT</th>
+                <th style="width: 16%;">UMD</th>
+                <th style="width: 12%;">%</th>
+                <th style="width: 20%;">MASKING</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: bold;">OD</td>
+                <td>{{ a.sdt_od|default:"" }} dB HL</td>
+                <td>{{ a.srt_od|default:"" }} dB HL</td>
+                <td>{{ a.umd_od|default:"" }} dB HL</td>
+                <td>{{ a.porcentaje_od|default:"" }} %</td>
+                <td>{{ a.masking_od|default:"" }} dB HL</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">OI</td>
+                <td>{{ a.sdt_oi|default:"" }} dB HL</td>
+                <td>{{ a.srt_oi|default:"" }} dB HL</td>
+                <td>{{ a.umd_oi|default:"" }} dB HL</td>
+                <td>{{ a.porcentaje_oi|default:"" }} %</td>
+                <td>{{ a.masking_oi|default:"" }} dB HL</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- MATERIAL FONÉTICO -->
+    <div class="fonetico-row">
+        <div class="fonetico-title">MATERIAL FONÉTICO</div>
+        <div class="fonetico-item">MONOSÍLABOS</div>
+        <div class="fonetico-item">BISÍLABOS</div>
+        <div class="fonetico-item">T. CONOCIDOS</div>
+        <div class="fonetico-item">FRASES</div>
+        <div class="fonetico-item">ÓRDENES</div>
+    </div>
+
+    <!-- SECCIÓN PRUEBAS ESPECIALES -->
+    <div class="special-tests-grid">
+        <div class="tests-left">
+            <table class="protocol-table">
+                <tbody>
+                    <tr><td style="font-weight: bold;">STAT</td></tr>
+                    <tr><td style="font-weight: bold;">CARHART</td></tr>
+                    <tr><td style="font-weight: bold;">MASPETIOL</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tests-right">
+            <table class="protocol-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;"></th>
+                        <th style="width: 21.25%;">500 Hz</th>
+                        <th style="width: 21.25%;">1000 Hz</th>
+                        <th style="width: 21.25%;">2000 Hz</th>
+                        <th style="width: 21.25%;">4000 Hz</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: bold;">OD</td>
+                        <td>{{ a.stat_500_od|default:"" }}</td>
+                        <td>{{ a.stat_1000_od|default:"" }}</td>
+                        <td>{{ a.stat_2000_od|default:"" }}</td>
+                        <td>{{ a.stat_4000_od|default:"" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">OI</td>
+                        <td>{{ a.stat_500_oi|default:"" }}</td>
+                        <td>{{ a.stat_1000_oi|default:"" }}</td>
+                        <td>{{ a.stat_2000_oi|default:"" }}</td>
+                        <td>{{ a.stat_4000_oi|default:"" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- OBSERVACIONES -->
+    <div class="obs-container">
+        <div class="obs-title">OBSERVACIONES</div>
+        <div class="obs-line">{{ a.observaciones|default:"" }}</div>
+        <div class="obs-line"></div>
+        <div class="obs-line"></div>
+    </div>
+
+    <!-- FIRMA FONOAUDIÓLOGA -->
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-line-mark"></div>
+            <div class="signature-title">FONOAUDIÓLOGA</div>
+        </div>
+    </div>
+
+    <script>
+    window.onload = function() {
+        const canvas = document.getElementById("audiogramaCanvas");
+        if(canvas) {
+            const ctx = canvas.getContext("2d");
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 1;
+        }
+    };
+    </script>
+</body>
+</html>
+{% endwith %}
