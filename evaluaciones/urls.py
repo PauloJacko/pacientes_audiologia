@@ -15,4 +15,6 @@ urlpatterns = [
     path('audiometria/<int:id>/editar/', views.editar_audiometria, name='editar_audiometria'),
     path('evaluacion/<int:id>/eliminar/', views.eliminar_evaluacion, name='eliminar_evaluacion'),
     path('audiometria/<int:id>/pdf/', views.ver_audiometria_pdf, name='ver_audiometria_pdf'),
+    path('otoscopia/<int:id>/ver/', views.ver_otoscopia, name='ver_otoscopia'),
+    path('otoscopia/<int:id>/editar/', views.editar_otoscopia, name='editar_otoscopia'),
 ]

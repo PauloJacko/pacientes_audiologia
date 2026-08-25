@@ -221,19 +221,51 @@
 
 <div class="evaluaciones-grid">
 
-        <!-- OTOSCOPIA -->
-    <div class="eval-column">
-        <h3 class="eval-title oto">Otoscopía</h3>
+<!-- OTOSCOPIA -->
+<div class="eval-column">
+    <h3 class="eval-title oto">Otoscopía</h3>
 
-        {% for e in otoscopias %}
-            <div class="eval-card">
-                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
-                <p>{{ e.observaciones|default:"-" }}</p>
+    {% for e in otoscopias %}
+    <div class="eval-card">
+
+        <div class="eval-top">
+            <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
+
+            <div class="actions">
+                <!-- VER DETALLE -->
+                <a href="{% url 'evaluaciones:ver_otoscopia' e.id %}" class="btn small">
+                    Ver
+                </a>
+
+                <!-- EDITAR -->
+                <a href="{% url 'evaluaciones:editar_otoscopia' e.id %}" class="btn small edit">
+                    Editar
+                </a>
+                
+                <!-- ELIMINAR -->
+                <button type="button" 
+                        class="btn small delete" 
+                        onclick="confirmDeleteEvaluacion('{{ e.id }}')">
+                    Eliminar
+                </button>
             </div>
-        {% empty %}
-            <p class="empty">Sin registros</p>
-        {% endfor %}
+        </div>
+
+        <div class="eval-body">
+            <p>{{ e.observaciones|default:"Sin observaciones" }}</p>
+
+            {% if e.archivo %}
+                <a href="{{ e.archivo.url }}" target="_blank" class="file-link">
+                    📎 Ver archivo adjunto
+                </a>
+            {% endif %}
+        </div>
+
     </div>
+    {% empty %}
+        <p class="empty">Sin registros</p>
+    {% endfor %}
+</div>
 
 <!-- AUDIO -->
 <div class="eval-column">
@@ -247,13 +279,19 @@
 
             <div class="actions">
                 <a href="{% url 'evaluaciones:ver_audiometria_pdf' e.id %}?auto_print=1"
-                target="_blank"
-                class="btn small">
+                   target="_blank"
+                   class="btn small">
                     Ver PDF
                 </a>
 
                 <a href="{% url 'evaluaciones:editar_audiometria' e.id %}" class="btn small edit">Editar</a>
-                <a href="{% url 'evaluaciones:eliminar_evaluacion' e.id %}" class="btn small delete">Eliminar</a>
+                
+                <!-- BOTÓN CON ALERTIFY EN LUGAR DE REDIRECCIÓN DIRECTA -->
+                <button type="button" 
+                        class="btn small delete" 
+                        onclick="confirmDeleteEvaluacion('{{ e.id }}')">
+                    Eliminar
+                </button>
             </div>
         </div>
 
@@ -498,6 +536,19 @@ function confirmDelete(id) {
         "¿Estás seguro de eliminar esta anamnesis? Esta acción no se puede deshacer.",
         function () {
             window.location.href = `/eliminar_anamnesis/${id}/`;
+        },
+        function () {
+            alertify.error("Cancelado");
+        }
+    );
+}
+
+function confirmDeleteEvaluacion(id) {
+    alertify.confirm(
+        "Eliminar Evaluación",
+        "¿Estás seguro de eliminar esta evaluación? Esta acción no se puede deshacer.",
+        function () {
+            window.location.href = `/evaluaciones/evaluacion/${id}/eliminar/`;
         },
         function () {
             alertify.error("Cancelado");

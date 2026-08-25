@@ -101,3 +101,18 @@ class Audiometria(models.Model):
 
     def __str__(self):
         return f"Audiometría - {self.evaluacion.paciente.nombre}"
+    
+class Otoscopia(models.Model):
+    evaluacion = models.OneToOneField(
+        Evaluacion, 
+        on_delete=models.CASCADE, 
+        related_name="otoscopia"
+    )
+    cae_od = models.CharField(max_length=255, blank=True)
+    membrana_od = models.CharField(max_length=255, blank=True)
+
+    cae_oi = models.CharField(max_length=255, blank=True)
+    membrana_oi = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"Otoscopía ID: {self.id} - Evaluacion: {self.evaluacion.id}"
