@@ -235,7 +235,7 @@
         {% endfor %}
     </div>
 
- <!-- AUDIO -->
+<!-- AUDIO -->
 <div class="eval-column">
     <h3 class="eval-title audio">Audiometrías</h3>
 
@@ -246,8 +246,12 @@
             <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
 
             <div class="actions">
-
-                <a href="{% url 'evaluaciones:ver_audiometria_pdf' e.id %}" target="_blank" class="btn small">Ver PDF</a>
+                <!-- Botón de impresión directa -->
+                <button type="button" 
+                        class="btn small" 
+                        onclick="imprimirAudiometriaDirecta('{% url 'evaluaciones:ver_audiometria_pdf' e.id %}')">
+                    Ver PDF
+                </button>
 
                 <a href="{% url 'evaluaciones:editar_audiometria' e.id %}" class="btn small edit">Editar</a>
                 <a href="{% url 'evaluaciones:eliminar_evaluacion' e.id %}" class="btn small delete">Eliminar</a>
@@ -269,6 +273,9 @@
         <p class="empty">Sin registros</p>
     {% endfor %}
 </div>
+
+<!-- IFRAME OCULTO (Debe ir una sola vez al final del bloque) -->
+<iframe id="pdfPrintFrame" style="display: none; position: absolute; width: 0; height: 0; border: none;"></iframe>
 
 
     <!-- IMPEDANCIA -->
@@ -502,6 +509,20 @@ function confirmDelete(id) {
         }
     );
 }
+
+function imprimirAudiometriaDirecta(urlPdf) {
+    const iframe = document.getElementById('pdfPrintFrame');
+    
+    iframe.onload = function() {
+        setTimeout(function() {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        }, 300);
+    };
+
+    iframe.src = urlPdf;
+}
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
