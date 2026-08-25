@@ -6,22 +6,90 @@
     <title>Editar Otoscopía - {{ evaluacion.paciente.nombre }}</title>
     <link rel="stylesheet" href="{% static 'evaluaciones/css/audiometria.css' %}">
     <style>
-        .otoscopia-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .ear-card { border-radius: 8px; padding: 20px; background: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #ccc; }
+        .otoscopia-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            margin-bottom: 20px; 
+        }
+        .ear-card { 
+            border-radius: 8px; 
+            padding: 20px; 
+            background: #ffffff; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border-top: 5px solid #ccc; 
+        }
         .ear-card.od { border-top-color: #e74c3c; }
         .ear-card.oi { border-top-color: #3498db; }
+        
+        .ear-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .ear-title.od { color: #e74c3c; }
+        .ear-title.oi { color: #3498db; }
+
+        .svg-container {
+            text-align: center;
+            margin-bottom: 15px;
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        .ear-svg {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+        }
+        
+        /* Elementos interactivos del SVG */
+        .svg-part {
+            transition: all 0.3s ease;
+            fill: #d0d7de;
+        }
+        .svg-part.highlight {
+            fill: #f1c40f !important;
+            filter: drop-shadow(0px 0px 4px #f39c12);
+        }
+
         .form-group { margin-bottom: 15px; }
-        .form-control { width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-border; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #444;
+            font-size: 0.9rem;
+        }
+        .form-control { 
+            width: 100%; 
+            padding: 8px 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            font-size: 0.95rem;
+            box-sizing: border-box; 
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #2980b9;
+        }
     </style>
 </head>
 <body>
 
+<div id="paciente-data" data-edad="{{ evaluacion.paciente.edad|default:'' }}" style="display: none;"></div>
+
+<!-- HEADER CLÍNICO -->
 <div class="header">
     <div class="header-left">
         <img src="{% static 'Login/img/logo-png.png' %}" class="logo-header">
         <div class="header-text">
             <span class="title">Editar Otoscopía</span>
-            <span class="subtitle">Paciente: {{ evaluacion.paciente.nombre }}</span>
+            <span class="subtitle">Evaluación clínica - {{ evaluacion.paciente.nombre }}</span>
         </div>
     </div>
     <div class="header-right">
@@ -35,41 +103,80 @@
         {% csrf_token %}
 
         <div class="otoscopia-grid">
-            <!-- OD -->
+            
+            <!-- OÍDO DERECHO (OD) -->
             <div class="ear-card od">
-                <h3 style="color: #e74c3c;">Oído Derecho (O.D.)</h3>
+                <div class="ear-title od">
+                    <span>Oído Derecho (O.D.)</span>
+                </div>
+
+                <div class="svg-container">
+                    <svg class="ear-svg" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                        <!-- CAE OD -->
+                        <path id="svg-cae-od" class="svg-part" d="M 20 40 Q 70 30 120 50 Q 70 70 20 60 Z" stroke="#888" stroke-width="2"/>
+                        <!-- Membrana Timpánica OD -->
+                        <ellipse id="svg-mem-od" class="svg-part" cx="130" cy="53" rx="12" ry="22" stroke="#888" stroke-width="2" transform="rotate(15 130 53)"/>
+                        <text x="50" y="30" font-size="10" fill="#666">C.A.E.</text>
+                        <text x="120" y="22" font-size="10" fill="#666">M.T.</text>
+                    </svg>
+                </div>
+
                 <div class="form-group">
                     <label>Conducto Auditivo Externo (C.A.E.)</label>
-                    <input type="text" name="cae_od" class="form-control" value="{{ otoscopia.cae_od|default:'' }}">
+                    <input type="text" name="cae_od" class="form-control focus-trigger" data-target="svg-cae-od" value="{{ otoscopia.cae_od|default:'' }}" placeholder="Ej: Permeable, cerumen parcial, exostosis...">
                 </div>
+
                 <div class="form-group">
                     <label>Membrana Timpánica</label>
-                    <input type="text" name="membrana_od" class="form-control" value="{{ otoscopia.membrana_od|default:'' }}">
+                    <input type="text" name="membrana_od" class="form-control focus-trigger" data-target="svg-mem-od" value="{{ otoscopia.membrana_od|default:'' }}" placeholder="Ej: Intacta, cono luminoso presente, opaca...">
                 </div>
             </div>
 
-            <!-- OI -->
+            <!-- OÍDO IZQUIERDO (OI) -->
             <div class="ear-card oi">
-                <h3 style="color: #3498db;">Oído Izquierdo (O.I.)</h3>
+                <div class="ear-title oi">
+                    <span>Oído Izquierdo (O.I.)</span>
+                </div>
+
+                <div class="svg-container">
+                    <svg class="ear-svg" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                        <!-- CAE OI -->
+                        <path id="svg-cae-oi" class="svg-part" d="M 180 40 Q 130 30 80 50 Q 130 70 180 60 Z" stroke="#888" stroke-width="2"/>
+                        <!-- Membrana Timpánica OI -->
+                        <ellipse id="svg-mem-oi" class="svg-part" cx="70" cy="53" rx="12" ry="22" stroke="#888" stroke-width="2" transform="rotate(-15 70 53)"/>
+                        <text x="120" y="30" font-size="10" fill="#666">C.A.E.</text>
+                        <text x="55" y="22" font-size="10" fill="#666">M.T.</text>
+                    </svg>
+                </div>
+
                 <div class="form-group">
                     <label>Conducto Auditivo Externo (C.A.E.)</label>
-                    <input type="text" name="cae_oi" class="form-control" value="{{ otoscopia.cae_oi|default:'' }}">
+                    <input type="text" name="cae_oi" class="form-control focus-trigger" data-target="svg-cae-oi" value="{{ otoscopia.cae_oi|default:'' }}" placeholder="Ej: Permeable, descamación, eritema...">
                 </div>
+
                 <div class="form-group">
                     <label>Membrana Timpánica</label>
-                    <input type="text" name="membrana_oi" class="form-control" value="{{ otoscopia.membrana_oi|default:'' }}">
+                    <input type="text" name="membrana_oi" class="form-control focus-trigger" data-target="svg-mem-oi" value="{{ otoscopia.membrana_oi|default:'' }}" placeholder="Ej: Abombada, perforada, retraída...">
                 </div>
             </div>
+
         </div>
 
+        <!-- OBSERVACIONES Y ARCHIVO -->
         <div class="card" style="margin-bottom: 20px; padding: 20px;">
             <div class="form-group">
                 <label>Observaciones Generales</label>
-                <textarea name="observaciones" class="form-control" rows="3">{{ evaluacion.observaciones|default:'' }}</textarea>
+                <textarea name="observaciones" class="form-control" rows="3" placeholder="Comentarios o hallazgos adicionales...">{{ evaluacion.observaciones|default:'' }}</textarea>
             </div>
-            <div class="form-group">
+
+            <div class="form-group" style="margin-bottom: 0;">
                 <label>Archivo Adjunto (Opcional)</label>
                 <input type="file" name="archivo" class="form-control">
+                {% if evaluacion.archivo %}
+                    <small style="display: block; margin-top: 5px; color: #666;">
+                        Archivo actual: <a href="{{ evaluacion.archivo.url }}" target="_blank">Ver adjunto</a>
+                    </small>
+                {% endif %}
             </div>
         </div>
 
@@ -78,6 +185,23 @@
         </footer>
     </form>
 </main>
+
+<script>
+    // Iluminación dinámica de las secciones SVG según el campo en foco
+    document.querySelectorAll('.focus-trigger').forEach(input => {
+        input.addEventListener('focus', function() {
+            const targetId = this.dataset.target;
+            const element = document.getElementById(targetId);
+            if(element) element.classList.add('highlight');
+        });
+
+        input.addEventListener('blur', function() {
+            const targetId = this.dataset.target;
+            const element = document.getElementById(targetId);
+            if(element) element.classList.remove('highlight');
+        });
+    });
+</script>
 
 </body>
 </html>
