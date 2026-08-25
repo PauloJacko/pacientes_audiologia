@@ -246,12 +246,11 @@
             <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
 
             <div class="actions">
-                <!-- Botón de impresión directa -->
-                <button type="button" 
-                        class="btn small" 
-                        onclick="imprimirAudiometriaDirecta('{% url 'evaluaciones:ver_audiometria_pdf' e.id %}')">
+                <a href="{% url 'evaluaciones:ver_audiometria_pdf' e.id %}?auto_print=1"
+                target="_blank"
+                class="btn small">
                     Ver PDF
-                </button>
+                </a>
 
                 <a href="{% url 'evaluaciones:editar_audiometria' e.id %}" class="btn small edit">Editar</a>
                 <a href="{% url 'evaluaciones:eliminar_evaluacion' e.id %}" class="btn small delete">Eliminar</a>
@@ -273,10 +272,6 @@
         <p class="empty">Sin registros</p>
     {% endfor %}
 </div>
-
-<!-- IFRAME OCULTO (Debe ir una sola vez al final del bloque) -->
-<iframe id="pdfPrintFrame" style="display: none; position: absolute; width: 0; height: 0; border: none;"></iframe>
-
 
     <!-- IMPEDANCIA -->
     <div class="eval-column">
@@ -508,19 +503,6 @@ function confirmDelete(id) {
             alertify.error("Cancelado");
         }
     );
-}
-
-function imprimirAudiometriaDirecta(urlPdf) {
-    const iframe = document.getElementById('pdfPrintFrame');
-    
-    iframe.onload = function() {
-        setTimeout(function() {
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-        }, 300);
-    };
-
-    iframe.src = urlPdf;
 }
 
 </script>

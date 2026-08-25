@@ -14,5 +14,5 @@ urlpatterns = [
     path('audiometria/<int:id>/', views.ver_audiometria, name='ver_audiometria'),
     path('audiometria/<int:id>/editar/', views.editar_audiometria, name='editar_audiometria'),
     path('evaluacion/<int:id>/eliminar/', views.eliminar_evaluacion, name='eliminar_evaluacion'),
-    path('evaluaciones/audiometria/<int:id>/pdf/', views.ver_audiometria_pdf, name='ver_audiometria_pdf'),
+    path('audiometria/<int:id>/pdf/', views.ver_audiometria_pdf, name='ver_audiometria_pdf'),
 ]

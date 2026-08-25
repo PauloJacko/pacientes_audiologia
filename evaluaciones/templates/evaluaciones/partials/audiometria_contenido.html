@@ -1,0 +1,972 @@
+{% load static %}
+
+    <!--   ============================================================
+         BOTÓN SOLO EN PANTALLA
+    ============================================================   -->
+
+      <div class="no-print">
+        <button onclick="window.print();" class="btn-print">🖨️ Imprimir / Guardar PDF</button>
+      </div>
+
+      <!--   ============================================================
+         ENCABEZADO
+    ============================================================   -->
+
+      <table class="header-table">
+        <tr>
+          <td style="width: 30%;">
+            <img src="{% static 'Login/img/logo-png.png' %}" class="logo-img" alt="Logo" />
+          </td>
+
+          <td style="width: 70%;">
+            <div class="doc-title">PROTOCOLO DE AUDIOMETRÍA</div>
+          </td>
+        </tr>
+      </table>
+
+      <!--   ============================================================
+         DATOS DEL PACIENTE
+    ============================================================   -->
+
+      <div class="patient-info">
+        <div class="info-row">
+          <span class="info-label">NOMBRE DEL PACIENTE:</span>
+
+          <span class="info-line">{{ evaluacion.paciente.nombre }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">RUT / EDAD:</span>
+
+          <span class="info-line">
+            {{ evaluacion.paciente.rut|default:'-' }}
+            /
+            {{ evaluacion.paciente.edad|default:'-' }} años
+          </span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">FECHA DE EVALUACIÓN:</span>
+
+          <span class="info-line">{{ evaluacion.fecha|date:'d/m/Y - H:i' }} hrs.</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">MODO:</span>
+
+          <span class="info-line">{{ a.modo|default:'TONAL'|upper }}</span>
+        </div>
+      </div>
+
+<!-- ============================================================
+     AUDIOGRAMA + WEBER / RINNE / PTP
+============================================================ -->
+
+<div class="middle-section">
+  <!-- AUDIOGRAMA -->
+
+  <div class="chart-container">
+    <div class="chart-title">AUDIOGRAMA</div>
+
+    <canvas id="audiogramaCanvas" width="380" height="250"></canvas>
+
+    {% if evaluacion.archivo %}
+      <div class="attachment">
+        Archivo adjunto:
+        <a href="{{ evaluacion.archivo.url }}" target="_blank">Abrir archivo</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- TABLAS LATERALES -->
+
+  <div class="side-tables">
+    <!-- WEBER -->
+
+    <table class="protocol-table">
+      <thead>
+        <tr>
+          <th colspan="2">WEBER</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td style="width:50%;">250 Hz</td>
+
+          <td>
+            {% if a.weber_250|lower == 'od' or a.weber_250|lower == 'derecho' or a.weber_250|lower == 'right' %}
+              <span style="color:#dc2626; font-weight:bold;">→ {{ a.weber_250 }}</span>
+            {% elif a.weber_250|lower == 'oi' or a.weber_250|lower == 'izquierdo' or a.weber_250|lower == 'left' %}
+              <span style="color:#2563eb; font-weight:bold;">{{ a.weber_250 }} ←</span>
+            {% elif a.weber_250|lower == 'central' or a.weber_250|lower == 'ambos' or a.weber_250|lower == 'bilateral' %}
+              <span style="color:#16a34a; font-weight:bold;">↔ {{ a.weber_250 }}</span>
+            {% else %}
+              {{ a.weber_250|default:'' }}
+            {% endif %}
+          </td>
+        </tr>
+
+        <tr>
+          <td>500 Hz</td>
+
+          <td>
+            {% if a.weber_500|lower == 'od' or a.weber_500|lower == 'derecho' or a.weber_500|lower == 'right' %}
+              <span style="color:#dc2626; font-weight:bold;">→ {{ a.weber_500 }}</span>
+            {% elif a.weber_500|lower == 'oi' or a.weber_500|lower == 'izquierdo' or a.weber_500|lower == 'left' %}
+              <span style="color:#2563eb; font-weight:bold;">{{ a.weber_500 }} ←</span>
+            {% elif a.weber_500|lower == 'central' or a.weber_500|lower == 'ambos' or a.weber_500|lower == 'bilateral' %}
+              <span style="color:#16a34a; font-weight:bold;">↔ {{ a.weber_500 }}</span>
+            {% else %}
+              {{ a.weber_500|default:'' }}
+            {% endif %}
+          </td>
+        </tr>
+
+        <tr>
+          <td>1000 Hz</td>
+
+          <td>
+            {% if a.weber_1000|lower == 'od' or a.weber_1000|lower == 'derecho' or a.weber_1000|lower == 'right' %}
+              <span style="color:#dc2626; font-weight:bold;">→ {{ a.weber_1000 }}</span>
+            {% elif a.weber_1000|lower == 'oi' or a.weber_1000|lower == 'izquierdo' or a.weber_1000|lower == 'left' %}
+              <span style="color:#2563eb; font-weight:bold;">{{ a.weber_1000 }} ←</span>
+            {% elif a.weber_1000|lower == 'central' or a.weber_1000|lower == 'ambos' or a.weber_1000|lower == 'bilateral' %}
+              <span style="color:#16a34a; font-weight:bold;">↔ {{ a.weber_1000 }}</span>
+            {% else %}
+              {{ a.weber_1000|default:'' }}
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- RINNE -->
+
+    <table class="protocol-table">
+      <thead>
+        <tr>
+          <th colspan="3">RINNE 512 Hz</th>
+        </tr>
+
+        <tr>
+          <th></th>
+
+          <th style="color:#dc2626;">OD</th>
+
+          <th style="color:#2563eb;">OI</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td style="font-weight:bold;">Resultado</td>
+
+          <td style="color:#dc2626; font-weight:bold;">{{ a.rinne_512_od|default:'' }}</td>
+
+          <td style="color:#2563eb; font-weight:bold;">{{ a.rinne_512_oi|default:'' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- PTP -->
+
+    <table class="protocol-table">
+      <tbody>
+        <tr>
+          <td colspan="3" style="font-weight:bold;">PTP</td>
+        </tr>
+
+        <tr>
+          <td style="width:34%;"></td>
+
+          <td style="width:33%; font-weight:bold;">V.A.</td>
+
+          <td style="width:33%; font-weight:bold;">V.O.</td>
+        </tr>
+
+        <tr>
+          <td style="font-weight:bold; color:#dc2626;">OD</td>
+
+          <td style="color:#dc2626; font-weight:bold;">{{ a.ptp_va_od|default:'' }}</td>
+
+          <td style="color:#dc2626; font-weight:bold;">{{ a.ptp_vo_od|default:'' }}</td>
+        </tr>
+
+        <tr>
+          <td style="font-weight:bold; color:#2563eb;">OI</td>
+
+          <td style="color:#2563eb; font-weight:bold;">{{ a.ptp_va_oi|default:'' }}</td>
+
+          <td style="color:#2563eb; font-weight:bold;">{{ a.ptp_vo_oi|default:'' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================
+     LOGOAUDIOMETRÍA
+============================================================ -->
+
+<div class="clinical-section">
+  <div class="clinical-section-title">LOGOAUDIOMETRÍA</div>
+
+  <table class="protocol-table">
+    <thead>
+      <tr>
+        <th style="width:20%;">OÍDO</th>
+
+        <th>% DISC</th>
+
+        <th>dB</th>
+
+        <th>MKG</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style="font-weight:bold; color:#dc2626;">OD</td>
+
+        <td style="color:#dc2626; font-weight:bold;">{{ a.sds_od|default:'' }}</td>
+
+        <td style="color:#dc2626; font-weight:bold;">{{ a.int_od|default:'' }}</td>
+
+        <td style="color:#dc2626; font-weight:bold;">{{ a.mkg_od|default:'' }}</td>
+      </tr>
+
+      <tr>
+        <td style="font-weight:bold; color:#2563eb;">OI</td>
+
+        <td style="color:#2563eb; font-weight:bold;">{{ a.sds_oi|default:'' }}</td>
+
+        <td style="color:#2563eb; font-weight:bold;">{{ a.int_oi|default:'' }}</td>
+
+        <td style="color:#2563eb; font-weight:bold;">{{ a.mkg_oi|default:'' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================
+     MATERIAL FONÉTICO
+============================================================ -->
+
+<div class="fonetico-row">
+  <div class="fonetico-title">MATERIAL FONÉTICO</div>
+
+  <div class="fonetico-item">MONOSÍLABOS</div>
+
+  <div class="fonetico-item">BISÍLABOS</div>
+
+  <div class="fonetico-item">T. CONOCIDOS</div>
+
+  <div class="fonetico-item">FRASES</div>
+
+  <div class="fonetico-item">ÓRDENES</div>
+</div>
+
+<!-- ============================================================
+     DETERIORO TONAL
+============================================================ -->
+
+<div class="clinical-section">
+  <div class="clinical-section-title">DETERIORO TONAL ({{ a.deterioro_test|default:'No evaluado'|upper }})</div>
+
+  <table class="protocol-table">
+    <thead>
+      <tr>
+        <th style="width:15%;"></th>
+
+        <th>500 Hz</th>
+
+        <th>1000 Hz</th>
+
+        <th>2000 Hz</th>
+
+        <th>4000 Hz</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style="font-weight:bold; color:#dc2626;">OD</td>
+
+        <td style="color:#dc2626; font-weight:bold;">{{ a.det_500_od|default:'' }}</td>
+
+        <td style="color:#dc2626; font-weight:bold;">{{ a.det_1000_od|default:'' }}</td>
+
+        <td style="color:#dc2626; font-weight:bold;">{{ a.det_2000_od|default:'' }}</td>
+
+        <td style="color:#dc2626; font-weight:bold;">{{ a.det_4000_od|default:'' }}</td>
+      </tr>
+
+      <tr>
+        <td style="font-weight:bold; color:#2563eb;">OI</td>
+
+        <td style="color:#2563eb; font-weight:bold;">{{ a.det_500_oi|default:'' }}</td>
+
+        <td style="color:#2563eb; font-weight:bold;">{{ a.det_1000_oi|default:'' }}</td>
+
+        <td style="color:#2563eb; font-weight:bold;">{{ a.det_2000_oi|default:'' }}</td>
+
+        <td style="color:#2563eb; font-weight:bold;">{{ a.det_4000_oi|default:'' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================
+     TINNITUMETRÍA
+============================================================ -->
+
+<div class="clinical-section">
+  <div class="clinical-section-title">TINNITUMETRÍA</div>
+
+  <table class="tinnitus-table">
+    <thead>
+      <tr>
+        <th>Tinnitus</th>
+
+        <th>Oído</th>
+
+        <th>Cualidad</th>
+
+        <th>Duración</th>
+
+        <th>Intensidad</th>
+
+        <th>Frecuencia</th>
+
+        <th>Masking</th>
+
+        <th>Inhibición Residual</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <!-- TINNITUS -->
+
+        <td>
+          <span class="tinni-check">
+            {% if a.tin_presente %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Presente
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_ausente %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Ausente
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_ocasional %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Ocasional
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_examen_positivo %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}(+) al examen
+          </span>
+        </td>
+
+        <!-- OÍDO -->
+
+        <td>
+          <span class="tinni-check" style="color:#dc2626; font-weight:bold;">
+            {% if a.tin_od %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}OD
+          </span>
+
+          <span class="tinni-check" style="color:#2563eb; font-weight:bold;">
+            {% if a.tin_oi %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}OI
+          </span>
+
+          <span class="tinni-check" style="color:#16a34a; font-weight:bold;">
+            {% if a.tin_bilateral %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Bilateral
+          </span>
+        </td>
+
+        <!-- CUALIDAD -->
+
+        <td>
+          <span class="tinni-check">
+            {% if a.tin_tono_puro %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Tono puro
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_ruido_blanco %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Ruido blanco
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_ruido_banda %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Banda estrecha
+          </span>
+        </td>
+
+        <!-- DURACIÓN -->
+
+        <td>
+          <span class="tinni-check">
+            {% if a.tin_continuo %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Continuo
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_pulsatil %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Pulsátil
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_fluctuante %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Fluctuante
+          </span>
+        </td>
+
+        <!-- INTENSIDAD -->
+
+        <td>
+          <div class="tinni-value">{{ a.tin_db_hl|default:'' }} dB HL</div>
+
+          <div class="tinni-value">{{ a.tin_db_sl|default:'' }} dB SL</div>
+        </td>
+
+        <!-- FRECUENCIA -->
+
+        <td>{{ a.tin_freq|default:'' }} Hz</td>
+
+        <!-- MASKING -->
+
+        <td>{{ a.tin_masking|default:'' }} dB HL</td>
+
+        <!-- INHIBICIÓN -->
+
+        <td>
+          <span class="tinni-check" style="color:#2563eb; font-weight:bold;">
+            {% if a.tin_inh_oi %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Izquierdo
+          </span>
+
+          <span class="tinni-check" style="color:#dc2626; font-weight:bold;">
+            {% if a.tin_inh_od %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Derecho
+          </span>
+
+          <span class="tinni-check" style="color:#16a34a; font-weight:bold;">
+            {% if a.tin_inh_bi %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}Bilateral
+          </span>
+
+          <span class="tinni-check">
+            {% if a.tin_inh_tc %}
+              ☑
+            {% else %}
+              ☐
+            {% endif %}T. Cráneo
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+      <!--   ============================================================
+         Se utiliza evaluacion.observaciones
+    ============================================================   -->
+
+      <div class="obs-container">
+        <div class="obs-title">OBSERVACIONES</div>
+
+        <div class="obs-line">{{ evaluacion.observaciones|default:'' }}</div>
+
+        <div class="obs-line"></div>
+
+        <div class="obs-line"></div>
+      </div>
+
+      <!--   ============================================================
+         FIRMA
+    ============================================================   -->
+
+      <div class="signature-section">
+        <div class="signature-box">
+          <div class="signature-line-mark"></div>
+
+          <div class="signature-title">FONOAUDIÓLOGA</div>
+
+          <div class="signature-subtitle">Firma y Timbre Profesional</div>
+        </div>
+      </div>
+
+      {{ a.audiograma|json_script:'audiograma-data' }}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const canvas = document.getElementById('audiogramaCanvas')
+
+    if (!canvas) {
+      return
+    }
+
+    const ctx = canvas.getContext('2d')
+
+    let rawData = []
+
+    const scriptTag = document.getElementById('audiograma-data')
+
+    if (scriptTag && scriptTag.textContent) {
+      try {
+        rawData = JSON.parse(scriptTag.textContent)
+
+        if (typeof rawData === 'string') {
+          rawData = JSON.parse(rawData)
+        }
+      } catch (e) {
+        console.error('Error al cargar el JSON del audiograma:', e)
+
+        rawData = []
+      }
+    }
+
+    const data = (Array.isArray(rawData) ? rawData : []).map(function (p) {
+      return {
+        ...p,
+
+        freq: Number(p.freq),
+
+        db: Number(p.db),
+
+        ear: p.ear || (p.oido === 'derecho' ? 'right' : p.oido === 'izquierdo' ? 'left' : p.oido),
+
+        type: p.type || p.tipo
+      }
+    })
+
+    const modoAudiometria = "{{ a.modo|default:'tonal' }}"
+
+    const freqs = [125, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 6000, 8000]
+
+    function getX(freq) {
+      const margin = 40
+
+      const width = canvas.width - 2 * margin
+
+      const index = freqs.indexOf(Number(freq))
+
+      if (index !== -1) {
+        return margin + index * (width / (freqs.length - 1))
+      }
+
+      return margin
+    }
+
+    function getY(db) {
+      const marginTop = 28
+
+      const marginBottom = 25
+
+      const height = canvas.height - marginTop - marginBottom
+
+      return marginTop + ((Number(db) + 10) / 130) * height
+    }
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.strokeStyle = '#d0d0d0'
+      ctx.lineWidth = 1
+
+      freqs.forEach(function (f) {
+        const x = getX(f)
+
+        ctx.beginPath()
+        ctx.moveTo(x, 28)
+        ctx.lineTo(x, canvas.height - 25)
+        ctx.stroke()
+        ctx.fillStyle = '#000000'
+        ctx.font = '9px Arial'
+        ctx.textAlign = 'center'
+
+        let label
+
+        if (f >= 1000) {
+          label = f / 1000 + 'k'
+        } else {
+          label = f
+        }
+
+        ctx.fillText(label, x, 18)
+      })
+
+      for (let db = -10; db <= 120; db += 10) {
+        const y = getY(db)
+
+        ctx.beginPath()
+        ctx.moveTo(40, y)
+        ctx.lineTo(canvas.width - 40, y)
+        ctx.stroke()
+        ctx.fillStyle = '#000000'
+        ctx.font = '8px Arial'
+        ctx.textAlign = 'right'
+        ctx.fillText(db, 34, y + 3)
+      }
+    }
+
+    function drawLines() {
+      if (!ctx) {
+        return
+      }
+
+      const ears = ['right', 'left']
+
+      const tipos = ['va', 'vo']
+
+      ears.forEach(function (ear) {
+        tipos.forEach(function (type) {
+          let puntos = data
+            .filter(function (p) {
+              return p.ear === ear && p.type === type && p.category !== 'ldl' && p.modifier !== 'nr'
+            })
+            .sort(function (a, b) {
+              return Number(a.freq) - Number(b.freq)
+            })
+
+          if (puntos.length < 2) {
+            return
+          }
+
+          // Asignación cromática: Rojo para OD (right) y Azul para OI (left)
+          const color = ear === 'right' ? '#dc2626' : '#2563eb'
+
+          ctx.save()
+          ctx.strokeStyle = color
+          ctx.lineWidth = 1.5
+          ctx.setLineDash(type === 'vo' ? [5, 3] : [])
+          ctx.beginPath()
+
+          let started = false
+
+          const freqsList = [125, 250, 500, 1000, 2000, 3000, 4000, 6000, 8000]
+
+          freqsList.forEach(function (freq) {
+            const p = puntos.find(function (pt) {
+              return Number(pt.freq) === Number(freq)
+            })
+
+            if (!p) {
+              started = false
+
+              return
+            }
+
+            const x = getX(freq)
+
+            const y = getY(p.db)
+
+            if (!started) {
+              ctx.moveTo(x, y)
+
+              started = true
+            } else {
+              ctx.lineTo(x, y)
+            }
+          })
+
+          ctx.stroke()
+
+          ctx.restore()
+        })
+      })
+    }
+
+    /* ============= 9. FLECHA "SIN RESPUESTA" ================ */
+
+    function drawNRArrow(x, y, isRight, color) {
+      ctx.save()
+
+      ctx.strokeStyle = color
+
+      ctx.lineWidth = 1.5
+
+      const dx = isRight ? -8 : 8
+
+      const dy = 10
+
+      const endX = x + dx
+
+      const endY = y + dy
+
+      ctx.beginPath()
+
+      ctx.moveTo(x, y)
+
+      ctx.lineTo(endX, endY)
+
+      const angle = Math.atan2(dy, dx)
+
+      const headLen = 4
+
+      ctx.lineTo(
+        endX - headLen * Math.cos(angle - Math.PI / 6),
+
+        endY - headLen * Math.sin(angle - Math.PI / 6)
+      )
+
+      ctx.moveTo(endX, endY)
+      ctx.lineTo(
+        endX - headLen * Math.cos(angle + Math.PI / 6),
+
+        endY - headLen * Math.sin(angle + Math.PI / 6)
+      )
+
+      ctx.stroke()
+      ctx.restore()
+    }
+
+    /* ========================================================
+                         10. LDL
+       ======================================================== */
+
+    function drawLDL(x, y, ear, color) {
+      ctx.save()
+      ctx.strokeStyle = color
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+
+      const size = 7
+
+      if (ear === 'right') {
+        ctx.moveTo(x, y - size)
+        ctx.lineTo(x - size, y + size)
+        ctx.lineTo(x, y + size)
+      } else {
+        ctx.moveTo(x, y - size)
+        ctx.lineTo(x + size, y + size)
+        ctx.lineTo(x, y + size)
+      }
+
+      ctx.closePath()
+      ctx.stroke()
+      ctx.restore()
+    }
+
+    /* ========================================================
+                       11. PUNTOS Y SÍMBOLOS CLÍNICOS
+       ======================================================== */
+
+    function drawPoints() {
+      if (!ctx) {
+        return
+      }
+
+      data.forEach(function (p) {
+        const x = getX(p.freq)
+
+        const y = getY(p.db)
+
+        const isRight = p.ear === 'right'
+
+        // Asignación cromática por punto: Rojo para OD (right) y Azul para OI (left)
+        const color = isRight ? '#dc2626' : '#2563eb'
+
+        const isMasked = Boolean(p.masked || p.enmascarado)
+
+        const isNR = p.modifier === 'nr' || Boolean(p.no_response || p.sin_respuesta || p.nr)
+
+        const category = p.category || (p.type === 'ldl' ? 'ldl' : p.type)
+
+        const type = p.type || 'va'
+
+        ctx.save()
+        ctx.strokeStyle = color
+        ctx.fillStyle = color
+        ctx.lineWidth = 1.5
+
+        /* ------------------------------------------------
+                                LDL
+           ------------------------------------------------ */
+
+        if (category === 'ldl') {
+          drawLDL(x, y, p.ear, color)
+
+          if (isNR) {
+            drawNRArrow(isRight ? x - 5 : x + 5, y + 5, isRight, color)
+          }
+
+          ctx.restore()
+          return
+        }
+
+        /* ------------------------------------------------
+                                VÍA ÓSEA
+           ------------------------------------------------ */
+
+        if (type === 'vo') {
+          ctx.font = 'bold 14px Arial'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+
+          const symbol = isRight ? (isMasked ? '[' : '<') : isMasked ? ']' : '>'
+          ctx.fillText(symbol, x, y)
+
+          if (isNR) {
+            drawNRArrow(isRight ? x - 6 : x + 6, y + 3, isRight, color)
+          }
+          ctx.restore()
+          return
+        }
+
+        /* ------------------------------------------------
+                                VÍA AÉREA - OD
+           ------------------------------------------------ */
+
+        if (isRight) {
+          if (isMasked) {
+            /*
+             * OD enmascarado:
+             * triángulo
+             */
+
+            ctx.beginPath()
+            ctx.moveTo(x, y - 6)
+            ctx.lineTo(x - 6, y + 6)
+            ctx.lineTo(x + 6, y + 6)
+            ctx.closePath()
+            ctx.stroke()
+            if (isNR) {
+              drawNRArrow(x - 4, y + 4, true, color)
+            }
+          } else {
+            /*
+             * OD normal:
+             * círculo
+             */
+
+            ctx.beginPath()
+
+            ctx.arc(x, y, 6, 0, Math.PI * 2)
+
+            ctx.stroke()
+
+            if (isNR) {
+              drawNRArrow(x - 4, y + 4, true, color)
+            }
+          }
+        } else {
+          /* ------------------------------------------------
+                                  VÍA AÉREA - OI
+             ------------------------------------------------ */
+
+          if (isMasked) {
+            /*
+             * OI enmascarado:
+             * cuadrado
+             */
+
+            ctx.strokeRect(x - 5, y - 5, 10, 10)
+
+            if (isNR) {
+              drawNRArrow(x + 4, y + 4, false, color)
+            }
+          } else {
+            /*
+             * OI normal:
+             * X
+             */
+
+            ctx.beginPath()
+            ctx.moveTo(x - 5, y - 5)
+            ctx.lineTo(x + 5, y + 5)
+            ctx.moveTo(x + 5, y - 5)
+            ctx.lineTo(x - 5, y + 5)
+            ctx.stroke()
+            if (isNR) {
+              drawNRArrow(x + 4, y + 4, false, color)
+            }
+          }
+        }
+
+        ctx.restore()
+      })
+    }
+
+    /* ========================================================
+                       12. EJECUCIÓN
+       ======================================================== */
+
+    drawGrid()
+
+    if (modoAudiometria !== 'campo_libre' && modoAudiometria !== 'campo') {
+      drawLines()
+    }
+
+    drawPoints()
+  })
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('auto_print') === '1') {
+
+        setTimeout(function () {
+            window.print();
+        }, 1000);
+
+    }
+
+});
+
+</script>
