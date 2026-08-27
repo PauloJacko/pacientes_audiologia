@@ -5,6 +5,8 @@ from django.views.decorators.http import require_POST
 from .models import Paciente, Anamnesis
 from django.db.models import Q
 from evaluaciones.models import Evaluacion
+from itertools import chain
+from operator import attrgetter
 
 
 def login_view(request):
@@ -65,6 +67,17 @@ def ver_paciente(request, id):
     otoscopias = evaluaciones.filter(tipo='otoscopia')
     otros = evaluaciones.filter(tipo='otro')
 
+    ultima_audiometria = audiometrias.first()
+    ultima_otoscopia = otoscopias.first()
+    ultima_impedancia = impedancias.first()
+
+    # 2. Historial unificado
+    historial_lista = sorted(
+        chain(anamnesis, evaluaciones),
+        key=attrgetter('fecha'),
+        reverse=True
+    )
+
     return render(request, 'Login/ver_paciente.html', {
         'paciente': paciente,
         'anamnesis': anamnesis,
@@ -72,6 +85,10 @@ def ver_paciente(request, id):
         'impedancias': impedancias,
         'otoscopias': otoscopias,
         'otros': otros,
+        'historial_lista': historial_lista,
+        'ultima_audiometria': ultima_audiometria,
+        'ultima_otoscopia': ultima_otoscopia,
+        'ultima_impedancia': ultima_impedancia,
     })
 
 @login_required

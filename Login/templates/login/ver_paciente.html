@@ -72,29 +72,219 @@
     <!-- CONTENIDO -->
     <section class="tab-content">
 
-        <div id="resumen" class="tab-pane active">
-            <div class="card panel">
-                <h2>Datos personales</h2>
-                    <div class="info-grid">
-                        <div><span>RUT</span><p>{{ paciente.rut }}</p></div>
+<div id="resumen" class="tab-pane active">
+    <!-- DATOS PERSONALES -->
+    <div class="card panel" style="margin-bottom: 20px;">
+        <h2>Datos personales</h2>
+        <div class="info-grid">
+            <div><span>RUT</span><p>{{ paciente.rut }}</p></div>
+            <div>
+                <span>Edad</span>
+                <p>{{ paciente.edad|default:"-" }} años</p>
+            </div>
+            <div><span>Teléfono</span><p>{{ paciente.telefono }}</p></div>
+            <div><span>Email</span><p>{{ paciente.email }}</p></div>
+            <div><span>Dirección</span><p>{{ paciente.direccion }}</p></div>
+            <div><span>Previsión</span><p>{{ paciente.get_prevision_display }}</p></div>
+        </div>
+    </div>
 
-                        <div>
-                            <span>Edad</span>
-                            <p>
-                                {{ paciente.edad|default:"-" }} años
-                            </p>
-                        </div>
+    <!-- RESUMEN VISUAL DE ÚLTIMOS EXÁMENES -->
+    <h2 style="margin-bottom: 15px; font-size: 1.2rem; color: #1e293b;">Últimos Exámenes Realizados</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
 
-                        <div><span>Teléfono</span><p>{{ paciente.telefono }}</p></div>
+        <!-- 1. TARJETA ÚLTIMA AUDIOMETRÍA -->
+        <div class="card panel" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+                    <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">🎧 Audiometría</h3>
+                    {% if ultima_audiometria %}
+                        <span style="font-size: 0.8rem; background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 12px; font-weight: bold;">
+                            {{ ultima_audiometria.fecha|date:"d/m/Y" }}
+                        </span>
+                    {% endif %}
+                </div>
 
-                        <div><span>Email</span><p>{{ paciente.email }}</p></div>
-
-                        <div><span>Dirección</span><p>{{ paciente.direccion }}</p></div>
-
-                        <div><span>Previsión</span><p>{{ paciente.get_prevision_display }}</p></div>
+                {% if ultima_audiometria %}
+                    <!-- Canvas Miniatura para Audiograma -->
+                    <div style="text-align: center; background: #fafafa; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px; margin-bottom: 10px;">
+                        <canvas id="canvas-summary-audio" width="300" height="170" style="width: 100%; height: auto; display: block;"></canvas>
                     </div>
+
+                    <div style="font-size: 0.82rem; color: #334155;">
+                        <p style="margin-bottom: 4px;"><strong>PTP VA OD:</strong> {{ ultima_audiometria.audiometria.ptp_va_od|default:"-" }} dB | <strong>OI:</strong> {{ ultima_audiometria.audiometria.ptp_va_oi|default:"-" }} dB</p>
+                        {% if ultima_audiometria.observaciones %}
+                            <p style="color: #64748b; font-size: 0.78rem;">{{ ultima_audiometria.observaciones|truncatechars:70 }}</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p style="color: #94a3b8; font-size: 0.85rem; font-style: italic; padding: 20px 0; text-align: center;">Sin registros de audiometría.</p>
+                {% endif %}
+            </div>
+
+            {% if ultima_audiometria %}
+                <div style="margin-top: 12px; border-top: 1px solid #f1f5f9; padding-top: 8px; text-align: right;">
+                    <a href="{% url 'evaluaciones:ver_audiometria_pdf' ultima_audiometria.id %}?auto_print=1" target="_blank" style="font-size: 0.85rem; font-weight: bold; color: #2563eb; text-decoration: none;">
+                        Ver examen completo ➔
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 2. TARJETA ÚLTIMA OTOSCOPÍA -->
+        <div class="card panel" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+                    <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">🔍 Otoscopía</h3>
+                    {% if ultima_otoscopia %}
+                        <span style="font-size: 0.8rem; background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 12px; font-weight: bold;">
+                            {{ ultima_otoscopia.fecha|date:"d/m/Y" }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if ultima_otoscopia %}
+                    <div style="font-size: 0.85rem; color: #334155; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="background: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #ef4444;">
+                            <strong style="color: #dc2626;">Oído Derecho (OD):</strong>
+                            <p style="margin-top: 2px;">{{ ultima_otoscopia.hallazgos_od|default:ultima_otoscopia.observaciones|default:"Sin hallazgos particulares" }}</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #2563eb;">
+                            <strong style="color: #2563eb;">Oído Izquierdo (OI):</strong>
+                            <p style="margin-top: 2px;">{{ ultima_otoscopia.hallazgos_oi|default:ultima_otoscopia.observaciones|default:"Sin hallazgos particulares" }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <p style="color: #94a3b8; font-size: 0.85rem; font-style: italic; padding: 20px 0; text-align: center;">Sin registros de otoscopía.</p>
+                {% endif %}
             </div>
         </div>
+
+        <!-- 3. TARJETA ÚLTIMA IMPEDANCIOMETRÍA -->
+        <div class="card panel" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+                    <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">📊 Timpanometría / Impedancia</h3>
+                    {% if ultima_impedancia %}
+                        <span style="font-size: 0.8rem; background: #f0fdf4; color: #166534; padding: 3px 8px; border-radius: 12px; font-weight: bold;">
+                            {{ ultima_impedancia.fecha|date:"d/m/Y" }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if ultima_impedancia %}
+                    <div style="font-size: 0.85rem; color: #334155; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px; border-radius: 4px;">
+                            <span><strong>Curva OD:</strong> {{ ultima_impedancia.curva_od|default:"Tipo A" }}</span>
+                            <span><strong>Curva OI:</strong> {{ ultima_impedancia.curva_oi|default:"Tipo A" }}</span>
+                        </div>
+                        {% if ultima_impedancia.observaciones %}
+                            <p style="color: #64748b; font-size: 0.8rem; margin-top: 4px;">
+                                {{ ultima_impedancia.observaciones|truncatechars:80 }}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p style="color: #94a3b8; font-size: 0.85rem; font-style: italic; padding: 20px 0; text-align: center;">Sin registros de impedanciometría.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- INYECCIÓN Y DIBUJO DEL AUDIOGRAMA RESUMIDO -->
+{% if ultima_audiometria %}
+    {{ ultima_audiometria.audiometria.audiograma|json_script:"summary-audiograma-data" }}
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("canvas-summary-audio");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+
+        const dataElement = document.getElementById("summary-audiograma-data");
+        const data = dataElement ? JSON.parse(dataElement.textContent) : [];
+
+        const freqs = [125, 250, 500, 1000, 2000, 3000, 4000, 6000, 8000];
+        const padding = { top: 20, left: 30, right: 15, bottom: 15 };
+        const chartWidth = canvas.width - padding.left - padding.right;
+        const chartHeight = canvas.height - padding.top - padding.bottom;
+
+        function getX(freq) {
+            const positions = { 125: 0, 250: 0.6, 500: 1.2, 1000: 1.8, 2000: 2.4, 3000: 3, 4000: 3.6, 6000: 4.2, 8000: 4.8 };
+            return padding.left + (positions[freq] / 6.2) * chartWidth;
+        }
+
+        function getY(db) {
+            return padding.top + (db / 120) * chartHeight;
+        }
+
+        // Grilla simplificada
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        freqs.forEach(f => {
+            let x = getX(f);
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.beginPath();
+            ctx.moveTo(x, padding.top);
+            ctx.lineTo(x, canvas.height - padding.bottom);
+            ctx.stroke();
+        });
+
+        for (let db = 0; db <= 120; db += 20) {
+            let y = getY(db);
+            ctx.strokeStyle = "#cbd5e1";
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(canvas.width - padding.right, y);
+            ctx.stroke();
+            ctx.fillStyle = "#64748b";
+            ctx.font = "8px Arial";
+            ctx.fillText(db, 5, y + 3);
+        }
+
+        // Dibujar líneas y puntos
+        ["right", "left"].forEach(ear => {
+            const points = data.filter(p => p.ear === ear && p.type === "va" && p.category !== "ldl")
+                               .sort((a, b) => freqs.indexOf(a.freq) - freqs.indexOf(b.freq));
+            if (points.length === 0) return;
+
+            const color = ear === "right" ? "#dc2626" : "#2563eb";
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            
+            points.forEach((p, idx) => {
+                const x = getX(p.freq);
+                const y = getY(p.db);
+                if (idx === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Dibujar marcadores
+            points.forEach(p => {
+                const x = getX(p.freq);
+                const y = getY(p.db);
+                ctx.strokeStyle = color;
+                if (ear === "right") {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.stroke();
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(x - 3, y - 3); ctx.lineTo(x + 3, y + 3);
+                    ctx.moveTo(x + 3, y - 3); ctx.lineTo(x - 3, y + 3);
+                    ctx.stroke();
+                }
+            });
+        });
+    });
+    </script>
+{% endif %}
 
         <div id="anamnesis" class="tab-pane">
             <div class="card panel">
@@ -384,25 +574,41 @@
             </div>
         </div>
 
-        <div id="historial" class="tab-pane">
-            <div class="card panel">
-                <h2>Historial</h2>
+<div id="historial" class="tab-pane">
+    <div class="card panel">
+        <h2>Historial de Atenciones</h2>
 
-                <div class="timeline compact">
-                    <div class="event">
-                        <div>
-                            <strong>15/04/2026</strong>
-                            <p>Control integral</p>
-                        </div>
-                    </div>
-
-                    <div class="event">
-                        <div>
-                            <strong>12/01/2026</strong>
-                            <p>Impedanciometría</p>
-                        </div>
+        <div class="timeline compact">
+            {% for item in historial_lista %}
+                <div class="event">
+                    <div>
+                        <strong>{{ item.fecha|date:"d/m/Y" }}</strong>
+                        <p>
+                            {% if item.tipo == 'audiometria' or item.audiometria %}
+                                <a href="{% url 'evaluaciones:ver_audiometria_pdf' item.id %}?auto_print=1" 
+                                   target="_blank" 
+                                   style="text-decoration: underline; font-weight: bold; color: inherit;">
+                                    Audiometría Tonal
+                                </a>
+                            {% elif item.tipo %}
+                                {{ item.get_tipo_display|default:item.tipo|title }}
+                            {% else %}
+                                Anamnesis / Consulta
+                            {% endif %}
+                        </p>
+                        {% if item.observaciones %}
+                            <small style="color: #64748b; display: block; margin-top: 2px;">
+                                {{ item.observaciones|truncatechars:60 }}
+                            </small>
+                        {% endif %}
                     </div>
                 </div>
+            {% empty %}
+                <p class="empty">No hay registros en el historial del paciente.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
             </div>
         </div>
 
