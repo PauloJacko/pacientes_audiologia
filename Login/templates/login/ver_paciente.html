@@ -256,7 +256,7 @@
 
             {% if e.archivo %}
                 <a href="{{ e.archivo.url }}" target="_blank" class="file-link">
-                    📎 Ver archivo adjunto
+                    Ver Adjunto
                 </a>
             {% endif %}
         </div>
@@ -300,7 +300,7 @@
 
             {% if e.archivo %}
                 <a href="{{ e.archivo.url }}" target="_blank" class="file-link">
-                    📎 Ver archivo adjunto
+                    Ver Adjunto
                 </a>
             {% endif %}
         </div>
@@ -311,19 +311,58 @@
     {% endfor %}
 </div>
 
-    <!-- IMPEDANCIA -->
-    <div class="eval-column">
-        <h3 class="eval-title impe">Impedanciometría</h3>
+<!-- IMPEDANCIOMETRÍA -->
+<div class="eval-column">
+    <h3 class="eval-title impe">Impedanciometría</h3>
 
-        {% for e in impedancias %}
-            <div class="eval-card">
-                <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
-                <p>{{ e.observaciones|default:"-" }}</p>
+    {% for e in impedancias %}
+    <div class="eval-card">
+
+        <div class="eval-top">
+            <span class="date">{{ e.fecha|date:"d/m/Y" }}</span>
+
+            <div class="actions">
+                <!-- VER DETALLE -->
+                <a href="{% url 'evaluaciones:ver_impedanciometria' e.id %}" class="btn small">
+                    Ver
+                </a>
+
+                <!-- EDITAR -->
+                <a href="{% url 'evaluaciones:editar_impedanciometria' e.id %}" class="btn small edit">
+                    Editar
+                </a>
+                
+                <!-- ELIMINAR CON ALERTIFY -->
+                <button type="button" 
+                        class="btn small delete" 
+                        onclick="confirmDeleteEvaluacion('{{ e.id }}')">
+                    Eliminar
+                </button>
             </div>
-        {% empty %}
-            <p class="empty">Sin registros</p>
-        {% endfor %}
+        </div>
+
+        <div class="eval-body">
+            {% if e.impedanciometria %}
+                <div style="font-size: 0.85rem; margin-bottom: 8px; color: #334155;">
+                    <div><strong>OD:</strong> Curva {{ e.impedanciometria.curva_od|default:"-" }} </div>
+                    <div><strong>OI:</strong> Curva {{ e.impedanciometria.curva_oi|default:"-" }} </div>
+                </div>
+            {% endif %}
+
+            <p>{{ e.observaciones|default:"Sin observaciones" }}</p>
+
+            {% if e.archivo %}
+                <a href="{{ e.archivo.url }}" target="_blank" class="file-link">
+                    Ver Adjunto
+                </a>
+            {% endif %}
+        </div>
+
     </div>
+    {% empty %}
+        <p class="empty">Sin registros</p>
+    {% endfor %}
+</div>
 
 
     <!-- OTROS -->

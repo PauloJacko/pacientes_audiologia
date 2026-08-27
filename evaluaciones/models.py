@@ -116,3 +116,29 @@ class Otoscopia(models.Model):
 
     def __str__(self):
         return f"Otoscopía ID: {self.id} - Evaluacion: {self.evaluacion.id}"
+
+class Impedanciometria(models.Model):
+    CURVA_CHOICES = [
+        ('A', 'Tipo A'),
+        ('As', 'Tipo As'),
+        ('Ad', 'Tipo Ad'),
+        ('B', 'Tipo B'),
+        ('C', 'Tipo C'),
+    ]
+
+    evaluacion = models.OneToOneField(Evaluacion, on_delete=models.CASCADE, related_name="impedanciometria")
+
+    # OD
+    presion_od = models.IntegerField(null=True, blank=True)
+    compliancia_od = models.FloatField(null=True, blank=True)
+    volumen_od = models.FloatField(null=True, blank=True)
+    curva_od = models.CharField(max_length=5, choices=CURVA_CHOICES, blank=True)
+
+    # OI
+    presion_oi = models.IntegerField(null=True, blank=True)
+    compliancia_oi = models.FloatField(null=True, blank=True)
+    volumen_oi = models.FloatField(null=True, blank=True)
+    curva_oi = models.CharField(max_length=5, choices=CURVA_CHOICES, blank=True)
+
+    def __str__(self):
+        return f"Impedanciometría ID: {self.id} - Evaluacion: {self.evaluacion.id}"

@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Impedanciometría - {{ paciente.nombre }}</title>
+    <link rel="stylesheet" href="{% static 'evaluaciones/css/audiometria.css' %}">
+    <style>
+        .tabs-nav { display: flex; gap: 8px; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 18px; background: #f8fafc; border: 1px solid #cbd5e1; border-bottom: none; border-radius: 6px 6px 0 0; font-weight: 600; color: #64748b; cursor: pointer; }
+        .tab-btn.active { background: #ffffff; color: #2563eb; border-bottom: 2px solid #ffffff; margin-bottom: -2px; }
+        .tab-btn.disabled { cursor: not-allowed; opacity: 0.6; }
+        .badge-soon { font-size: 0.7rem; background: #e2e8f0; color: #475569; padding: 2px 6px; border-radius: 10px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .ear-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .ear-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.04); border-top: 5px solid #ccc; }
+        .ear-card.od { border-top-color: #e74c3c; }
+        .ear-card.oi { border-top-color: #3498db; }
+        .ear-title { font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; }
+        .ear-title.od { color: #e74c3c; }
+        .ear-title.oi { color: #3498db; }
+        .timpano-canvas-container { display: flex; justify-content: center; background: #fafafa; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+        .form-control[readonly] { background-color: #f1f5f9; font-weight: bold; color: #1e293b; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <div class="header-text">
+            <span class="title">Editar Impedanciometría</span>
+            <span class="subtitle">Paciente: {{ paciente.nombre }}</span>
+        </div>
+    </div>
+    <div class="header-right">
+        <a href="{% url 'ver_paciente' paciente.id %}" class="btn-back">← Volver</a>
+    </div>
+</div>
+
+<main class="dashboard-container" style="max-width: 1200px; margin: 20px auto; padding: 0 15px;">
+    <div class="tabs-nav">
+        <button type="button" class="tab-btn active">Timpanometría</button>
+        <button type="button" class="tab-btn disabled">Reflejo Acústico <span class="badge-soon">Próximamente</span></button>
+        <button type="button" class="tab-btn disabled">Fatiga del Reflejo <span class="badge-soon">Próximamente</span></button>
+        <button type="button" class="tab-btn disabled">Función Tubaria <span class="badge-soon">Próximamente</span></button>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div id="tab-timpanometria" class="tab-content active">
+            <div class="ear-grid">
+                <!-- OÍDO DERECHO (OD) -->
+                <div class="ear-card od">
+                    <div class="ear-title od">Oído Derecho (O.D.)</div>
+                    <div class="timpano-canvas-container">
+                        <canvas id="canvas-od" width="400" height="280"></canvas>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Presión (daPa)</label>
+                            <input type="number" id="presion_od" name="presion_od" class="form-control" value="{{ impedanciometria.presion_od|default:'' }}" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Compliancia (ml)</label>
+                            <input type="number" id="compliancia_od" name="compliancia_od" class="form-control" value="{{ impedanciometria.compliancia_od|default:'' }}" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Volumen Canal (ml)</label>
+                            <input type="number" id="volumen_od" name="volumen_od" class="form-control" value="{{ impedanciometria.volumen_od|default:'' }}" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Curva (Autodiagnóstico)</label>
+                            <input type="text" id="curva_od" name="curva_od" class="form-control" readonly value="{{ impedanciometria.curva_od|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OÍDO IZQUIERDO (OI) -->
+                <div class="ear-card oi">
+                    <div class="ear-title oi">Oído Izquierdo (O.I.)</div>
+                    <div class="timpano-canvas-container">
+                        <canvas id="canvas-oi" width="400" height="280"></canvas>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Presión (daPa)</label>
+                            <input type="number" id="presion_oi" name="presion_oi" class="form-control" value="{{ impedanciometria.presion_oi|default:'' }}" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Compliancia (ml)</label>
+                            <input type="number" id="compliancia_oi" name="compliancia_oi" class="form-control" value="{{ impedanciometria.compliancia_oi|default:'' }}" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Volumen Canal (ml)</label>
+                            <input type="number" id="volumen_oi" name="volumen_oi" class="form-control" value="{{ impedanciometria.volumen_oi|default:'' }}" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Curva (Autodiagnóstico)</label>
+                            <input type="text" id="curva_oi" name="curva_oi" class="form-control" readonly value="{{ impedanciometria.curva_oi|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Observaciones Clínicas</label>
+                <textarea name="observaciones" class="form-control" rows="3">{{ evaluacion.observaciones|default:'' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Archivo Adjunto (Opcional)</label>
+                <input type="file" name="archivo" class="form-control">
+            </div>
+        </div>
+
+        <button type="submit" style="background: #2563eb; color: white; border: none; padding: 12px 24px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">Guardar Cambios</button>
+    </form>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const minP = -400, maxP = 200, minC = 0.0, maxC = 3.0;
+
+    function initTimpanogram(canvasId, earColor) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        const padding = { top: 30, right: 20, bottom: 30, left: 45 };
+        const w = canvas.width - padding.left - padding.right;
+        const h = canvas.height - padding.top - padding.bottom;
+
+        function getX(p) { return padding.left + ((Math.max(minP, Math.min(maxP, p)) - minP) / (maxP - minP)) * w; }
+        function getY(c) { return canvas.height - padding.bottom - ((Math.max(minC, Math.min(maxC, c)) - minC) / (maxC - minC)) * h; }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(220, 252, 231, 0.5)";
+            ctx.fillRect(getX(-100), getY(1.6), getX(100) - getX(-100), getY(0.3) - getY(1.6));
+
+            ctx.lineWidth = 1; ctx.font = "10px Arial"; ctx.fillStyle = "#64748b";
+            [-400, -300, -200, -100, 0, 100, 200].forEach(p => {
+                let x = getX(p);
+                ctx.strokeStyle = p === 0 ? "#94a3b8" : "#e2e8f0";
+                ctx.beginPath(); ctx.moveTo(x, padding.top); ctx.lineTo(x, canvas.height - padding.bottom); ctx.stroke();
+                ctx.textAlign = "center"; ctx.fillText(p, x, canvas.height - 10);
+            });
+
+            [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0].forEach(c => {
+                let y = getY(c);
+                ctx.strokeStyle = c === 0 ? "#94a3b8" : "#e2e8f0";
+                ctx.beginPath(); ctx.moveTo(padding.left, y); ctx.lineTo(canvas.width - padding.right, y); ctx.stroke();
+                ctx.textAlign = "right"; ctx.fillText(c.toFixed(1), padding.left - 5, y + 3);
+            });
+        }
+
+        function drawCurve(presion, compliancia) {
+            drawGrid();
+            if (presion === null || compliancia === null || isNaN(presion) || isNaN(compliancia)) return;
+
+            const xPeak = getX(presion), yPeak = getY(compliancia), yBase = getY(0.05);
+            ctx.strokeStyle = earColor; ctx.lineWidth = 2.5; ctx.beginPath();
+            ctx.moveTo(Math.max(padding.left, xPeak - 120), yBase);
+            ctx.bezierCurveTo(xPeak - 40, yBase, xPeak - 20, yPeak, xPeak, yPeak);
+            ctx.bezierCurveTo(xPeak + 20, yPeak, xPeak + 40, yBase, Math.min(canvas.width - padding.right, xPeak + 120), yBase);
+            ctx.stroke();
+            ctx.fillStyle = earColor; ctx.beginPath(); ctx.arc(xPeak, yPeak, 4, 0, Math.PI * 2); ctx.fill();
+        }
+
+        return { drawCurve };
+    }
+
+    const timpanogramaOD = initTimpanogram("canvas-od", "#e74c3c");
+    const timpanogramaOI = initTimpanogram("canvas-oi", "#3498db");
+
+    function calcularJerger(presion, compliancia) {
+        if (presion === null || compliancia === null || isNaN(presion) || isNaN(compliancia)) return "";
+        if (compliancia <= 0.2) return "B";
+        if (presion < -100) return "C";
+        if (presion >= -100 && presion <= 100) {
+            if (compliancia < 0.3) return "As";
+            if (compliancia > 1.6) return "Ad";
+            return "A";
+        }
+        return "A";
+    }
+
+    const presOD = document.getElementById("presion_od"), compOD = document.getElementById("compliancia_od"), curvaOD = document.getElementById("curva_od");
+    function updateOD() {
+        let p = parseFloat(presOD.value), c = parseFloat(compOD.value);
+        p = isNaN(p) ? null : p; c = isNaN(c) ? null : c;
+        timpanogramaOD.drawCurve(p, c);
+        curvaOD.value = calcularJerger(p, c);
+    }
+    presOD.addEventListener("input", updateOD); compOD.addEventListener("input", updateOD);
+
+    const presOI = document.getElementById("presion_oi"), compOI = document.getElementById("compliancia_oi"), curvaOI = document.getElementById("curva_oi");
+    function updateOI() {
+        let p = parseFloat(presOI.value), c = parseFloat(compOI.value);
+        p = isNaN(p) ? null : p; c = isNaN(c) ? null : c;
+        timpanogramaOI.drawCurve(p, c);
+        curvaOI.value = calcularJerger(p, c);
+    }
+    presOI.addEventListener("input", updateOI); compOI.addEventListener("input", updateOI);
+
+    // Dibujo inicial con datos existentes
+    updateOD();
+    updateOI();
+});
+</script>
+</body>
+</html>

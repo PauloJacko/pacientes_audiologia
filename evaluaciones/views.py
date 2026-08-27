@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from Login.models import Paciente
-from .models import Evaluacion, Audiometria, Otoscopia
+from .models import Evaluacion, Audiometria, Otoscopia, Impedanciometria
 from Login.models import Paciente
 import json
 
@@ -212,17 +212,100 @@ def crear_impedanciometria(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
 
     if request.method == "POST":
-        Evaluacion.objects.create(
+        evaluacion = Evaluacion.objects.create(
             paciente=paciente,
             tipo='impedanciometria',
-            observaciones=request.POST.get("observaciones"),
+            observaciones=request.POST.get("observaciones", ""),
             archivo=request.FILES.get("archivo")
         )
+
+        def parse_float(val):
+            try:
+                return float(val) if val != "" else None
+            except (ValueError, TypeError):
+                return None
+
+        def parse_int(val):
+            try:
+                return int(val) if val != "" else None
+            except (ValueError, TypeError):
+                return None
+
+        Impedanciometria.objects.create(
+            evaluacion=evaluacion,
+            presion_od=parse_int(request.POST.get("presion_od")),
+            compliancia_od=parse_float(request.POST.get("compliancia_od")),
+            volumen_od=parse_float(request.POST.get("volumen_od")),
+            curva_od=request.POST.get("curva_od", ""),
+
+            presion_oi=parse_int(request.POST.get("presion_oi")),
+            compliancia_oi=parse_float(request.POST.get("compliancia_oi")),
+            volumen_oi=parse_float(request.POST.get("volumen_oi")),
+            curva_oi=request.POST.get("curva_oi", "")
+        )
+
         return redirect('ver_paciente', paciente_id)
 
     return render(request, 'evaluaciones/impedanciometria_form.html', {
         'paciente': paciente,
         'edad': paciente.edad
+    })
+
+def ver_impedanciometria(request, id):
+    evaluacion = get_object_or_404(Evaluacion, id=id)
+    impedanciometria = getattr(evaluacion, 'impedanciometria', None)
+    
+    return render(request, 'evaluaciones/ver_impedanciometria.html', {
+        'evaluacion': evaluacion,
+        'impedanciometria': impedanciometria,
+        'paciente': evaluacion.paciente
+    })
+
+def editar_impedanciometria(request, id):
+    evaluacion = get_object_or_404(Evaluacion, id=id)
+    impedanciometria = getattr(evaluacion, 'impedanciometria', None)
+    
+    if not impedanciometria:
+        impedanciometria = Impedanciometria.objects.create(evaluacion=evaluacion)
+
+    if request.method == "POST":
+        # Guardar evaluación general
+        evaluacion.observaciones = request.POST.get("observaciones", "")
+        if request.FILES.get("archivo"):
+            evaluacion.archivo = request.FILES.get("archivo")
+        evaluacion.save()
+
+        def parse_float(val):
+            try:
+                return float(val) if val != "" else None
+            except (ValueError, TypeError):
+                return None
+
+        def parse_int(val):
+            try:
+                return int(val) if val != "" else None
+            except (ValueError, TypeError):
+                return None
+
+        # Guardar datos específicos de impedanciometría (Timpanometría)
+        impedanciometria.presion_od = parse_int(request.POST.get("presion_od"))
+        impedanciometria.compliancia_od = parse_float(request.POST.get("compliancia_od"))
+        impedanciometria.volumen_od = parse_float(request.POST.get("volumen_od"))
+        impedanciometria.curva_od = request.POST.get("curva_od", "")
+
+        impedanciometria.presion_oi = parse_int(request.POST.get("presion_oi"))
+        impedanciometria.compliancia_oi = parse_float(request.POST.get("compliancia_oi"))
+        impedanciometria.volumen_oi = parse_float(request.POST.get("volumen_oi"))
+        impedanciometria.curva_oi = request.POST.get("curva_oi", "")
+
+        impedanciometria.save()
+
+        return redirect('ver_paciente', evaluacion.paciente.id)
+
+    return render(request, 'evaluaciones/editar_impedanciometria.html', {
+        'evaluacion': evaluacion,
+        'impedanciometria': impedanciometria,
+        'paciente': evaluacion.paciente
     })
 
 
