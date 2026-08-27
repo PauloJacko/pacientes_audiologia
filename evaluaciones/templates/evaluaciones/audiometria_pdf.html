@@ -9,58 +9,50 @@
       <title>Protocolo de Audiometría - {{ evaluacion.paciente.nombre }}</title>
 
       <style>
-
-        /* Colorimetría Audiológica Estándar */
-        .od-text { color: #dc2626 !important; font-weight: 700; }
-        .oi-text { color: #2563eb !important; font-weight: 700; }
-        .central-text { color: #16a34a !important; font-weight: 700; }
-
-        /* Badges de Acumetría (Rinne / Weber) */
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
-
-        .badge-od { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .badge-oi { background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-        .badge-central { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        .badge-empty { background-color: #f8fafc; color: #94a3b8; font-weight: normal; }
-        /* = CONFIGURACIÓN GENERAL - PROTOCOLO A4 = */
-        
-        @page {
-          size: A4 portrait;
-          margin: 12mm 15mm 12mm 15mm;
-        }
-        
+        /* ==========================================
+          1. ESTILOS PARA LA PANTALLA (VISOR DE HOJA A4)
+          ========================================== */
         * {
           box-sizing: border-box;
           margin: 0;
           padding: 0;
           font-family: Arial, Helvetica, sans-serif;
         }
-        
+
         body {
-          background: #ffffff;
+          background-color: #525659; /* Fondo gris oscuro tipo visor PDF */
           color: #000000;
           font-size: 8pt;
           line-height: 1.15;
-          width: 100%;
+          padding: 20px 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
-        
-        /* ============================================================
-                           BOTÓN DE IMPRESIÓN
-                        ============================================================ */
-        
+
+        /* Contenedor wrapper que simula la hoja A4 en el monitor */
+        .page-sheet {
+          background: #ffffff;
+          width: 210mm;
+          min-height: 297mm;
+          padding: 12mm 15mm;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+          border-radius: 2px;
+          margin: 0 auto;
+        }
+
         .no-print {
+          width: 100%;
+          max-width: 210mm; 
           background: #1e293b;
-          padding: 10px;
+          padding: 10px 15px;
           text-align: right;
-          margin-bottom: 10px;
+          margin: 0 auto 15px auto;
+          border-radius: 4px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          box-sizing: border-box; 
         }
-        
+
         .btn-print {
           background: #2563eb;
           color: #ffffff;
@@ -70,323 +62,109 @@
           font-weight: bold;
           cursor: pointer;
           font-size: 9pt;
+          transition: background 0.2s ease;
         }
-        
-        /* ============================================================
-                           ENCABEZADO
-                        ============================================================ */
-        
-        .header-table {
-          width: 100%;
-          margin-bottom: 8px;
-          border-collapse: collapse;
+
+        .btn-print:hover {
+          background: #1d4ed8;
         }
-        
-        .logo-img {
-          height: 42px;
-          width: auto;
+
+        /* Clases auxiliares */
+        .od-text { color: #dc2626 !important; font-weight: 700; }
+        .oi-text { color: #2563eb !important; font-weight: 700; }
+        .central-text { color: #16a34a !important; font-weight: 700; }
+
+        .badge {
+          display: inline-block;
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 0.85rem;
         }
-        
-        .doc-title {
-          text-align: center;
-          font-size: 13pt;
-          font-weight: bold;
-          letter-spacing: 0.5px;
-          padding-top: 5px;
+
+        .badge-od { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .badge-oi { background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .badge-central { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .badge-empty { background-color: #f8fafc; color: #94a3b8; font-weight: normal; }
+
+        .header-table { width: 100%; margin-bottom: 8px; border-collapse: collapse; }
+        .logo-img { height: 42px; width: auto; }
+        .doc-title { text-align: center; font-size: 13pt; font-weight: bold; letter-spacing: 0.5px; padding-top: 5px; }
+
+        .patient-info { width: 100%; margin-bottom: 10px; }
+        .info-row { display: flex; align-items: flex-end; margin-bottom: 4px; font-size: 8.5pt; font-weight: bold; }
+        .info-label { white-space: nowrap; padding-right: 6px; }
+        .info-line { flex-grow: 1; border-bottom: 1px dashed #000000; padding-left: 6px; font-weight: normal; font-size: 8.5pt; }
+
+        .middle-section { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; width: 100%; }
+        .chart-container { width: 62%; }
+        .chart-title { font-weight: bold; font-size: 8.5pt; margin-bottom: 4px; }
+        #audiogramaCanvas { width: 100% !important; height: 250px !important; border: 2px solid #000000; display: block; background: #ffffff; }
+
+        .side-tables { width: 36%; display: flex; flex-direction: column; gap: 6px; }
+
+        table.protocol-table { width: 100%; border-collapse: collapse; font-size: 7.5pt; text-align: center; }
+        table.protocol-table th, table.protocol-table td { border: 1.5px solid #000000; padding: 2px 3px; height: 17px; }
+        table.protocol-table th { font-weight: bold; background: #ffffff; }
+
+        .full-table { width: 100%; margin-bottom: 6px; }
+
+        .fonetico-row { display: flex; border: 1.5px solid #000000; margin-bottom: 6px; font-size: 7pt; font-weight: bold; text-align: center; width: 100%; }
+        .fonetico-title { background: #ffffff; padding: 3px 6px; border-right: 1.5px solid #000000; white-space: nowrap; }
+        .fonetico-item { flex: 1; padding: 3px 2px; border-right: 1.5px solid #000000; }
+        .fonetico-item:last-child { border-right: none; }
+
+        .clinical-section { margin-bottom: 8px; page-break-inside: avoid; }
+        .clinical-section-title { font-size: 8.5pt; font-weight: bold; margin-bottom: 4px; }
+
+        .tinnitus-table { width: 100%; border-collapse: collapse; font-size: 6.7pt; text-align: center; }
+        .tinnitus-table th, .tinnitus-table td { border: 1.5px solid #000000; padding: 3px; vertical-align: top; }
+        .tinnitus-table th { font-weight: bold; }
+
+        .tinni-check { display: block; text-align: left; margin-bottom: 2px; white-space: nowrap; }
+        .tinni-value { margin-bottom: 3px; }
+
+        .obs-container { margin-top: 6px; margin-bottom: 15px; width: 100%; page-break-inside: avoid; }
+        .obs-title { font-weight: bold; font-size: 8.5pt; margin-bottom: 4px; }
+        .obs-line { width: 100%; border-bottom: 2px solid #000000; min-height: 18px; font-size: 8.5pt; padding-left: 4px; padding-top: 2px; }
+
+        .signature-section { display: flex; justify-content: flex-end; margin-top: 100px; page-break-inside: avoid; width: 100%; }
+        .signature-box { width: 210px; text-align: center; }
+        .signature-line-mark { border-bottom: 2px solid #000000; height: 30px; margin-bottom: 4px; }
+        .signature-title { font-weight: bold; font-size: 8.5pt; letter-spacing: 0.5px; }
+        .signature-subtitle { font-size: 7pt; margin-top: 2px; }
+
+        .attachment { margin-top: 5px; margin-bottom: 7px; font-size: 7pt; }
+        .attachment a { color: #000000; text-decoration: underline; }
+
+        /* ==========================================
+          2. REGLAS ESTRICTAS DE IMPRESIÓN (A4)
+          ========================================== */
+        @page {
+          size: A4 portrait;
+          margin: 12mm 15mm 12mm 15mm;
         }
-        
-        /* ============================================================
-                           DATOS DEL PACIENTE
-                        ============================================================ */
-        
-        .patient-info {
-          width: 100%;
-          margin-bottom: 10px;
-        }
-        
-        .info-row {
-          display: flex;
-          align-items: flex-end;
-          margin-bottom: 4px;
-          font-size: 8.5pt;
-          font-weight: bold;
-        }
-        
-        .info-label {
-          white-space: nowrap;
-          padding-right: 6px;
-        }
-        
-        .info-line {
-          flex-grow: 1;
-          border-bottom: 1px dashed #000000;
-          padding-left: 6px;
-          font-weight: normal;
-          font-size: 8.5pt;
-        }
-        
-        /* ============================================================
-                           BLOQUE CENTRAL
-                        ============================================================ */
-        
-        .middle-section {
-          display: flex;
-          justify-content: space-between;
-          gap: 10px;
-          margin-bottom: 8px;
-          width: 100%;
-        }
-        
-        .chart-container {
-          width: 62%;
-        }
-        
-        .chart-title {
-          font-weight: bold;
-          font-size: 8.5pt;
-          margin-bottom: 4px;
-        }
-        
-        #audiogramaCanvas {
-          width: 100% !important;
-          height: 250px !important;
-          border: 2px solid #000000;
-          display: block;
-          background: #ffffff;
-        }
-        
-        .side-tables {
-          width: 36%;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-        
-        /* ============================================================
-                           TABLAS
-                        ============================================================ */
-        
-        table.protocol-table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 7.5pt;
-          text-align: center;
-        }
-        
-        table.protocol-table th,
-        table.protocol-table td {
-          border: 1.5px solid #000000;
-          padding: 2px 3px;
-          height: 17px;
-        }
-        
-        table.protocol-table th {
-          font-weight: bold;
-          background: #ffffff;
-        }
-        
-        .full-table {
-          width: 100%;
-          margin-bottom: 6px;
-        }
-        
-        /* ============================================================
-                           MATERIAL FONÉTICO
-                        ============================================================ */
-        
-        .fonetico-row {
-          display: flex;
-          border: 1.5px solid #000000;
-          margin-bottom: 6px;
-          font-size: 7pt;
-          font-weight: bold;
-          text-align: center;
-          width: 100%;
-        }
-        
-        .fonetico-title {
-          background: #ffffff;
-          padding: 3px 6px;
-          border-right: 1.5px solid #000000;
-          white-space: nowrap;
-        }
-        
-        .fonetico-item {
-          flex: 1;
-          padding: 3px 2px;
-          border-right: 1.5px solid #000000;
-        }
-        
-        .fonetico-item:last-child {
-          border-right: none;
-        }
-        
-        /* ============================================================
-                           ACUMETRÍA / DETERIORO
-                        ============================================================ */
-        
-        .special-tests-grid {
-          display: flex;
-          gap: 8px;
-          margin-bottom: 8px;
-          width: 100%;
-        }
-        
-        .tests-left {
-          width: 26%;
-        }
-        
-        .tests-right {
-          width: 74%;
-        }
-        
-        .section-title {
-          font-weight: bold;
-          font-size: 8pt;
-          margin-bottom: 4px;
-        }
-        
-        /* ============================================================
-                           LOGOAUDIOMETRÍA / PTP
-                        ============================================================ */
-        
-        .clinical-section {
-          margin-bottom: 8px;
-          page-break-inside: avoid;
-        }
-        
-        .clinical-section-title {
-          font-size: 8.5pt;
-          font-weight: bold;
-          margin-bottom: 4px;
-        }
-        
-        /* ============================================================
-                           TINNITUMETRÍA
-                        ============================================================ */
-        
-        .tinnitus-table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 6.7pt;
-          text-align: center;
-        }
-        
-        .tinnitus-table th,
-        .tinnitus-table td {
-          border: 1.5px solid #000000;
-          padding: 3px;
-          vertical-align: top;
-        }
-        
-        .tinnitus-table th {
-          font-weight: bold;
-        }
-        
-        .tinni-check {
-          display: block;
-          text-align: left;
-          margin-bottom: 2px;
-          white-space: nowrap;
-        }
-        
-        .tinni-value {
-          margin-bottom: 3px;
-        }
-        
-        /* ============================================================
-                           OBSERVACIONES
-                        ============================================================ */
-        
-        .obs-container {
-          margin-top: 6px;
-          margin-bottom: 15px;
-          width: 100%;
-          page-break-inside: avoid;
-        }
-        
-        .obs-title {
-          font-weight: bold;
-          font-size: 8.5pt;
-          margin-bottom: 4px;
-        }
-        
-        .obs-line {
-          width: 100%;
-          border-bottom: 2px solid #000000;
-          min-height: 18px;
-          font-size: 8.5pt;
-          padding-left: 4px;
-          padding-top: 2px;
-        }
-        
-        /* ============================================================
-                           FIRMA
-                        ============================================================ */
-        
-        .signature-section {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 100px;
-        page-break-inside: avoid;
-        width: 100%;
-        }
-        
-        .signature-box {
-          width: 210px;
-          text-align: center;
-        }
-        
-        .signature-line-mark {
-          border-bottom: 2px solid #000000;
-          height: 30px;
-          margin-bottom: 4px;
-        }
-        
-        .signature-title {
-          font-weight: bold;
-          font-size: 8.5pt;
-          letter-spacing: 0.5px;
-        }
-        
-        .signature-subtitle {
-          font-size: 7pt;
-          margin-top: 2px;
-        }
-        
-        /* ============================================================
-                           ARCHIVO ADJUNTO
-                        ============================================================ */
-        
-        .attachment {
-          margin-top: 5px;
-          margin-bottom: 7px;
-          font-size: 7pt;
-        }
-        
-        .attachment a {
-          color: #000000;
-          text-decoration: underline;
-        }
-        
-        /* ============================================================
-                           IMPRESIÓN
-                        ============================================================ */
-        
+
         @media print {
+          body {
+            background: #ffffff !important;
+            padding: 0 !important;
+          }
+
           .no-print {
             display: none !important;
           }
-        
-          body {
-            padding: 0;
+
+          .page-sheet {
+            width: 100% !important;
+            min-height: auto !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
           }
-        
-          .page-break-avoid {
-            page-break-inside: avoid;
-          }
-        
-          .clinical-section {
+
+          .page-break-avoid, .clinical-section {
             page-break-inside: avoid;
           }
         }
@@ -395,7 +173,9 @@
 
     <body>
 
-        {% include "evaluaciones/partials/audiometria_contenido.html" %}
+        <div class="page-sheet">
+          {% include "evaluaciones/partials/audiometria_contenido.html" %}
+        </div>
 
     </body>
   </html>

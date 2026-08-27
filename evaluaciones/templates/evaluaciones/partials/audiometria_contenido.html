@@ -1,16 +1,8 @@
 {% load static %}
 
-    <!--   ============================================================
-         BOTÓN SOLO EN PANTALLA
-    ============================================================   -->
-
       <div class="no-print">
         <button onclick="window.print();" class="btn-print">🖨️ Imprimir / Guardar PDF</button>
       </div>
-
-      <!--   ============================================================
-         ENCABEZADO
-    ============================================================   -->
 
       <table class="header-table">
         <tr>
@@ -24,9 +16,6 @@
         </tr>
       </table>
 
-      <!--   ============================================================
-         DATOS DEL PACIENTE
-    ============================================================   -->
 
       <div class="patient-info">
         <div class="info-row">
@@ -58,9 +47,6 @@
         </div>
       </div>
 
-<!-- ============================================================
-     AUDIOGRAMA + WEBER / RINNE / PTP
-============================================================ -->
 
 <div class="middle-section">
   <!-- AUDIOGRAMA -->
@@ -205,10 +191,6 @@
   </div>
 </div>
 
-<!-- ============================================================
-     LOGOAUDIOMETRÍA
-============================================================ -->
-
 <div class="clinical-section">
   <div class="clinical-section-title">LOGOAUDIOMETRÍA</div>
 
@@ -249,10 +231,6 @@
   </table>
 </div>
 
-<!-- ============================================================
-     MATERIAL FONÉTICO
-============================================================ -->
-
 <div class="fonetico-row">
   <div class="fonetico-title">MATERIAL FONÉTICO</div>
 
@@ -266,10 +244,6 @@
 
   <div class="fonetico-item">ÓRDENES</div>
 </div>
-
-<!-- ============================================================
-     DETERIORO TONAL
-============================================================ -->
 
 <div class="clinical-section">
   <div class="clinical-section-title">DETERIORO TONAL ({{ a.deterioro_test|default:'No evaluado'|upper }})</div>
@@ -317,10 +291,6 @@
   </table>
 </div>
 
-<!-- ============================================================
-     TINNITUMETRÍA
-============================================================ -->
-
 <div class="clinical-section">
   <div class="clinical-section-title">TINNITUMETRÍA</div>
 
@@ -347,8 +317,6 @@
 
     <tbody>
       <tr>
-        <!-- TINNITUS -->
-
         <td>
           <span class="tinni-check">
             {% if a.tin_presente %}
@@ -383,8 +351,6 @@
           </span>
         </td>
 
-        <!-- OÍDO -->
-
         <td>
           <span class="tinni-check" style="color:#dc2626; font-weight:bold;">
             {% if a.tin_od %}
@@ -410,8 +376,6 @@
             {% endif %}Bilateral
           </span>
         </td>
-
-        <!-- CUALIDAD -->
 
         <td>
           <span class="tinni-check">
@@ -439,8 +403,6 @@
           </span>
         </td>
 
-        <!-- DURACIÓN -->
-
         <td>
           <span class="tinni-check">
             {% if a.tin_continuo %}
@@ -467,23 +429,15 @@
           </span>
         </td>
 
-        <!-- INTENSIDAD -->
-
         <td>
           <div class="tinni-value">{{ a.tin_db_hl|default:'' }} dB HL</div>
 
           <div class="tinni-value">{{ a.tin_db_sl|default:'' }} dB SL</div>
         </td>
 
-        <!-- FRECUENCIA -->
-
         <td>{{ a.tin_freq|default:'' }} Hz</td>
 
-        <!-- MASKING -->
-
         <td>{{ a.tin_masking|default:'' }} dB HL</td>
-
-        <!-- INHIBICIÓN -->
 
         <td>
           <span class="tinni-check" style="color:#2563eb; font-weight:bold;">
@@ -523,10 +477,6 @@
   </table>
 </div>
 
-      <!--   ============================================================
-         Se utiliza evaluacion.observaciones
-    ============================================================   -->
-
       <div class="obs-container">
         <div class="obs-title">OBSERVACIONES</div>
 
@@ -536,10 +486,6 @@
 
         <div class="obs-line"></div>
       </div>
-
-      <!--   ============================================================
-         FIRMA
-    ============================================================   -->
 
       <div class="signature-section">
         <div class="signature-box">
@@ -802,10 +748,6 @@
       ctx.restore()
     }
 
-    /* ========================================================
-                       11. PUNTOS Y SÍMBOLOS CLÍNICOS
-       ======================================================== */
-
     function drawPoints() {
       if (!ctx) {
         return
@@ -833,11 +775,6 @@
         ctx.strokeStyle = color
         ctx.fillStyle = color
         ctx.lineWidth = 1.5
-
-        /* ------------------------------------------------
-                                LDL
-           ------------------------------------------------ */
-
         if (category === 'ldl') {
           drawLDL(x, y, p.ear, color)
 
@@ -848,10 +785,6 @@
           ctx.restore()
           return
         }
-
-        /* ------------------------------------------------
-                                VÍA ÓSEA
-           ------------------------------------------------ */
 
         if (type === 'vo') {
           ctx.font = 'bold 14px Arial'
@@ -867,10 +800,6 @@
           ctx.restore()
           return
         }
-
-        /* ------------------------------------------------
-                                VÍA AÉREA - OD
-           ------------------------------------------------ */
 
         if (isRight) {
           if (isMasked) {
@@ -889,10 +818,6 @@
               drawNRArrow(x - 4, y + 4, true, color)
             }
           } else {
-            /*
-             * OD normal:
-             * círculo
-             */
 
             ctx.beginPath()
 
@@ -905,15 +830,8 @@
             }
           }
         } else {
-          /* ------------------------------------------------
-                                  VÍA AÉREA - OI
-             ------------------------------------------------ */
 
           if (isMasked) {
-            /*
-             * OI enmascarado:
-             * cuadrado
-             */
 
             ctx.strokeRect(x - 5, y - 5, 10, 10)
 
@@ -921,10 +839,6 @@
               drawNRArrow(x + 4, y + 4, false, color)
             }
           } else {
-            /*
-             * OI normal:
-             * X
-             */
 
             ctx.beginPath()
             ctx.moveTo(x - 5, y - 5)
@@ -941,10 +855,6 @@
         ctx.restore()
       })
     }
-
-    /* ========================================================
-                       12. EJECUCIÓN
-       ======================================================== */
 
     drawGrid()
 

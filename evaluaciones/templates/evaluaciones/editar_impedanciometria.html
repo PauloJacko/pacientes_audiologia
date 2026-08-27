@@ -67,13 +67,13 @@
                         </div>
                         <div class="form-group">
                             <label>Compliancia (ml)</label>
-                            <input type="number" id="compliancia_od" name="compliancia_od" class="form-control" value="{{ impedanciometria.compliancia_od|default:'' }}" step="0.01">
+                            <input type="number" id="compliancia_od" name="compliancia_od" class="form-control" value="{{ impedanciometria.compliancia_od|stringformat:'.2f'|default:'' }}" step="0.01">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Volumen Canal (ml)</label>
-                            <input type="number" id="volumen_od" name="volumen_od" class="form-control" value="{{ impedanciometria.volumen_od|default:'' }}" step="0.01">
+                            <input type="number" id="volumen_od" name="volumen_od" class="form-control" value="{{ impedanciometria.volumen_od|stringformat:'.2f'|default:'' }}" step="0.01">
                         </div>
                         <div class="form-group">
                             <label>Curva (Autodiagnóstico)</label>
@@ -95,13 +95,13 @@
                         </div>
                         <div class="form-group">
                             <label>Compliancia (ml)</label>
-                            <input type="number" id="compliancia_oi" name="compliancia_oi" class="form-control" value="{{ impedanciometria.compliancia_oi|default:'' }}" step="0.01">
+                            <input type="number" id="compliancia_oi" name="compliancia_oi" class="form-control" value="{{ impedanciometria.compliancia_oi|stringformat:'.2f'|default:'' }}" step="0.01">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Volumen Canal (ml)</label>
-                            <input type="number" id="volumen_oi" name="volumen_oi" class="form-control" value="{{ impedanciometria.volumen_oi|default:'' }}" step="0.01">
+                            <input type="number" id="volumen_oi" name="volumen_oi" class="form-control" value="{{ impedanciometria.volumen_oi|stringformat:'.2f'|default:'' }}" step="0.01">
                         </div>
                         <div class="form-group">
                             <label>Curva (Autodiagnóstico)</label>
@@ -133,6 +133,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function initTimpanogram(canvasId, earColor) {
         const canvas = document.getElementById(canvasId);
+        if (!canvas) return null;
+        
         const ctx = canvas.getContext("2d");
         const padding = { top: 30, right: 20, bottom: 30, left: 45 };
         const w = canvas.width - padding.left - padding.right;
@@ -193,25 +195,48 @@ document.addEventListener("DOMContentLoaded", function () {
         return "A";
     }
 
-    const presOD = document.getElementById("presion_od"), compOD = document.getElementById("compliancia_od"), curvaOD = document.getElementById("curva_od");
+    // Helper para interpretar entradas numéricas con coma o punto
+    function parseInputValue(val) {
+        if (!val || val.trim() === "") return null;
+        let num = parseFloat(val.replace(',', '.'));
+        return isNaN(num) ? null : num;
+    }
+
+    // --- OÍDO DERECHO (OD) ---
+    const presOD = document.getElementById("presion_od");
+    const compOD = document.getElementById("compliancia_od");
+    const curvaOD = document.getElementById("curva_od");
+
     function updateOD() {
-        let p = parseFloat(presOD.value), c = parseFloat(compOD.value);
-        p = isNaN(p) ? null : p; c = isNaN(c) ? null : c;
-        timpanogramaOD.drawCurve(p, c);
-        curvaOD.value = calcularJerger(p, c);
-    }
-    presOD.addEventListener("input", updateOD); compOD.addEventListener("input", updateOD);
+        if (!presOD || !compOD) return;
+        let p = parseInputValue(presOD.value);
+        let c = parseInputValue(compOD.value);
 
-    const presOI = document.getElementById("presion_oi"), compOI = document.getElementById("compliancia_oi"), curvaOI = document.getElementById("curva_oi");
+        if (timpanogramaOD) timpanogramaOD.drawCurve(p, c);
+        if (curvaOD) curvaOD.value = calcularJerger(p, c);
+    }
+
+    if (presOD) presOD.addEventListener("input", updateOD);
+    if (compOD) compOD.addEventListener("input", updateOD);
+
+    // --- OÍDO IZQUIERDO (OI) ---
+    const presOI = document.getElementById("presion_oi");
+    const compOI = document.getElementById("compliancia_oi");
+    const curvaOI = document.getElementById("curva_oi");
+
     function updateOI() {
-        let p = parseFloat(presOI.value), c = parseFloat(compOI.value);
-        p = isNaN(p) ? null : p; c = isNaN(c) ? null : c;
-        timpanogramaOI.drawCurve(p, c);
-        curvaOI.value = calcularJerger(p, c);
-    }
-    presOI.addEventListener("input", updateOI); compOI.addEventListener("input", updateOI);
+        if (!presOI || !compOI) return;
+        let p = parseInputValue(presOI.value);
+        let c = parseInputValue(compOI.value);
 
-    // Dibujo inicial con datos existentes
+        if (timpanogramaOI) timpanogramaOI.drawCurve(p, c);
+        if (curvaOI) curvaOI.value = calcularJerger(p, c);
+    }
+
+    if (presOI) presOI.addEventListener("input", updateOI);
+    if (compOI) compOI.addEventListener("input", updateOI);
+
+    // Dibujo inicial con datos preexistentes al cargar la vista
     updateOD();
     updateOI();
 });
