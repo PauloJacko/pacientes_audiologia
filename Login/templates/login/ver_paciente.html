@@ -107,6 +107,9 @@
                 </div>
 
                 {% if ultima_audiometria %}
+                    <!-- Serialización segura del JSON de la audiometría -->
+                    {{ ultima_audiometria.audiometria.audiograma|json_script:"summary-audiograma-data" }}
+
                     <!-- Canvas Miniatura para Audiograma -->
                     <div style="text-align: center; background: #fafafa; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px; margin-bottom: 10px;">
                         <canvas id="canvas-summary-audio" width="300" height="170" style="width: 100%; height: auto; display: block;"></canvas>
@@ -173,12 +176,27 @@
                     {% endif %}
                 </div>
 
-                {% if ultima_impedancia %}
+                {% if ultima_impedancia and ultima_impedancia.impedanciometria %}
                     <div style="font-size: 0.85rem; color: #334155; display: flex; flex-direction: column; gap: 8px;">
                         <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px; border-radius: 4px;">
-                            <span><strong>Curva OD:</strong> {{ ultima_impedancia.curva_od|default:"Tipo A" }}</span>
-                            <span><strong>Curva OI:</strong> {{ ultima_impedancia.curva_oi|default:"Tipo A" }}</span>
+                            <span>
+                                <strong>Curva OD:</strong> 
+                                {% if ultima_impedancia.impedanciometria.curva_od %}
+                                    {{ ultima_impedancia.impedanciometria.get_curva_od_display }}
+                                {% else %}
+                                    Sin registro
+                                {% endif %}
+                            </span>
+                            <span>
+                                <strong>Curva OI:</strong> 
+                                {% if ultima_impedancia.impedanciometria.curva_oi %}
+                                    {{ ultima_impedancia.impedanciometria.get_curva_oi_display }}
+                                {% else %}
+                                    Sin registro
+                                {% endif %}
+                            </span>
                         </div>
+
                         {% if ultima_impedancia.observaciones %}
                             <p style="color: #64748b; font-size: 0.8rem; margin-top: 4px;">
                                 {{ ultima_impedancia.observaciones|truncatechars:80 }}
@@ -204,84 +222,267 @@
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
 
-        const dataElement = document.getElementById("summary-audiograma-data");
-        const data = dataElement ? JSON.parse(dataElement.textContent) : [];
+        // --- CARGA Y NORMALIZACIÓN DE DATOS ---
+        let rawData = [];
+        const scriptTag = document.getElementById("summary-audiograma-data");
+        if (scriptTag && scriptTag.textContent) {
+            try {
+                rawData = JSON.parse(scriptTag.textContent);
+                if (typeof rawData === "string") rawData = JSON.parse(rawData);
+            } catch (e) {
+                console.error("Error al parsear el audiograma:", e);
+                rawData = [];
+            }
+        }
 
+        const data = (Array.isArray(rawData) ? rawData : []).map(p => ({
+            ...p,
+            freq: Number(p.freq),
+            db: Number(p.db),
+            ear: p.ear || (p.oido === 'derecho' ? 'right' : p.oido === 'izquierdo' ? 'left' : p.oido),
+            type: (p.type || p.tipo || "va").toLowerCase()
+        }));
+
+        const modoAudiometria = "{{ ultima_audiometria.audiometria.modo|default:'tonal' }}";
+
+        // --- CONFIGURACIÓN DE GRILLA (Dimensiones de vista reducida) ---
         const freqs = [125, 250, 500, 1000, 2000, 3000, 4000, 6000, 8000];
         const padding = { top: 20, left: 30, right: 15, bottom: 15 };
         const chartWidth = canvas.width - padding.left - padding.right;
         const chartHeight = canvas.height - padding.top - padding.bottom;
 
-        function getX(freq) {
-            const positions = { 125: 0, 250: 0.6, 500: 1.2, 1000: 1.8, 2000: 2.4, 3000: 3, 4000: 3.6, 6000: 4.2, 8000: 4.8 };
-            return padding.left + (positions[freq] / 6.2) * chartWidth;
+        /* POSICIONES */
+        function getXByFreq(freq) {
+            const positions = {
+                125: 0, 250: 0.6, 500: 1.2, 1000: 1.8,
+                2000: 2.4, 3000: 3, 4000: 3.6, 6000: 4.2, 8000: 4.8
+            };
+            const maxIndex = 6.2;
+            const index = positions[freq] !== undefined ? positions[freq] : 0;
+            return padding.left + (index / maxIndex) * chartWidth;
         }
 
         function getY(db) {
             return padding.top + (db / 120) * chartHeight;
         }
 
-        // Grilla simplificada
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        /* GRID */
+        function drawGrid() {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        freqs.forEach(f => {
-            let x = getX(f);
-            ctx.strokeStyle = "#e2e8f0";
-            ctx.beginPath();
-            ctx.moveTo(x, padding.top);
-            ctx.lineTo(x, canvas.height - padding.bottom);
-            ctx.stroke();
-        });
+            // Frecuencias
+            freqs.forEach(f => {
+                let x = getXByFreq(f);
+                ctx.strokeStyle = "#e2e8f0";
+                ctx.beginPath();
+                ctx.moveTo(x, padding.top);
+                ctx.lineTo(x, canvas.height - padding.bottom);
+                ctx.stroke();
+            });
 
-        for (let db = 0; db <= 120; db += 20) {
-            let y = getY(db);
-            ctx.strokeStyle = "#cbd5e1";
-            ctx.beginPath();
-            ctx.moveTo(padding.left, y);
-            ctx.lineTo(canvas.width - padding.right, y);
-            ctx.stroke();
-            ctx.fillStyle = "#64748b";
-            ctx.font = "8px Arial";
-            ctx.fillText(db, 5, y + 3);
+            // dB
+            for (let db = 0; db <= 120; db += 20) {
+                let y = getY(db);
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(canvas.width - padding.right, y);
+                ctx.stroke();
+
+                ctx.fillStyle = "#64748b";
+                ctx.font = "8px Arial";
+                ctx.fillText(db, 5, y + 3);
+            }
         }
 
-        // Dibujar líneas y puntos
-        ["right", "left"].forEach(ear => {
-            const points = data.filter(p => p.ear === ear && p.type === "va" && p.category !== "ldl")
-                               .sort((a, b) => freqs.indexOf(a.freq) - freqs.indexOf(b.freq));
-            if (points.length === 0) return;
-
-            const color = ear === "right" ? "#dc2626" : "#2563eb";
+        /* FIGURAS Y SÍMBOLOS (Idénticos al Formulario) */
+        function drawCircle(x, y, color) {
             ctx.strokeStyle = color;
-            ctx.lineWidth = 1.5;
             ctx.beginPath();
-            
-            points.forEach((p, idx) => {
-                const x = getX(p.freq);
-                const y = getY(p.db);
-                if (idx === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
             ctx.stroke();
+        }
 
-            // Dibujar marcadores
-            points.forEach(p => {
-                const x = getX(p.freq);
+        function drawX(x, y, color) {
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x - 4, y - 4);
+            ctx.lineTo(x + 4, y + 4);
+            ctx.moveTo(x + 4, y - 4);
+            ctx.lineTo(x - 4, y + 4);
+            ctx.stroke();
+        }
+
+        function drawTriangle(x, y, color) {
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y - 5);
+            ctx.lineTo(x - 5, y + 5);
+            ctx.lineTo(x + 5, y + 5);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function drawSquare(x, y, color) {
+            ctx.strokeStyle = color;
+            ctx.strokeRect(x - 4, y - 4, 8, 8);
+        }
+
+        function drawBone(x, y, ear, masked, color) {
+            ctx.fillStyle = color;
+            ctx.font = "12px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            let symbol = ear === "right" ? (masked ? "[" : "<") : (masked ? "]" : ">");
+            ctx.fillText(symbol, x, y);
+        }
+
+        function drawNRArrow(x, y, color) {
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y + 4);
+            ctx.lineTo(x, y + 12);
+            ctx.lineTo(x - 3, y + 9);
+            ctx.moveTo(x, y + 12);
+            ctx.lineTo(x + 3, y + 9);
+            ctx.stroke();
+        }
+
+        function drawLDL(x, y, ear, color) {
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            const size = 6;
+
+            if (ear === "right") {
+                ctx.moveTo(x, y - size);
+                ctx.lineTo(x - size, y + size);
+                ctx.lineTo(x, y + size);
+            } else {
+                ctx.moveTo(x, y - size);
+                ctx.lineTo(x + size, y + size);
+                ctx.lineTo(x, y + size);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function drawSF(x, y, text) {
+            ctx.fillStyle = "#111";
+            ctx.font = "10px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(text, x, y);
+        }
+
+        /* DIBUJO DE LÍNEAS INTERCONECTADAS */
+        function drawLines() {
+            const ears = ["right", "left"];
+            const types = ["va", "vo"];
+
+            ears.forEach(ear => {
+                types.forEach(type => {
+                    let points = data
+                        .filter(p => p.ear === ear && p.type === type && p.category !== "ldl" && p.modifier !== "nr" && !p.no_response && !p.sin_respuesta && !p.nr)
+                        .sort((a, b) => freqs.indexOf(a.freq) - freqs.indexOf(b.freq));
+
+                    if (points.length < 2) return;
+
+                    const color = ear === "right" ? "#dc2626" : "#2563eb";
+
+                    ctx.save();
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash(type === "vo" ? [4, 4] : []);
+
+                    ctx.beginPath();
+                    let started = false;
+
+                    freqs.forEach(freq => {
+                        const p = points.find(pt => pt.freq === freq);
+
+                        if (!p) {
+                            started = false;
+                            return;
+                        }
+
+                        const x = getXByFreq(freq);
+                        const y = getY(p.db);
+
+                        if (!started) {
+                            ctx.moveTo(x, y);
+                            started = true;
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+
+                    ctx.stroke();
+                    ctx.restore();
+                });
+            });
+        }
+
+        /* DIBUJO DE PUNTOS EN CANVAS */
+        function drawPoints() {
+            // CAMPO LIBRE
+            if (modoAudiometria === "campo" || modoAudiometria === "campo_libre") {
+                data.forEach(p => {
+                    const x = getXByFreq(p.freq);
+                    const y = getY(p.db);
+
+                    drawSF(x, y, p.sf || "S");
+
+                    if (p.modifier === "nr" || p.no_response || p.sin_respuesta || p.nr) {
+                        drawNRArrow(x, y, "#000000");
+                    }
+                    if (p.category === "ldl") {
+                        drawLDL(x, y, p.ear || "right", "#000000");
+                    }
+                });
+                return;
+            }
+
+            // TONAL
+            data.forEach(p => {
+                const x = getXByFreq(p.freq);
                 const y = getY(p.db);
-                ctx.strokeStyle = color;
-                if (ear === "right") {
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.stroke();
-                } else {
-                    ctx.beginPath();
-                    ctx.moveTo(x - 3, y - 3); ctx.lineTo(x + 3, y + 3);
-                    ctx.moveTo(x + 3, y - 3); ctx.lineTo(x - 3, y + 3);
-                    ctx.stroke();
+                const isRight = p.ear === "right";
+                const color = isRight ? "#dc2626" : "#2563eb";
+                const isMasked = Boolean(p.masked || p.enmascarado);
+                const isNR = Boolean(p.modifier === "nr" || p.no_response || p.sin_respuesta || p.nr);
+
+                ctx.lineWidth = 1.5;
+
+                if (p.category === "ldl" || p.type === "ldl") {
+                    drawLDL(x, y, p.ear, color);
+                    if (isNR) drawNRArrow(x, y, color);
+                    return;
+                }
+
+                if (p.type === "vo") {
+                    drawBone(x, y, p.ear, isMasked, color);
+                } else if (p.type === "va") {
+                    if (isMasked) {
+                        isRight ? drawTriangle(x, y, color) : drawSquare(x, y, color);
+                    } else {
+                        isRight ? drawCircle(x, y, color) : drawX(x, y, color);
+                    }
+                }
+
+                if (isNR) {
+                    drawNRArrow(x, y, color);
                 }
             });
-        });
+        }
+
+        // --- EJECUCIÓN DEL RENDERIZADO ---
+        drawGrid();
+        if (modoAudiometria === "tonal") {
+            drawLines();
+        }
+        drawPoints();
     });
     </script>
 {% endif %}
