@@ -10,18 +10,22 @@ from operator import attrgetter
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
+            request.session.cycle_key() 
             return redirect('dashboard')
         else:
             return render(request, 'Login/login.html', {
-                'error': 'Usuario o contraseña incorrectos'
+                'error': 'Usuario o contraseña incorrectos.'
             })
 
     return render(request, 'Login/login.html')

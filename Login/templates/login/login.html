@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Acceso al Sistema</title>
 
     {% load static %}
 
@@ -21,15 +21,36 @@
         <p class="error">{{ error }}</p>
     {% endif %}
 
-    <form method="POST">
+    <form method="POST" action="{% url 'login' %}" autocomplete="off" id="loginForm">
         {% csrf_token %}
 
-        <input type="text" name="username" placeholder="Usuario" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
+        <input 
+            type="text" 
+            name="username" 
+            placeholder="Usuario" 
+            required 
+            autocomplete="username"
+            autofocus
+        >
+        <input 
+            type="password" 
+            name="password" 
+            placeholder="Contraseña" 
+            required 
+            autocomplete="current-password"
+        >
 
-        <button type="submit">Ingresar</button>
+        <button type="submit" id="btnSubmit">Ingresar</button>
     </form>
 </div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function() {
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.innerText = 'Cargando...';
+    });
+</script>
 
 </body>
 </html>

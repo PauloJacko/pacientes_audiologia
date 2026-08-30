@@ -1,19 +1,18 @@
-
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# --- SEGURIDAD Y CLAVES ---
+# Se lee desde las variables de entorno de Render. Se deja un valor por defecto solo para entorno local.
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-n$)^&s%my&8s)72&!ap-m0*w19l4uy242!(+yi_@fkc_d$i-=0')
 
+# DEBUG controlado por entorno: en producción estará en False si defines DEBUG=False
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n$)^&s%my&8s)72&!ap-m0*w19l4uy242!(+yi_@fkc_d$i-=0'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -27,6 +26,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Login',
     'evaluaciones',
+    'axes',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -37,7 +42,26 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
+
+# Configuración de límites y bloqueos
+AXES_FAILURE_LIMIT = 5            
+AXES_COOLOFF_TIME = 1             
+AXES_LOCKOUT_TEMPLATE = 'Login/login.html' 
+AXES_RESET_ON_SUCCESS = True      
+AXES_ONLY_USER_FAILURES = False   
+
+# Seguridad de Sesión y Cookies
+SESSION_COOKIE_HTTPONLY = True        
+CSRF_COOKIE_HTTPONLY = True           
+SESSION_COOKIE_AGE = 28800            
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Cabeceras de protección
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'              
 
 ROOT_URLCONF = 'config.urls'
 
@@ -59,13 +83,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
+# Database (PostgreSQL para Render / SQLite para Local)
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600
+    )
 }
 
 
@@ -105,6 +129,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 
