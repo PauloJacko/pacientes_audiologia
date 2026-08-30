@@ -28,7 +28,7 @@ def login_view(request):
                 'error': 'Usuario o contraseña incorrectos.'
             })
 
-    return render(request, 'Login/login.html')
+    return render(request, 'login/login.html')
 
 def logout_view(request):
     logout(request)
@@ -55,7 +55,7 @@ def dashboard_view(request):
     if rut:
         pacientes = pacientes.filter(rut__icontains=rut)
 
-    return render(request, 'Login/dashboard.html', {
+    return render(request, 'login/dashboard.html', {
         'pacientes': pacientes
     })
 
@@ -82,7 +82,7 @@ def ver_paciente(request, id):
         reverse=True
     )
 
-    return render(request, 'Login/ver_paciente.html', {
+    return render(request, 'login/ver_paciente.html', {
         'paciente': paciente,
         'anamnesis': anamnesis,
         'audiometrias': audiometrias,
