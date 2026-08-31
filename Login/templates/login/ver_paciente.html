@@ -94,7 +94,7 @@
     
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
 
-        <!-- 1. TARJETA ÚLTIMA AUDIOMETRÍA -->
+        <!-- 1. TARJETA AUDIOMETRÍA -->
         <div class="card panel" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
@@ -107,10 +107,8 @@
                 </div>
 
                 {% if ultima_audiometria %}
-                    <!-- Serialización segura del JSON de la audiometría -->
                     {{ ultima_audiometria.audiometria.audiograma|json_script:"summary-audiograma-data" }}
 
-                    <!-- Canvas Miniatura para Audiograma -->
                     <div style="text-align: center; background: #fafafa; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px; margin-bottom: 10px;">
                         <canvas id="canvas-summary-audio" width="300" height="170" style="width: 100%; height: auto; display: block;"></canvas>
                     </div>
@@ -135,28 +133,80 @@
             {% endif %}
         </div>
 
-        <!-- 2. TARJETA ÚLTIMA OTOSCOPÍA -->
+        <!-- 2. TARJETA OTOSCOPÍA -->
         <div class="card panel" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
                     <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">🔍 Otoscopía</h3>
                     {% if ultima_otoscopia %}
                         <span style="font-size: 0.8rem; background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 12px; font-weight: bold;">
-                            {{ ultima_otoscopia.fecha|date:"d/m/Y" }}
+                            {{ ultima_otoscopia.evaluacion.fecha|date:"d/m/Y" }}
                         </span>
                     {% endif %}
                 </div>
 
                 {% if ultima_otoscopia %}
                     <div style="font-size: 0.85rem; color: #334155; display: flex; flex-direction: column; gap: 8px;">
+
                         <div style="background: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #ef4444;">
                             <strong style="color: #dc2626;">Oído Derecho (OD):</strong>
-                            <p style="margin-top: 2px;">{{ ultima_otoscopia.hallazgos_od|default:ultima_otoscopia.observaciones|default:"Sin hallazgos particulares" }}</p>
+                            <div style="margin-top: 4px; font-size: 0.8rem; color: #475569;">
+                                <div>
+                                    <strong>CAE:</strong> 
+                                    {% if ultima_otoscopia.cae_od %}
+                                        {{ ultima_otoscopia.cae_od }}
+                                    {% else %}
+                                        <span style="color: #94a3b8; font-style: italic;">Sin registro</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <strong>Membrana:</strong> 
+                                    {% if ultima_otoscopia.membrana_od %}
+                                        {{ ultima_otoscopia.membrana_od }}
+                                    {% else %}
+                                        <span style="color: #94a3b8; font-style: italic;">Sin registro</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
+
                         <div style="background: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #2563eb;">
                             <strong style="color: #2563eb;">Oído Izquierdo (OI):</strong>
-                            <p style="margin-top: 2px;">{{ ultima_otoscopia.hallazgos_oi|default:ultima_otoscopia.observaciones|default:"Sin hallazgos particulares" }}</p>
+                            <div style="margin-top: 4px; font-size: 0.8rem; color: #475569;">
+                                <div>
+                                    <strong>CAE:</strong> 
+                                    {% if ultima_otoscopia.cae_oi %}
+                                        {{ ultima_otoscopia.cae_oi }}
+                                    {% else %}
+                                        <span style="color: #94a3b8; font-style: italic;">Sin registro</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <strong>Membrana:</strong> 
+                                    {% if ultima_otoscopia.membrana_oi %}
+                                        {{ ultima_otoscopia.membrana_oi }}
+                                    {% else %}
+                                        <span style="color: #94a3b8; font-style: italic;">Sin registro</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
+
+                        {% if ultima_otoscopia.evaluacion.observaciones %}
+                            <div style="background: #f1f5f9; padding: 6px 8px; border-radius: 4px; font-size: 0.8rem; margin-top: 4px; color: #334155;">
+                                <strong>Obs. Generales:</strong> 
+                                <span>{{ ultima_otoscopia.evaluacion.observaciones }}</span>
+                            </div>
+                        {% endif %}
+
+                        {% if ultima_otoscopia.evaluacion.archivo %}
+                            <div style="margin-top: 4px;">
+                                <a href="{{ ultima_otoscopia.evaluacion.archivo.url }}" target="_blank" style="display: inline-block; font-size: 0.8rem; color: #2563eb; font-weight: 600; text-decoration: none; background: #eff6ff; padding: 5px 10px; border-radius: 4px; border: 1px solid #bfdbfe;">
+                                    Ver Adjunto
+                                </a>
+                            </div>
+                        {% endif %}
+
                     </div>
                 {% else %}
                     <p style="color: #94a3b8; font-size: 0.85rem; font-style: italic; padding: 20px 0; text-align: center;">Sin registros de otoscopía.</p>
@@ -164,11 +214,12 @@
             </div>
         </div>
 
-        <!-- 3. TARJETA ÚLTIMA IMPEDANCIOMETRÍA -->
+        <!-- 3. TARJETA IMPEDANCIOMETRÍA -->
         <div class="card panel" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
-                    <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">📊 Timpanometría / Impedancia</h3>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 10px;">
+                    <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">📊 Impedancioetría</h3>
                     {% if ultima_impedancia %}
                         <span style="font-size: 0.8rem; background: #f0fdf4; color: #166534; padding: 3px 8px; border-radius: 12px; font-weight: bold;">
                             {{ ultima_impedancia.fecha|date:"d/m/Y" }}
@@ -177,37 +228,148 @@
                 </div>
 
                 {% if ultima_impedancia and ultima_impedancia.impedanciometria %}
-                    <div style="font-size: 0.85rem; color: #334155; display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px; border-radius: 4px;">
-                            <span>
-                                <strong>Curva OD:</strong> 
+                    <div style="text-align: center; margin-bottom: 8px;">
+                        <span style="font-size: 0.85rem; font-weight: bold; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; background: #f1f5f9; padding: 2px 10px; border-radius: 4px;">
+                            Timpanometría
+                        </span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <div style="background: #fff5f5; border: 1px solid #fecaca; border-radius: 6px; padding: 6px; text-align: center;">
+                            <span style="font-size: 0.75rem; font-weight: bold; color: #dc2626; display: block; margin-bottom: 4px;">OD (Oído Derecho)</span>
+                            <canvas id="mini-canvas-od" width="160" height="110" style="background: #ffffff; border-radius: 4px; border: 1px solid #fca5a5; max-width: 100%;"></canvas>
+                            <div style="font-size: 0.8rem; margin-top: 4px; color: #1e293b;">
+                                <strong>Curva:</strong> 
                                 {% if ultima_impedancia.impedanciometria.curva_od %}
-                                    {{ ultima_impedancia.impedanciometria.get_curva_od_display }}
+                                    <span style="font-weight: bold; color: #dc2626;">{{ ultima_impedancia.impedanciometria.get_curva_od_display }}</span>
                                 {% else %}
-                                    Sin registro
+                                    Sin reg.
                                 {% endif %}
-                            </span>
-                            <span>
-                                <strong>Curva OI:</strong> 
-                                {% if ultima_impedancia.impedanciometria.curva_oi %}
-                                    {{ ultima_impedancia.impedanciometria.get_curva_oi_display }}
-                                {% else %}
-                                    Sin registro
-                                {% endif %}
-                            </span>
+                            </div>
                         </div>
 
-                        {% if ultima_impedancia.observaciones %}
-                            <p style="color: #64748b; font-size: 0.8rem; margin-top: 4px;">
-                                {{ ultima_impedancia.observaciones|truncatechars:80 }}
-                            </p>
-                        {% endif %}
+                        <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 6px; text-align: center;">
+                            <span style="font-size: 0.75rem; font-weight: bold; color: #0284c7; display: block; margin-bottom: 4px;">OI (Oído Izquierdo)</span>
+                            <canvas id="mini-canvas-oi" width="160" height="110" style="background: #ffffff; border-radius: 4px; border: 1px solid #7dd3fc; max-width: 100%;"></canvas>
+                            <div style="font-size: 0.8rem; margin-top: 4px; color: #1e293b;">
+                                <strong>Curva:</strong> 
+                                {% if ultima_impedancia.impedanciometria.curva_oi %}
+                                    <span style="font-weight: bold; color: #0284c7;">{{ ultima_impedancia.impedanciometria.get_curva_oi_display }}</span>
+                                {% else %}
+                                    Sin reg.
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
+
+                    {% if ultima_impedancia.observaciones %}
+                        <p style="color: #64748b; font-size: 0.78rem; margin-top: 4px; line-height: 1.2;">
+                            <strong>Obs:</strong> {{ ultima_impedancia.observaciones|truncatechars:70 }}
+                        </p>
+                    {% endif %}
+
+                    {% if ultima_impedancia.evaluacion.archivo or ultima_impedancia.archivo %}
+                        <div style="margin-top: 8px;">
+                            <a href="{% if ultima_impedancia.evaluacion.archivo %}{{ ultima_impedancia.evaluacion.archivo.url }}{% else %}{{ ultima_impedancia.archivo.url }}{% endif %}" target="_blank" style="display: inline-block; font-size: 0.8rem; color: #2563eb; font-weight: 600; text-decoration: none; background: #eff6ff; padding: 5px 10px; border-radius: 4px; border: 1px solid #bfdbfe;">
+                                📎 Ver Adjunto
+                            </a>
+                        </div>
+                    {% endif %}
+
                 {% else %}
                     <p style="color: #94a3b8; font-size: 0.85rem; font-style: italic; padding: 20px 0; text-align: center;">Sin registros de impedanciometría.</p>
                 {% endif %}
             </div>
         </div>
+
+{% if ultima_impedancia and ultima_impedancia.impedanciometria %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const minP = -400, maxP = 200;
+    const minC = 0.0, maxC = 3.0;
+
+    function renderMiniTimpanogram(canvasId, presion, compliancia, earColor) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        
+        const padding = { top: 10, right: 8, bottom: 18, left: 22 };
+        const w = canvas.width - padding.left - padding.right;
+        const h = canvas.height - padding.top - padding.bottom;
+
+        function getX(p) {
+            let val = Math.max(minP, Math.min(maxP, p));
+            return padding.left + ((val - minP) / (maxP - minP)) * w;
+        }
+
+        function getY(c) {
+            let val = Math.max(minC, Math.min(maxC, c));
+            return canvas.height - padding.bottom - ((val - minC) / (maxC - minC)) * h;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "rgba(220, 252, 231, 0.6)";
+        ctx.fillRect(getX(-100), getY(1.6), getX(100) - getX(-100), getY(0.3) - getY(1.6));
+
+        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = "#e2e8f0";
+
+        ctx.beginPath();
+        ctx.moveTo(getX(0), padding.top);
+        ctx.lineTo(getX(0), canvas.height - padding.bottom);
+        ctx.stroke();
+
+        ctx.font = "8px Arial";
+        ctx.fillStyle = "#94a3b8";
+        ctx.textAlign = "center";
+        ctx.fillText("0", getX(0), canvas.height - 4);
+        ctx.fillText("-200", getX(-200), canvas.height - 4);
+        ctx.fillText("+200", getX(200), canvas.height - 4);
+
+        if (presion === null || compliancia === null || isNaN(presion) || isNaN(compliancia)) {
+            return;
+        }
+
+        const xPeak = getX(presion);
+        const yPeak = getY(compliancia);
+        const yBase = getY(0.05);
+
+        ctx.strokeStyle = earColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        let leftBaseX = Math.max(padding.left, xPeak - 45);
+        let rightBaseX = Math.min(canvas.width - padding.right, xPeak + 45);
+
+        ctx.moveTo(leftBaseX, yBase);
+        ctx.bezierCurveTo(xPeak - 15, yBase, xPeak - 8, yPeak, xPeak, yPeak);
+        ctx.bezierCurveTo(xPeak + 8, yPeak, xPeak + 15, yBase, rightBaseX, yBase);
+        ctx.stroke();
+
+        ctx.fillStyle = earColor;
+        ctx.beginPath();
+        ctx.arc(xPeak, yPeak, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    renderMiniTimpanogram(
+        "mini-canvas-od", 
+        {% if ultima_impedancia.impedanciometria.presion_od != None %}{{ ultima_impedancia.impedanciometria.presion_od }}{% else %}null{% endif %}, 
+        {% if ultima_impedancia.impedanciometria.compliancia_od != None %}{{ ultima_impedancia.impedanciometria.compliancia_od }}{% else %}null{% endif %}, 
+        "#e74c3c"
+    );
+
+    renderMiniTimpanogram(
+        "mini-canvas-oi", 
+        {% if ultima_impedancia.impedanciometria.presion_oi != None %}{{ ultima_impedancia.impedanciometria.presion_oi }}{% else %}null{% endif %}, 
+        {% if ultima_impedancia.impedanciometria.compliancia_oi != None %}{{ ultima_impedancia.impedanciometria.compliancia_oi }}{% else %}null{% endif %}, 
+        "#3498db"
+    );
+});
+</script>
+{% endif %}
 
     </div>
 </div>
@@ -222,7 +384,6 @@
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
 
-        // --- CARGA Y NORMALIZACIÓN DE DATOS ---
         let rawData = [];
         const scriptTag = document.getElementById("summary-audiograma-data");
         if (scriptTag && scriptTag.textContent) {
@@ -245,13 +406,11 @@
 
         const modoAudiometria = "{{ ultima_audiometria.audiometria.modo|default:'tonal' }}";
 
-        // --- CONFIGURACIÓN DE GRILLA (Dimensiones de vista reducida) ---
         const freqs = [125, 250, 500, 1000, 2000, 3000, 4000, 6000, 8000];
         const padding = { top: 20, left: 30, right: 15, bottom: 15 };
         const chartWidth = canvas.width - padding.left - padding.right;
         const chartHeight = canvas.height - padding.top - padding.bottom;
 
-        /* POSICIONES */
         function getXByFreq(freq) {
             const positions = {
                 125: 0, 250: 0.6, 500: 1.2, 1000: 1.8,
@@ -266,12 +425,10 @@
             return padding.top + (db / 120) * chartHeight;
         }
 
-        /* GRID */
         function drawGrid() {
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Frecuencias
             freqs.forEach(f => {
                 let x = getXByFreq(f);
                 ctx.strokeStyle = "#e2e8f0";
@@ -281,7 +438,6 @@
                 ctx.stroke();
             });
 
-            // dB
             for (let db = 0; db <= 120; db += 20) {
                 let y = getY(db);
                 ctx.strokeStyle = "#cbd5e1";
@@ -296,7 +452,6 @@
             }
         }
 
-        /* FIGURAS Y SÍMBOLOS (Idénticos al Formulario) */
         function drawCircle(x, y, color) {
             ctx.strokeStyle = color;
             ctx.beginPath();
@@ -376,7 +531,6 @@
             ctx.fillText(text, x, y);
         }
 
-        /* DIBUJO DE LÍNEAS INTERCONECTADAS */
         function drawLines() {
             const ears = ["right", "left"];
             const types = ["va", "vo"];
@@ -424,9 +578,7 @@
             });
         }
 
-        /* DIBUJO DE PUNTOS EN CANVAS */
         function drawPoints() {
-            // CAMPO LIBRE
             if (modoAudiometria === "campo" || modoAudiometria === "campo_libre") {
                 data.forEach(p => {
                     const x = getXByFreq(p.freq);
@@ -444,7 +596,6 @@
                 return;
             }
 
-            // TONAL
             data.forEach(p => {
                 const x = getXByFreq(p.freq);
                 const y = getY(p.db);
@@ -477,7 +628,6 @@
             });
         }
 
-        // --- EJECUCIÓN DEL RENDERIZADO ---
         drawGrid();
         if (modoAudiometria === "tonal") {
             drawLines();

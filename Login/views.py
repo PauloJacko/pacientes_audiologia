@@ -24,7 +24,7 @@ def login_view(request):
             request.session.cycle_key() 
             return redirect('dashboard')
         else:
-            return render(request, 'Login/login.html', {
+            return render(request, 'login/login.html', {
                 'error': 'Usuario o contraseña incorrectos.'
             })
 
@@ -72,10 +72,13 @@ def ver_paciente(request, id):
     otros = evaluaciones.filter(tipo='otro')
 
     ultima_audiometria = audiometrias.first()
-    ultima_otoscopia = otoscopias.first()
+
+    ultima_eval_otoscopia = otoscopias.first()
+
+    ultima_otoscopia = getattr(ultima_eval_otoscopia, 'otoscopia', None) if ultima_eval_otoscopia else None
+    
     ultima_impedancia = impedancias.first()
 
-    # 2. Historial unificado
     historial_lista = sorted(
         chain(anamnesis, evaluaciones),
         key=attrgetter('fecha'),

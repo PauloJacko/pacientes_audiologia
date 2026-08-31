@@ -49,7 +49,7 @@ MIDDLEWARE = [
 # Configuración de límites y bloqueos
 AXES_FAILURE_LIMIT = 5            
 AXES_COOLOFF_TIME = 1             
-AXES_LOCKOUT_TEMPLATE = 'Login/login.html' 
+AXES_LOCKOUT_TEMPLATE = 'login/login.html' 
 AXES_RESET_ON_SUCCESS = True      
 AXES_ONLY_USER_FAILURES = False   
 
